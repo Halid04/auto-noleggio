@@ -67,13 +67,16 @@ class BaseGateway {
     public function delete($id)
     {
         $statement = "
-            DELETE FROM person
+            DELETE FROM :tableName
             WHERE id = :id;
         ";
 
         try {
             $statement = $this->conn->prepare($statement);
-            $statement->execute(array('id' => $id));
+            $statement->execute(array(
+                'tableName' => $this->tableName,
+                'id' => $id
+            ));
             $result['body'] = $statement->rowCount();
             $result['statusCode'] = 200;
             return $result;

@@ -40,7 +40,7 @@ class BaseController {
                 $response = $this->delete($this->id);
                 break;
             default:
-                $this->sendOutput('', array(), 404);
+                $this->sendOutput(404);
                 break;
         }
         $this->sendOutput($response['body'], array('Content-Type: application/json'), $response['statusCode']);
@@ -71,7 +71,7 @@ class BaseController {
         
     }
 
-    protected function sendOutput($data, $httpHeaders=array(), $statusCode)
+    protected function sendOutput($data=[], $httpHeaders=array(), $statusCode)
     {
 
         if(isset($statusCode)) {

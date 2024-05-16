@@ -1,10 +1,4 @@
 <?php
-    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-        http_response_code(405);
-        header('ALLOW: POST');
-        exit();
-    }
-
     $contentType = isset($_SERVER["CONTENT_TYPE"]) ? trim($_SERVER["CONTENT_TYPE"]) : '';
     
     if ($contentType !== 'application/json') {
