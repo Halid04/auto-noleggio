@@ -3,94 +3,128 @@ namespace Src\Controller;
 
 class ClientController extends BaseController {
 
-    private $db;
-    private $requestMethod;
-    private $id;
+    private $clientGateway;
 
-    public function __call($name, $arguments)
+    public function __construct($db, $requestMethod, $id, $data)
     {
-        $this->sendOutput('', array('HTTP/1.1 404 Not Found'));
+        parent::__construct($db, $requestMethod, $id, $data);
+
+        $this->clientGateway = new ClientGateway($db);
     }
 
-
-    public function __construct($db, $requestMethod, $id)
+    private function getAll($data)
     {
-        $this->db = $db;
-        $this->requestMethod = $requestMethod;
-        $this->id = $id;
-    }
-
-    public function processRequest()
-    {
-        switch ($this->requestMethod) {
-            case 'GET':
-                if ($this->id) {
-                    $response = $this->get($this->id);
-                } else {
-                    $response = $this->getAll();
-                };
-                break;
-            case 'POST':
-                $response = $this->create();
-                break;
-            case 'PUT':
-                $response = $this->update($this->id);
-                break;
-            case 'DELETE':
-                $response = $this->delete($this->id);
-                break;
-            default:
-                $this->sendOutput('', array(), 404);
-                break;
-        }
-        $this->sendOutput($response['body'], array('Content-Type: application/json'), $response['statusCode']);
-    }
-
-    private function getAll()
-    {
-        
-    }
-
-    private function get($id)
-    {
-        
-    }
-
-    private function create()
-    {
-        
-    }
-
-    private function update($id)
-    {
-        
-    }
-
-    private function delete($id)
-    {
-        
-    }
-
-    protected function sendOutput($data, $httpHeaders=array(), $statusCode)
-    {
-
-        if(isset($statusCode)) {
-            http_response_code($statusCode);
-        }
-
-        if (is_array($httpHeaders) && count($httpHeaders)) {
-
-            foreach ($httpHeaders as $httpHeader) {
-
-                header($httpHeader);
-
+        try {
+            if (!isset($data["jwt"])) {
+                return array (
+                    'statusCode' => 401,
+                    'body' => array (
+                        'message' => "Missing JWT."
+                    )
+                );
             }
-
+            $this->authenticateJWTToken($data["jwt"]);
+            return $this->clientGateway->findAll($data);
+        } catch (Exception $e) {
+            return array (
+                'statusCode' => 401,
+                'body' => array (
+                    'message' => $e->getMessage()
+                )
+            );
         }
-
-        echo json_encode($data);
-
-        exit;
-
     }
+
+    private function get($data, $id)
+    {
+        try {
+            if (!isset($data["jwt"])) {
+                return array (
+                    'statusCode' => 401,
+                    'body' => array (
+                        'message' => "Missing JWT."
+                    )
+                );
+            }
+            $this->authenticateJWTToken($data["jwt"]);
+            return $this->clientGateway->find($id);
+        } catch (Exception $e) {
+            return array (
+                'statusCode' => 401,
+                'body' => array (
+                    'message' => $e->getMessage()
+                )
+            );
+        }
+    }
+
+    private function create($data)
+    {
+        try {
+            if (!isset($data["jwt"])) {
+                return array (
+                    'statusCode' => 401,
+                    'body' => array (
+                        'message' => "Missing JWT."
+                    )
+                );
+            }
+            $this->authenticateJWTToken($data["jwt"]);
+            return $this->clientGateway->insert($data, $id);
+        } catch (Exception $e) {
+            return array (
+                'statusCode' => 401,
+                'body' => array (
+                    'message' => $e->getMessage()
+                )
+            );
+        }
+    }
+
+    private function update($data, $id)
+    {
+        try {
+            if (!isset($data["jwt"])) {
+                return array (
+                    'statusCode' => 401,
+                    'body' => array (
+                        'message' => "Missing JWT."
+                    )
+                );
+            }
+            $this->authenticateJWTToken($data["jwt"]);
+            return $this->clientGateway->findAll();
+        } catch (Exception $e) {
+            return array (
+                'statusCode' => 401,
+                'body' => array (
+                    'message' => $e->getMessage()
+                )
+            );
+        }
+    }
+
+    private function delete($data, $id)
+    {
+        try {
+            if (!isset($data["jwt"])) {
+                return array (
+                    'statusCode' => 401,
+                    'body' => array (
+                        'message' => "Missing JWT."
+                    )
+                );
+            }
+            $this->authenticateJWTToken($data["jwt"]);
+            return $this->clientGateway->findAll();
+        } catch (Exception $e) {
+            return array (
+                'statusCode' => 401,
+                'body' => array (
+                    'message' => $e->getMessage()
+                )
+            );
+        }
+    }
+
 }

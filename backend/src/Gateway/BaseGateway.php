@@ -27,11 +27,11 @@ class BaseGateway {
             $statement->execute(array(
                 'tableName' => $this->tableName
             ));
-            $result['body'] = $statement->fetchAll(\PDO::FETCH_ASSOC);
+            $result['body']['content']  = $statement->fetchAll(\PDO::FETCH_ASSOC);
             $result['statusCode'] = 200;
             return $result;
         } catch (\PDOException $e) {
-            $result['body'] = $e->getMessage();
+            $result['body']['message']  = $e->getMessage();
             $result['statusCode'] = 500;
             return $result;
         }
@@ -53,11 +53,11 @@ class BaseGateway {
                 'tableName' => $this->tableName,
                 'id' => $id
             ));
-            $result['body'] = $statement->fetchAll(\PDO::FETCH_ASSOC);
+            $result['body']['content']  = $statement->fetchAll(\PDO::FETCH_ASSOC);
             $result['statusCode'] = 200;
             return $result;
         } catch (\PDOException $e) {
-            $result['body'] = $e->getMessage();
+            $result['body']['message']  = $e->getMessage();
             $result['statusCode'] = 500;
             return $result;
         }    
@@ -77,11 +77,11 @@ class BaseGateway {
                 'tableName' => $this->tableName,
                 'id' => $id
             ));
-            $result['body'] = $statement->rowCount();
+            $result['body']['content']  = $statement->rowCount();
             $result['statusCode'] = 200;
             return $result;
         } catch (\PDOException $e) {
-            $result['body'] = $e->getMessage();
+            $result['body']['message']  = $e->getMessage();
             $result['statusCode'] = 500;
             return $result;
         }    
