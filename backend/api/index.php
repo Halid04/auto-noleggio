@@ -7,6 +7,9 @@
 
     $parts = explode("/", $path);
 
+    echo explode (" ", $parts);
+    exit;
+
 
     $resource = $parts[3];
 

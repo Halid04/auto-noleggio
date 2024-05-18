@@ -1,76 +1,83 @@
 <?php
 namespace Src\Controller;
 
+use \Src\Gateway\BaseGateway;
+
 use \Firebase\JWT\JWT;
+use Firebase\JWT\Key;
+
 
 class BaseController {
-
-    private $db;
     private $requestMethod;
-    private $id;
     private $data;
-
+    private BaseGateway $gateway;
+    private $dotenv;
     public function __call($name, $arguments)
     {
         $this->sendOutput(statusCode: 404);
     }
 
-
-    public function __construct($db, $requestMethod, $data, $id)
+    public function __construct($requestMethod, $data, $gateway)
     {
-        $this->db = $db;
         $this->requestMethod = $requestMethod;
-        $this->id = $id;
         $this->data = $data;
+        $this->gateway = $gateway; 
+        $this->dotenv = \Dotenv\Dotenv::createImmutable("../");
+        $this->dotenv->load();
+    
     }
 
     public function processRequest()
     {
-        switch ($this->requestMethod) {
-            case 'GET':
-                if ($this->id) {
-                    $response = $this->get($this->data, $this->id);
-                } else {
-                    $response = $this->getAll($this->data);
-                };
-                break;
-            case 'POST':
-                $response = $this->create($this->data);
-                break;
-            case 'PUT':
-                $response = $this->update($this->data, $this->id);
-                break;
-            case 'DELETE':
-                $response = $this->delete($this->data, $this->id);
-                break;
-            default:
-                $this->sendOutput(statusCode: 404);
-                break;
+        $response = [];
+        //echo json_encode($)
+        try {
+            if (!isset($this->data['jwt'])) {
+                $response = array (
+                    'statusCode' => 401,
+                    'body' => array (
+                        'message' => "Missing JWT."
+                    )
+                );
+            } else {
+                //$this->authenticateJWTToken($this->data["jwt"]);
+                switch ($this->requestMethod) {
+                    case 'GET':
+                        if (!isset($this->data['id'])) {
+                            $response = $this->gateway->findAll($this->data);
+                        } else {
+                            //$response = $this->gateway->find($this->data);
+                        };
+                        break;
+                    case 'POST':
+                        $response = $this->gateway->insert($this->data);
+                        break;
+                    case 'PUT':
+                        $response = $this->gateway->update($this->data);
+                        break;
+                    case 'DELETE':
+                        $response = $this->gateway->delete($this->data);
+                        break;
+                    default:
+                        $this->sendOutput(statusCode: 404);
+                        return;
+                }
+                //echo json_encode($response);
+            }
+            
+        } catch (Exception $e) {
+            $response = array (
+                'statusCode' => 401,
+                'body' => array (
+                    'message' => $e->getMessage()
+                )
+            );
         }
-        $this->sendOutput($response['body'], array('Content-Type: application/json'), $response['statusCode']);
+        $this->sendOutput(array('Content-Type: application/json'), $response['body'], $response['statusCode']);
+
     }
 
-    private function get($data, $id)
-    {
-        
-    }
-
-    private function create($data)
-    {
-        
-    }
-
-    private function update($data, $id)
-    {
-        
-    }
-
-    private function delete($data, $id)
-    {
-        
-    }
-
-    protected function sendOutput($data=[], $httpHeaders, $statusCode=200)
+    protected function sendOutput($httpHeaders, $data=[], $statusCode=200)
     {
 
         http_response_code($statusCode);
@@ -87,6 +94,6 @@ class BaseController {
 
     public function authenticateJWTToken($jwt_token)
         {
-            return JWT::decode($jwt_token, $secret_key, array('HS256'));
+            return JWT::decode($jwt_token, new Key($_ENV["SECRET_KEY"], 'HS256'));
         }
 }

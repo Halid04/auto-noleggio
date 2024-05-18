@@ -1,5 +1,6 @@
 <?php
 namespace Src\Gateway;
+use \Src\Database;
 
 class BaseGateway {
 
@@ -7,7 +8,7 @@ class BaseGateway {
     private $tableName = null;
     private $result = [];
 
-    public function __construct(Database $db, $tableName)
+    public function __construct($db, $tableName)
     {
         $this->conn = $db->getConnection();
         $this->tableName = $tableName;
@@ -18,72 +19,98 @@ class BaseGateway {
         $statement = "
             SELECT 
                 *
-            FROM
-                :tableName;
-        ";
+            FROM " . $this->tableName . ";";
+        
 
         try {
             $statement = $this->conn->prepare($statement);
-            $statement->execute(array(
-                'tableName' => $this->tableName
-            ));
-            $result['body']['content']  = $statement->fetchAll(\PDO::FETCH_ASSOC);
-            $result['statusCode'] = 200;
-            return $result;
+            $statement->execute();
+            
+            return array (
+                "statusCode" => 200,
+                "body" => array (
+                    "content" => $statement->fetchAll(\PDO::FETCH_ASSOC)
+                )
+            );
         } catch (\PDOException $e) {
-            $result['body']['message']  = $e->getMessage();
-            $result['statusCode'] = 500;
-            return $result;
+            return array (
+                "statusCode" => 500,
+                "body" => array (
+                    "message" => $e->getMessage()
+                )
+            );
         }
     }
 
-    public function find($id)
+    public function find($input)
     {
         $statement = "
             SELECT 
                 *
-            FROM
-                :tableName
-            WHERE id = :id;
+            FROM " . $this->tableName .
+            " WHERE id = :id;
         ";
 
         try {
             $statement = $this->conn->prepare($statement);
             $statement->execute(array(
                 'tableName' => $this->tableName,
-                'id' => $id
+                'id' => (int) $input["id"]
             ));
-            $result['body']['content']  = $statement->fetchAll(\PDO::FETCH_ASSOC);
-            $result['statusCode'] = 200;
-            return $result;
+
+            return array (
+                "statusCode" => 200,
+                "body" => array (
+                    "content" => $statement->fetch(\PDO::FETCH_ASSOC)
+                )
+            );
         } catch (\PDOException $e) {
-            $result['body']['message']  = $e->getMessage();
-            $result['statusCode'] = 500;
-            return $result;
+            return array (
+                "statusCode" => 500,
+                "body" => array (
+                    "message" => $e->getMessage()
+                )
+            );
         }    
     }
 
 
-    public function delete($id)
+    public function delete($input)
     {
         $statement = "
-            DELETE FROM :tableName
-            WHERE id = :id;
+            DELETE FROM " . $this->tableName .
+             " WHERE id = :id;
         ";
+
+        if (!isset($input["id"])) {
+            return array (
+                'statusCode' => 400,
+                'body' => array (
+                    'message' => "Missing parameters: id"
+                )
+            );
+        }
 
         try {
             $statement = $this->conn->prepare($statement);
             $statement->execute(array(
                 'tableName' => $this->tableName,
-                'id' => $id
+                'id' => (int) $input["id"]
             ));
-            $result['body']['content']  = $statement->rowCount();
-            $result['statusCode'] = 200;
-            return $result;
+
+            return array (
+                "statusCode" => 500,
+                "body" => array (
+                    "content" => $statement->rowCount()
+                )
+            );
         } catch (\PDOException $e) {
-            $result['body']['message']  = $e->getMessage();
-            $result['statusCode'] = 500;
-            return $result;
+            return array (
+                "statusCode" => 500,
+                "body" => array (
+                    "message" => $e->getMessage()
+                )
+            );
         }    
     }
 }

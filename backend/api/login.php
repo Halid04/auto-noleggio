@@ -16,7 +16,7 @@
 
     if (count($missing_keys) !== 0) {
         http_response_code(400);
-        echo json_encode(["message" => "Missing credentials: " . implode(",", $missing_keys)]);
+        echo json_encode(["message" => "Missing parameters: " . implode(",", $missing_keys)]);
         exit();
     }
 

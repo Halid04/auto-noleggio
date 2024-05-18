@@ -1,14 +1,43 @@
 <?php
 namespace Src\Gateway;
+use \Src\Database;
+use \Src\Gateway\BaseGateway;
 
 class ClientGateway extends BaseGateway {
 
     private $conn = null;
-    private $tableName = null;
     private $result = [];
+
+    public function __construct(Database $db)
+    {
+        parent::__construct($db, "Cliente");
+    }
 
     public function insert(Array $input)
     {
+        $required_parameters = [
+            "nome", 
+            "cognome",
+            "email",
+            "password",
+            "telefono",
+            "data_di_nascita",
+            "amministratore"
+        ];
+    
+        $request_keys = array_keys($input);
+    
+        $missing_keys = array_diff($required_parameters, $request_keys);
+    
+        if (count($missing_keys) !== 0) {
+            return array (
+                "statusCode" => 400,
+                "body" => array (
+                    "message" => "Missing parameters: " . implode(",", $missing_keys)
+                )
+            );
+        }
+
         $statement = "
             INSERT INTO Cliente 
                 (nome, cognome, email, password, telefono, data_di_nascita, amministratore)
@@ -33,18 +62,34 @@ class ClientGateway extends BaseGateway {
                 'data_di_nascita' => $input['data_di_nascita'],
                 'amministratore' => $input['amministratore'],
             ));
-            $result['body']['content'] = $statement->rowCount();
-            $result['statusCode'] = 200;
-            return $result;
+
+            return array (
+                "statusCode" => 201,
+                "body" => array (
+                    "content" => $statement->rowCount()
+                )
+            );
         } catch (\PDOException $e) {
-            $result['body'] = $e->getMessage();
-            $result['statusCode'] = 500;
-            return $result;
+            return array (
+                "statusCode" => 500,
+                "body" => array (
+                    "message" => $e->getMessage()
+                )
+            );
         }    
     }
 
-    public function update(Array $input, $id)
+    public function update(Array $input)
     {
+        if (!isset($input["id"])) {
+            return array (
+                'statusCode' => 400,
+                'body' => array (
+                    'message' => "Missing parameters: id"
+                )
+            );
+        }
+
         $update_name_statement = "
             UPDATE Cliente
             SET 
@@ -97,7 +142,7 @@ class ClientGateway extends BaseGateway {
             try {
                 $statement = $this->conn->prepare($update_nome_statement);
                 $statement->execute(array(
-                    'id' => (int) $id,
+                    'id' => (int) $input["id"],
                     'nome' => $input['nome'],
                 ));
             } catch (\PDOException $e) {
@@ -116,9 +161,12 @@ class ClientGateway extends BaseGateway {
                 ));
 
             } catch (\PDOException $e) {
-                $result['body']['message'] = $e->getMessage();
-                $result['statusCode'] = 500;
-                return $result;
+                return array (
+                    "statusCode" => 500,
+                    "body" => array (
+                        "message" => $e->getMessage()
+                    )
+                );
             }    
         }
 
@@ -131,9 +179,12 @@ class ClientGateway extends BaseGateway {
                 ));
 
             } catch (\PDOException $e) {
-                $result['body']['message'] = $e->getMessage();
-                $result['statusCode'] = 500;
-                return $result;
+                return array (
+                    "statusCode" => 500,
+                    "body" => array (
+                        "message" => $e->getMessage()
+                    )
+                );
             }    
         }
 
@@ -146,18 +197,24 @@ class ClientGateway extends BaseGateway {
                 ));
 
             } catch (\PDOException $e) {
-                $result['body']['message'] = $e->getMessage();
-                $result['statusCode'] = 500;
-                return $result;
+                return array (
+                    "statusCode" => 500,
+                    "body" => array (
+                        "message" => $e->getMessage()
+                    )
+                );
             }    
         }
 
         if (isset($input["new_password"])) {
 
             if (!isset($input['password'])) {
-                $result['body']['message'] = "Enter current password.";
-                $result['statusCode'] = 400;
-                return $result;
+                return array (
+                    "statusCode" => 400,
+                    "body" => array (
+                        "message" => "Enter current password."
+                    )
+                );
             }
         
     
@@ -178,20 +235,30 @@ class ClientGateway extends BaseGateway {
                     ));
 
                 } else {
-                    $result['body']['message'] = "Current password does not match.";
-                    $result['statusCode'] = 401;
-                    return $result;
+                    return array (
+                        "statusCode" => 401,
+                        "body" => array (
+                            "message" => "Current password does not match."
+                        )
+                    );
                 }
 
             } catch (\PDOException $e) {
-                $result['body']['message'] = $e->getMessage();
-                $result['statusCode'] = 500;
-                return $result;
+                return array (
+                    "statusCode" => 500,
+                    "body" => array (
+                        "message" => $e->getMessage()
+                    )
+                );
             }    
         }
 
-        $result['statusCode'] = 200;
-        return $result;
+        return array (
+            "statusCode" => 200,
+            "body" => array (
+                "message" => "Successfully updated information"
+            )
+        );
         
     }
 }
