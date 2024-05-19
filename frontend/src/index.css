@@ -9,3 +9,7 @@ body {
   font-family: "Roboto", sans-serif;
   font-style: normal;
 }
+
+.card-auto-anchor {
+  margin: 1rem;
+}
