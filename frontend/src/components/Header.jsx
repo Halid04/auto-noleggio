@@ -44,9 +44,9 @@ function Header() {
       </div>
       <div className="flex justify-center items-center w-[20%] gap-5">
         <Moon color="#192024" />
-        <div className="flex justify-center items-center gap-3">
+        <div className="flex justify-center items-baseline md:items-center md:gap-3">
           <img
-            className="w-8 h-8  rounded-full ring-1 ring-[#192024] object-cover"
+            className="w-6 md:w-8 aspect-square  rounded-full ring-1 ring-[#192024] object-cover"
             src="src/images/pearsonFace.jpg"
             alt="Bordered avatar"
             loading="lazy"
@@ -63,7 +63,7 @@ function Header() {
                 onClick={handleMenuButtonClick}
                 // onBlur={handleMenuClose}
               >
-                Halid Cisse
+                <span className="hidden md:flex">Halid Cisse</span>
                 <ChevronDown className="-mr-1 h-5 w-5" color="#192024" />
               </button>
             </div>
