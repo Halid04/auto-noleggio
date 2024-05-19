@@ -10,6 +10,20 @@ body {
   font-style: normal;
 }
 
-.card-auto-anchor {
-  margin: 1rem;
+.tags {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 10px;
+}
+
+.oneline{
+  display: flex;
+  align-items: baseline;
+}
+
+.carpic{
+  border-radius: 7px 7px 0px 0px;
+  width:100%; 
+  height:auto; 
+  object-fit: cover;
 }
