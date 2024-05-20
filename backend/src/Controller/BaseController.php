@@ -3,7 +3,7 @@ namespace Src\Controller;
 
 use \Src\Gateway\BaseGateway;
 
-use \Firebase\JWT\JWT;
+use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 
 
@@ -30,7 +30,6 @@ class BaseController {
     public function processRequest()
     {
         $response = [];
-        //echo json_encode($)
         try {
             if (!isset($this->data['jwt'])) {
                 $response = array (
@@ -46,7 +45,7 @@ class BaseController {
                         if (!isset($this->data['id'])) {
                             $response = $this->gateway->findAll($this->data);
                         } else {
-                            //$response = $this->gateway->find($this->data);
+                            $response = $this->gateway->find($this->data);
                         };
                         break;
                     case 'POST':
@@ -62,7 +61,6 @@ class BaseController {
                         $this->sendOutput(statusCode: 404);
                         return;
                 }
-                //echo json_encode($response);
             }
             
         } catch (Exception $e) {

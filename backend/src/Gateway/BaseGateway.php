@@ -4,14 +4,12 @@ use \Src\Database;
 
 class BaseGateway {
 
-    private $conn = null;
-    private $tableName = null;
-    private $result = [];
+    public $conn = null;
+    public $tableName = null;
 
-    public function __construct($db, $tableName)
+    public function __construct($db)
     {
         $this->conn = $db->getConnection();
-        $this->tableName = $tableName;
     }
 
     public function findAll()
@@ -21,7 +19,6 @@ class BaseGateway {
                 *
             FROM " . $this->tableName . ";";
         
-
         try {
             $statement = $this->conn->prepare($statement);
             $statement->execute();
@@ -48,13 +45,12 @@ class BaseGateway {
             SELECT 
                 *
             FROM " . $this->tableName .
-            " WHERE id = :id;
-        ";
+            " WHERE id_". $this->tableName. " = :id;
+            ";
 
         try {
             $statement = $this->conn->prepare($statement);
             $statement->execute(array(
-                'tableName' => $this->tableName,
                 'id' => (int) $input["id"]
             ));
 
@@ -79,7 +75,7 @@ class BaseGateway {
     {
         $statement = "
             DELETE FROM " . $this->tableName .
-             " WHERE id = :id;
+             " WHERE id_". $this->tableName. " = :id;
         ";
 
         if (!isset($input["id"])) {
@@ -94,12 +90,11 @@ class BaseGateway {
         try {
             $statement = $this->conn->prepare($statement);
             $statement->execute(array(
-                'tableName' => $this->tableName,
                 'id' => (int) $input["id"]
             ));
 
             return array (
-                "statusCode" => 500,
+                "statusCode" => 200,
                 "body" => array (
                     "content" => $statement->rowCount()
                 )

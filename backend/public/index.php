@@ -1,26 +1,32 @@
 <?php
     require "../src/bootstrap.php";
     require "../src/request.php";
+
+    use \Firebase\JWT\JWT;
+
     use Src\Controller\ClientController;
+    use Src\Gateway\ClientGateway;
 
     header("Access-Control-Allow-Origin: *");
     header("Content-Type: application/json; charset=UTF-8");
-    header("Access-Control-Allow-Methods: OPTIONS,GET,POST,PUT,DELETE");
+    header("Access-Control-Allow-Methods: GET,POST,PUT,DELETE");
     header("Access-Control-Max-Age: 3600");
     //header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
     $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
     $uri = array_slice(explode( '/', $uri ), 4);
     $requestMethod = $_SERVER['REQUEST_METHOD'];
+
     switch ($uri[0]) {
-        case "cliente":
+        case "register":
+            registerUser($data, $database);
+            break;
+        case "login":
+            authenticateUser($data, $database);
+            break;
+        case "clienti":
             $controller = new ClientController($requestMethod, $data, $database);
             $controller->processRequest();
-            break;
-        case "persona":
-            echo json_encode( array (
-                "message" => "Asked for persona"
-            ));
             break;
         default:
             http_response_code(404);
@@ -30,7 +36,184 @@
             );
             break;
     }
-    exit;
+
+    exit();
+
+    function registerUser ($data, $database) {
+        $required_parameters = [
+            "nome", 
+            "cognome", 
+            "email", 
+            "password", 
+            "telefono", 
+            "data_di_nascita"
+        ];
+    
+        $request_keys = array_keys($data);
+    
+        $missing_keys = array_diff($required_parameters, $request_keys);
+    
+        if (count($missing_keys) !== 0) {
+            http_response_code(400);
+            echo json_encode(["message" => "Missing credentials: " . implode(",", $missing_keys)]);
+            return;
+        }
+    
+        $conn = $database->getConnection();
+    
+        $existing_users_sql = "
+                            SELECT COUNT(*) as count 
+                            FROM Cliente 
+                            WHERE email = :email";
+
+        try {
+            $existing_users_stmt = $conn->prepare($existing_users_sql);
+            $existing_users_stmt->bindValue(":email", $data["email"]);
+            $existing_users_stmt->execute();
+        } catch (PDOException $e) {
+            header('Content-Type: application/json');
+            http_response_code(500);
+            echo json_encode (
+                array (
+                    "message" => $e->getMessage()
+                )
+            );
+            return;
+        }
+    
+        $existing_users_count = $existing_users_stmt->fetch(PDO::FETCH_ASSOC)["count"];
+    
+        if ($existing_users_count > 0) {
+            http_response_code(400);
+            echo json_encode (
+                array (
+                    "message" => "E-mail has already been registered."
+                )
+            );
+            return;
+        }
+
+        $user_gateway = new ClientGateway($database);
+    
+        $result = $user_gateway->insert($data);
+
+        if ($result['statusCode'] != 201) {
+            header('Content-Type: application/json');
+            http_response_code($result['statusCode']);
+            echo json_encode($result['body']);
+            return;
+        }
+
+        $result = $user_gateway->findByEmail($data);
+
+        if ($result['statusCode'] != 200) {
+            header('Content-Type: application/json');
+            http_response_code($result['statusCode']);
+            echo json_encode($result['body']);
+            return;
+        }
+
+        $user = $result['body']['content'];
+        
+        $issuedat_claim = time(); 
+        $notbefore_claim = $issuedat_claim; 
+        $expire_claim = $issuedat_claim + 60 * 60;
+    
+        $payload = array (
+            "iat" => $issuedat_claim,
+            "nbf" => $notbefore_claim,
+            "exp" => $expire_claim,
+            "data" => array (
+                "user_id" => $user["id_cliente"],
+                "email" => $user["email"],
+                "admin" => $user["amministratore"]
+                )
+            );
+
+        header('Content-Type: application/json');
+        http_response_code(200);
+    
+        $token = JWT::encode($payload, $_ENV["SECRET_KEY"], 'HS256');
+    
+        echo json_encode(
+            array (
+                "message" => "Account registered succesfully.",
+                "jwt" => $token,
+                "expireAt" => $expire_claim
+            )
+        );
+        return;
+    }
+
+    function authenticateUser ($data, $database) {
+        $required_parameters = [
+            "email", 
+            "password"
+        ];
+    
+        $request_keys = array_keys($data);
+    
+        $missing_keys = array_diff($required_parameters, $request_keys);
+    
+        if (count($missing_keys) !== 0) {
+            http_response_code(400);
+            echo json_encode(["message" => "Missing parameters: " . implode(",", $missing_keys)]);
+            return;
+        }
+    
+        $user_gateway = new ClientGateway($database);
+    
+        $result = $user_gateway->findByEmail($data);
+
+        if ($result['statusCode'] != 200) {
+            header('Content-Type: application/json');
+            http_response_code($result['statusCode']);
+            echo json_encode($result['body']);
+            return;
+        }
+
+        $user = $result['body']['content'];
+    
+        if (!$user) {
+            http_response_code(401);
+            echo json_encode(["message" => "User account does not exist."]);
+            return;
+        }
+    
+        if (!password_verify($data['password'], $user['password'])) {
+            http_response_code(401);
+            echo json_encode(["message" => "Password is incorrect."]);
+            return;
+        }
+    
+        $issuedat_claim = time(); 
+        $notbefore_claim = $issuedat_claim; 
+        $expire_claim = $issuedat_claim + 60 * 60; 
+    
+        $payload = array (
+            "iat" => $issuedat_claim,
+            "nbf" => $notbefore_claim,
+            "exp" => $expire_claim,
+            "data" => array (
+                "user_id" => $user["id_cliente"],
+                "email" => $user["email"],
+                "admin" => $user["amministratore"]
+                    )
+            );
+    
+        http_response_code(200);
+    
+        $token = JWT::encode($payload, $_ENV["SECRET_KEY"], 'HS256');
+    
+        echo json_encode(
+            array (
+                "message" => "Successful login.",
+                "jwt" => $token,
+                "expireAt" => $expire_claim
+            )
+        );
+        return;
+    }
 
     
 
@@ -46,24 +229,3 @@
         http_response_code(404);
         echo json_encode(['message' => 'Not Found']);
     }
-    
-
-
-    // all of our endpoints start with /person
-    // everything else results in a 404 Not Found
-    if ($uri[1] !== 'person') {
-        header("HTTP/1.1 404 Not Found");
-        exit();
-    }
-
-    // the user id is, of course, optional and must be a number:
-    $userId = null;
-    if (isset($uri[2])) {
-        $userId = (int) $uri[2];
-    }
-
-    $requestMethod = $_SERVER["REQUEST_METHOD"];
-
-    // pass the request method and user ID to the PersonController and process the HTTP request:
-    $controller = new PersonController($dbConnection, $requestMethod, $userId);
-    $controller->processRequest();

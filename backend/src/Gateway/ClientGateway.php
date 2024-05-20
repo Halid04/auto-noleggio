@@ -5,12 +5,50 @@ use \Src\Gateway\BaseGateway;
 
 class ClientGateway extends BaseGateway {
 
-    private $conn = null;
-    private $result = [];
 
     public function __construct(Database $db)
     {
-        parent::__construct($db, "Cliente");
+        $this->tableName = "Cliente";
+        parent::__construct($db);
+    }
+
+    public function findByEmail($input)
+    {
+        if (!isset($input["email"])) {
+            return array (
+                'statusCode' => 400,
+                'body' => array (
+                    'message' => "Missing parameters: email"
+                )
+            );
+        }
+        
+        $statement = "
+            SELECT 
+                *
+            FROM " . $this->tableName . "
+            WHERE email = :email;";
+
+        try {
+            $statement = $this->conn->prepare($statement);
+            $statement->execute(array(
+                'email' => $input["email"]
+            ));
+
+            return array (
+                "statusCode" => 200,
+                "body" => array (
+                    "content" => $statement->fetch(\PDO::FETCH_ASSOC)
+                )
+            );
+        } catch (\PDOException $e) {
+            return array (
+                "statusCode" => 500,
+                "body" => array (
+                    "message" => $e->getMessage()
+                )
+            );
+        }    
     }
 
     public function insert(Array $input)
@@ -39,7 +77,7 @@ class ClientGateway extends BaseGateway {
         }
 
         $statement = "
-            INSERT INTO Cliente 
+            INSERT INTO " . $this->tableName . "
                 (nome, cognome, email, password, telefono, data_di_nascita, amministratore)
             VALUES (
                 :nome,
@@ -57,7 +95,7 @@ class ClientGateway extends BaseGateway {
                 'nome' => $input['nome'],
                 'cognome'  => $input['cognome'],
                 'email' => $input['email'],
-                'password' => $input['password'],
+                'password' => password_hash($input['password'], PASSWORD_DEFAULT),
                 'telefono' => $input['telefono'],
                 'data_di_nascita' => $input['data_di_nascita'],
                 'amministratore' => $input['amministratore'],
@@ -94,48 +132,48 @@ class ClientGateway extends BaseGateway {
             UPDATE Cliente
             SET 
                 nome = :nome
-            WHERE id = :id;
+            WHERE id_". $this->tableName. " = :id;
         ";
 
         $update_cognome_statement = "
             UPDATE Cliente
             SET 
                 cognome = :cognome
-            WHERE id = :id;
+            WHERE id_". $this->tableName. " = :id;
         ";
 
         $update_name_statement = "
             UPDATE Cliente
             SET 
                 nome = :nome
-            WHERE id = :id;
+            WHERE id_". $this->tableName. " = :id;
         ";
 
         $update_telefono_statement = "
             UPDATE Cliente
             SET 
                 telefono = :telefono
-            WHERE id = :id;
+            WHERE id_". $this->tableName. " = :id;
         ";
 
         $update_dob_statement = "
             UPDATE Cliente
             SET 
                 data_di_nascita = :data_di_nascita
-            WHERE id = :id;
+            WHERE id_". $this->tableName. " = :id;
         ";
 
         $update_password_statement = "
             UPDATE Cliente
             SET 
                 password = :password
-            WHERE id = :id;
+            WHERE id_". $this->tableName. " = :id;
         ";
 
         $get_current_password_statement = "
             SELECT password
             FROM Cliente
-            WHERE id = :id;
+            WHERE id_". $this->tableName. " = :id;
         ";
 
         if (isset($input["nome"])) {
