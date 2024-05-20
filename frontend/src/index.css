@@ -33,3 +33,23 @@ body {
   height: auto;
   object-fit: cover;
 }
+
+/* width */
+.filtri-list-section::-webkit-scrollbar {
+  width: 5px;
+}
+
+/* Track */
+.filtri-list-section::-webkit-scrollbar-track {
+  background: #ffffff;
+}
+
+/* Handle */
+.filtri-list-section::-webkit-scrollbar-thumb {
+  background: #b0aeae;
+}
+
+/* Handle on hover */
+.filtri-list-section::-webkit-scrollbar-thumb:hover {
+  background: #969494;
+}

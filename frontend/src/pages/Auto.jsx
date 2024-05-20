@@ -256,7 +256,7 @@ function Auto() {
         </div>
 
         {/* Filtri Marca  */}
-        <div className="relative inline-block text-left">
+        <div className="hidden relative md:inline-block text-left">
           <div>
             <button
               type="button"
@@ -267,45 +267,116 @@ function Auto() {
               onClick={handleMenuButtonClickMarcaFiltri}
             >
               <span className=" font-bold text-[#192024]">Marca</span>
-              <ChevronDown className="-mr-1 h-5 w-5" color="#192024" />
+              <ChevronDown
+                className={`mr-1 h-5 w-5 transition-transform duration-300 ${
+                  isDropdownMarcaFiltriOpen ? "rotate-180" : "rotate-0"
+                }`}
+                color="#192024"
+              />
             </button>
           </div>
 
           {/* <!-- Dropdown Filtri marca menu --> */}
           {isDropdownMarcaFiltriOpen && (
-            <div
+            <form
               ref={dropdownMarcaFiltriRef}
-              className="absolute left-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+              className="flex flex-col shrink-0 text-[#192024] justify-start items-start absolute left-0 z-10 mt-2 w-72 h-80 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
               role="menu"
               aria-orientation="vertical"
               aria-labelledby="menu-button"
             >
-              <div className="py-1" role="none">
+              <div className="filtri-list-section w-full h-[80%] shrink-0 flex flex-col overflow-y-auto overflow-x-hidden justify-start items-start p-3">
+                <h2 className="font-bold mb-2 px-2 text-lg">Marca</h2>
+                {/* Mercedes */}
+                <div className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]">
+                  <p className="w-[80%]">Mercedes</p>
+                  <input
+                    className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
+                    type="checkbox"
+                    value="Mercedes"
+                  />
+                </div>
+
+                {/* Audi */}
+                <div className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]">
+                  <p className="w-[80%]">Audi</p>
+                  <input
+                    className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
+                    type="checkbox"
+                    value="Audi"
+                  />
+                </div>
+
+                {/* Dacia */}
+                <div className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]">
+                  <p className="w-[80%]">Dacia</p>
+                  <input
+                    className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
+                    type="checkbox"
+                    value="Dacia"
+                  />
+                </div>
+
+                {/* Ford */}
+                <div className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]">
+                  <p className="w-[80%]">Ford</p>
+                  <input
+                    className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
+                    type="checkbox"
+                    value="Ford"
+                  />
+                </div>
+
+                {/* Lamborghini */}
+                <div className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]">
+                  <p className="w-[80%]">Lamborghini</p>
+                  <input
+                    className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
+                    type="checkbox"
+                    value="Lamborghini"
+                  />
+                </div>
+
+                {/* Nissan */}
+                <div className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]">
+                  <p className="w-[80%]">Nissan</p>
+                  <input
+                    className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
+                    type="checkbox"
+                    value="Nissan"
+                  />
+                </div>
+
+                {/* Fiat */}
+                <div className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]">
+                  <p className="w-[80%]">Fiat</p>
+                  <input
+                    className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
+                    type="checkbox"
+                    value="Fiat"
+                  />
+                </div>
+              </div>
+              <div className="w-full h-[20%] flex justify-around items-center border-t-[1.5px] border-t-[#EEEEEE]">
                 <button
                   type="button"
-                  className="text-gray-700 block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
-                  role="menuitem"
-                  tabIndex="-1"
-                  // onClick={handleNavigateToAccount}
+                  className="bg-[#192024] border-[1.5px] outline-none hover:bg-[#0f1315] text-white font-bold py-2 px-7 rounded-lg"
                 >
-                  Marca
+                  Applica
                 </button>
                 <button
                   type="button"
-                  className="text-gray-700 block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
-                  role="menuitem"
-                  tabIndex="-1"
-                  // onClick={handleLogout}
+                  className="bg-trasparent border-[1.5px] border-[#192024] hover:bg-[#EEEEEE] text-[#192024] font-bold py-2 px-5 rounded-lg"
                 >
-                  Disconnessione
+                  Reimposta
                 </button>
               </div>
-            </div>
+            </form>
           )}
         </div>
 
         {/* Filtri Tipo macchina  */}
-        <div className="hidden relative sm:inline-block text-left">
+        <div className="hidden relative md:inline-block text-left">
           <div>
             <button
               type="button"
@@ -315,46 +386,91 @@ function Auto() {
               aria-haspopup="true"
               onClick={handleMenuButtonClickTipoMacchinaFiltri}
             >
-              <span className=" font-bold text-[#192024]">Tipo macchina</span>
-              <ChevronDown className="-mr-1 h-5 w-5" color="#192024" />
+              <span className=" font-bold text-[#192024]">
+                Tipo di macchina
+              </span>
+              <ChevronDown
+                className={`mr-1 h-5 w-5 transition-transform duration-300 ${
+                  isDropdownTipoMacchinaFiltriOpen ? "rotate-180" : "rotate-0"
+                }`}
+                color="#192024"
+              />
             </button>
           </div>
 
-          {/* <!-- Dropdown Filtri marca menu --> */}
+          {/* <!-- Dropdown Filtri Tipo Macchina menu --> */}
           {isDropdownTipoMacchinaFiltriOpen && (
-            <div
+            <form
               ref={dropdownTipoMacchinaFiltriRef}
-              className="absolute left-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+              className="flex flex-col shrink-0 text-[#192024] justify-start items-start absolute left-0 z-10 mt-2 w-72 h-80 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
               role="menu"
               aria-orientation="vertical"
               aria-labelledby="menu-button"
             >
-              <div className="py-1" role="none">
+              <div className="filtri-list-section w-full h-[80%] shrink-0 flex flex-col overflow-y-auto overflow-x-hidden justify-start items-start p-3">
+                <h2 className="font-bold mb-2 px-2 text-lg">
+                  Tipo di macchina
+                </h2>
+                {/* Piccola */}
+                <div className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]">
+                  <p className="w-[80%]">Piccola</p>
+                  <input
+                    className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
+                    type="checkbox"
+                    value="Piccola"
+                  />
+                </div>
+
+                {/* Media */}
+                <div className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]">
+                  <p className="w-[80%]">Media</p>
+                  <input
+                    className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
+                    type="checkbox"
+                    value="Media"
+                  />
+                </div>
+
+                {/* Grande */}
+                <div className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]">
+                  <p className="w-[80%]">Grande</p>
+                  <input
+                    className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
+                    type="checkbox"
+                    value="Grande"
+                  />
+                </div>
+
+                {/* SUV */}
+                <div className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]">
+                  <p className="w-[80%]">SUV</p>
+                  <input
+                    className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
+                    type="checkbox"
+                    value="SUV"
+                  />
+                </div>
+              </div>
+              <div className="w-full h-[20%] flex justify-around items-center border-t-[1.5px] border-t-[#EEEEEE]">
                 <button
                   type="button"
-                  className="text-gray-700 block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
-                  role="menuitem"
-                  tabIndex="-1"
-                  // onClick={handleNavigateToAccount}
+                  className="bg-[#192024] border-[1.5px] outline-none hover:bg-[#0f1315] text-white font-bold py-2 px-7 rounded-lg"
                 >
-                  Tipo macchina
+                  Applica
                 </button>
                 <button
                   type="button"
-                  className="text-gray-700 block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
-                  role="menuitem"
-                  tabIndex="-1"
-                  // onClick={handleLogout}
+                  className="bg-trasparent border-[1.5px] border-[#192024] hover:bg-[#EEEEEE] text-[#192024] font-bold py-2 px-5 rounded-lg"
                 >
-                  Disconnessione
+                  Reimposta
                 </button>
               </div>
-            </div>
+            </form>
           )}
         </div>
 
         {/* Filtri Prezzo  */}
-        <div className="hidden relative sm:inline-block text-left">
+        <div className="hidden relative md:inline-block text-left">
           <div>
             <button
               type="button"
@@ -365,7 +481,12 @@ function Auto() {
               onClick={handleMenuButtonClickPrezzoFiltri}
             >
               <span className=" font-bold text-[#192024]">Prezzo</span>
-              <ChevronDown className="-mr-1 h-5 w-5" color="#192024" />
+              <ChevronDown
+                className={`mr-1 h-5 w-5 transition-transform duration-300 ${
+                  isDropdownPrezzoFiltriOpen ? "rotate-180" : "rotate-0"
+                }`}
+                color="#192024"
+              />
             </button>
           </div>
 
@@ -403,7 +524,7 @@ function Auto() {
         </div>
 
         {/* Filtri Anno  */}
-        <div className="hidden relative sm:inline-block text-left">
+        <div className="hidden relative md:inline-block text-left">
           <div>
             <button
               type="button"
@@ -414,45 +535,86 @@ function Auto() {
               onClick={handleMenuButtonClickAnnoFiltri}
             >
               <span className=" font-bold text-[#192024]">Anno</span>
-              <ChevronDown className="-mr-1 h-5 w-5" color="#192024" />
+              <ChevronDown
+                className={`mr-1 h-5 w-5 transition-transform duration-300 ${
+                  isDropdownAnnoFiltriOpen ? "rotate-180" : "rotate-0"
+                }`}
+                color="#192024"
+              />
             </button>
           </div>
 
           {/* <!-- Dropdown Filtri Anno menu --> */}
           {isDropdownAnnoFiltriOpen && (
-            <div
+            <form
               ref={dropdownAnnoFiltriRef}
-              className="absolute left-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+              className="flex flex-col shrink-0 text-[#192024] justify-start items-start absolute left-0 z-10 mt-2 w-72 h-80 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
               role="menu"
               aria-orientation="vertical"
               aria-labelledby="menu-button"
             >
-              <div className="py-1" role="none">
+              <div className="filtri-list-section w-full h-[80%] shrink-0 flex flex-col overflow-y-auto overflow-x-hidden justify-start items-start p-3">
+                <h2 className="font-bold mb-2 px-2 text-lg">Anno</h2>
+                {/* 2005-2010 */}
+                <div className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]">
+                  <p className="w-[80%]">2005-2010</p>
+                  <input
+                    className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
+                    type="checkbox"
+                    value="2005-2010"
+                  />
+                </div>
+
+                {/* 2010-2015 */}
+                <div className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]">
+                  <p className="w-[80%]">2010-2015</p>
+                  <input
+                    className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
+                    type="checkbox"
+                    value="2010-2015"
+                  />
+                </div>
+
+                {/* 2015-2020 */}
+                <div className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]">
+                  <p className="w-[80%]">2015-2020</p>
+                  <input
+                    className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
+                    type="checkbox"
+                    value="2015-2020"
+                  />
+                </div>
+
+                {/* 2020-oggi */}
+                <div className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]">
+                  <p className="w-[80%]">2020-oggi</p>
+                  <input
+                    className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
+                    type="checkbox"
+                    value="2020-oggi"
+                  />
+                </div>
+              </div>
+              <div className="w-full h-[20%] flex justify-around items-center border-t-[1.5px] border-t-[#EEEEEE]">
                 <button
                   type="button"
-                  className="text-gray-700 block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
-                  role="menuitem"
-                  tabIndex="-1"
-                  // onClick={handleNavigateToAccount}
+                  className="bg-[#192024] border-[1.5px] outline-none hover:bg-[#0f1315] text-white font-bold py-2 px-7 rounded-lg"
                 >
-                  Anno
+                  Applica
                 </button>
                 <button
                   type="button"
-                  className="text-gray-700 block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
-                  role="menuitem"
-                  tabIndex="-1"
-                  // onClick={handleLogout}
+                  className="bg-trasparent border-[1.5px] border-[#192024] hover:bg-[#EEEEEE] text-[#192024] font-bold py-2 px-5 rounded-lg"
                 >
-                  Disconnessione
+                  Reimposta
                 </button>
               </div>
-            </div>
+            </form>
           )}
         </div>
 
         {/* Filtri Tipo carburante  */}
-        <div className="hidden relative md:inline-block text-left">
+        <div className="hidden relative lg:inline-block text-left">
           <div>
             <button
               type="button"
@@ -463,40 +625,71 @@ function Auto() {
               onClick={handleMenuButtonClickTipoCarburanteFiltri}
             >
               <span className=" font-bold text-[#192024]">Tipo carburante</span>
-              <ChevronDown className="-mr-1 h-5 w-5" color="#192024" />
+              <ChevronDown
+                className={`mr-1 h-5 w-5 transition-transform duration-300 ${
+                  isDropdownTipoCarburanteFiltriOpen ? "rotate-180" : "rotate-0"
+                }`}
+                color="#192024"
+              />
             </button>
           </div>
 
           {/* <!-- Dropdown Filtri Tipo carburante menu --> */}
           {isDropdownTipoCarburanteFiltriOpen && (
-            <div
+            <form
               ref={dropdownTipoCarburanteFiltriRef}
-              className="absolute left-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+              className="flex flex-col shrink-0 text-[#192024] justify-start items-start absolute left-0 z-10 mt-2 w-72 h-80 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
               role="menu"
               aria-orientation="vertical"
               aria-labelledby="menu-button"
             >
-              <div className="py-1" role="none">
+              <div className="filtri-list-section w-full h-[80%] shrink-0 flex flex-col overflow-y-auto overflow-x-hidden justify-start items-start p-3">
+                <h2 className="font-bold mb-2 px-2 text-lg">Tipo carburante</h2>
+                {/* Benzina */}
+                <div className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]">
+                  <p className="w-[80%]">Benzina</p>
+                  <input
+                    className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
+                    type="checkbox"
+                    value="Benzina"
+                  />
+                </div>
+
+                {/* Diesel */}
+                <div className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]">
+                  <p className="w-[80%]">Diesel</p>
+                  <input
+                    className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
+                    type="checkbox"
+                    value="Diesel"
+                  />
+                </div>
+
+                {/* GPL */}
+                <div className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]">
+                  <p className="w-[80%]">GPL</p>
+                  <input
+                    className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
+                    type="checkbox"
+                    value="GPL"
+                  />
+                </div>
+              </div>
+              <div className="w-full h-[20%] flex justify-around items-center border-t-[1.5px] border-t-[#EEEEEE]">
                 <button
                   type="button"
-                  className="text-gray-700 block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
-                  role="menuitem"
-                  tabIndex="-1"
-                  // onClick={handleNavigateToAccount}
+                  className="bg-[#192024] border-[1.5px] outline-none hover:bg-[#0f1315] text-white font-bold py-2 px-7 rounded-lg"
                 >
-                  Tipo carburante
+                  Applica
                 </button>
                 <button
                   type="button"
-                  className="text-gray-700 block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
-                  role="menuitem"
-                  tabIndex="-1"
-                  // onClick={handleLogout}
+                  className="bg-trasparent border-[1.5px] border-[#192024] hover:bg-[#EEEEEE] text-[#192024] font-bold py-2 px-5 rounded-lg"
                 >
-                  Disconnessione
+                  Reimposta
                 </button>
               </div>
-            </div>
+            </form>
           )}
         </div>
 
@@ -512,7 +705,12 @@ function Auto() {
               onClick={handleMenuButtonClickVicinoATeFiltri}
             >
               <span className=" font-bold text-[#192024]">Vicino a te</span>
-              <ChevronDown className="-mr-1 h-5 w-5" color="#192024" />
+              <ChevronDown
+                className={`mr-1 h-5 w-5 transition-transform duration-300 ${
+                  isDropdownVicinoATeFiltriOpen ? "rotate-180" : "rotate-0"
+                }`}
+                color="#192024"
+              />
             </button>
           </div>
 
