@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import HomePage from "./pages/HomePage.jsx";
-import Test from "./pages/Test.jsx";
+import Auto from "./pages/Auto.jsx";
+import AutoNoleggiate from "./pages/AutoNoleggiate.jsx";
+import Sedi from "./pages/Sedi.jsx";
 import Header from "./components/Header.jsx";
 import Sidebar from "./components/Sidebar.jsx";
 
@@ -18,7 +20,13 @@ function App() {
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route exact path="/homePage" element={<HomePage />} />
-              <Route exact path="/test" element={<Test />} />
+              <Route exact path="/auto" element={<Auto />} />
+              <Route
+                exact
+                path="/autoNoleggiate"
+                element={<AutoNoleggiate />}
+              />
+              <Route exact path="/sedi" element={<Sedi />} />
             </Routes>
           </div>
         </div>

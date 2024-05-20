@@ -56,7 +56,7 @@ function Header() {
             <div>
               <button
                 type="button"
-                className="inline-flex w-full justify-center items-center outline-none bg-trasparent  text-[#192024]"
+                className="inline-flex whitespace-nowrap w-full justify-center items-center outline-none bg-trasparent  text-[#192024]"
                 id="menu-button"
                 aria-expanded={isDropdownOpen}
                 aria-haspopup="true"

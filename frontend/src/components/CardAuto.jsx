@@ -3,54 +3,39 @@ import { MapPin } from "lucide-react";
 
 function CardAuto() {
   return (
-    <div className="w-72 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-      <a href="#">
-        <img
-          className="rounded-t-lg"
-          src="/docs/images/blog/image-1.jpg"
-          alt=""
-        />
-      </a>
+    <div className=" w-64 cursor-pointer bg-white border border-gray-200 rounded-lg shadow hover:scale-[.95] transition-transform duration-300 ease-in-out">
       <img
-        class="carpic"
+        className="carpic"
         src="https://assets.volkswagen.com/is/image/volkswagenag/NuovaPolo-1920x1080-Promo?Zml0PWNyb3AsMSZmbXQ9d2VicCZxbHQ9Nzkmd2lkPTE5MjAmaGVpPTEwODAmYWxpZ249MC4wMCwwLjAwJmJmYz1vZmYmM2E1Nw=="
         alt="auto"
+        loading="lazy"
       />
-      <div class="p-5">
-        <a href="#" class="infoCar">
-          <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+      <div className="px-2 py-5 flex flex-col justify-start items-start gap-2">
+        <a href="#" className="infoCar flex items-baseline gap-1">
+          <h5 className="whitespace-nowrap text-xl font-bold tracking-tight text-gray-900 dark:text-white">
             Nuova Polo
           </h5>
-          <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
+          <p className="whitespace-nowrap text-sm font-normal text-gray-700 dark:text-gray-400">
             - 1.0 TSI Edition
           </p>
         </a>
-        <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">
+        <p className="text-sm font-normal text-gray-700 dark:text-gray-400">
           05/10/2015 | Deisel | 80.000 km
         </p>
-        <div class="tags">
-          <a
-            href="#"
-            className="card-auto-anchor inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-orange-700 rounded-lg hover:bg-orange-800 focus:ring-4 focus:outline-none focus:ring-orange-300 dark:bg-orange-600 dark:hover:bg-orange-700 dark:focus:ring-orange-800"
-          >
+        <div className="tags flex gap-1 mb-2">
+          <span className=" inline-flex items-center px-3 h-7 text-sm font-normal text-center text-white bg-[#FF690F] rounded-lg hover:bg-[#d55508] ">
             Family
-          </a>
-          <a
-            href="#"
-            className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-orange-700 rounded-lg hover:bg-orange-800 focus:ring-4 focus:outline-none focus:ring-orange-300 dark:bg-orange-600 dark:hover:bg-orange-700 dark:focus:ring-orange-800"
-          >
+          </span>
+          <span className="inline-flex items-center px-3 h-7 text-sm font-normal text-center text-white bg-[#FF690F] rounded-lg hover:bg-[#d55508] ">
             Spaziosa
-          </a>
-          <a
-            href="#"
-            className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-orange-700 rounded-lg hover:bg-orange-800 focus:ring-4 focus:outline-none focus:ring-orange-300 dark:bg-orange-600 dark:hover:bg-orange-700 dark:focus:ring-orange-800"
-          >
+          </span>
+          <span className="inline-flex items-center px-3 h-7 text-sm font-normal text-center text-white bg-[#FF690F] rounded-lg hover:bg-[#d55508] ">
             Blu
-          </a>
+          </span>
         </div>
-        <div class="oneline">
+        <div className="oneline">
           <MapPin />{" "}
-          <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
+          <p className=" font-normal text-gray-700 dark:text-gray-400">
             {" "}
             Brescia, Via BLa bla
           </p>
