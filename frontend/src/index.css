@@ -35,21 +35,42 @@ body {
 }
 
 /* width */
-.filtri-list-section::-webkit-scrollbar {
+.filtri-list-section::-webkit-scrollbar,
+.p-dialog-content::-webkit-scrollbar {
   width: 5px;
 }
 
 /* Track */
-.filtri-list-section::-webkit-scrollbar-track {
+.filtri-list-section::-webkit-scrollbar-track,
+.p-dialog-content::-webkit-scrollbar-track {
   background: #ffffff;
 }
 
 /* Handle */
-.filtri-list-section::-webkit-scrollbar-thumb {
+.filtri-list-section::-webkit-scrollbar-thumb,
+.p-dialog-content::-webkit-scrollbar-thumb {
   background: #b0aeae;
 }
 
 /* Handle on hover */
-.filtri-list-section::-webkit-scrollbar-thumb:hover {
+.filtri-list-section::-webkit-scrollbar-thumb:hover,
+.p-dialog-content::-webkit-scrollbar-thumb:hover {
   background: #969494;
+}
+
+.p-dialog-header {
+  display: none;
+}
+
+.login-card {
+  backdrop-filter: brightness(60%);
+}
+
+.p-dialog-mask.p-dialog-center.p-component-overlay.p-component-overlay-enter.p-dialog-draggable.p-dialog-resizable {
+  background-color: rgba(0, 0, 0, 0.47);
+}
+
+.p-dialog-content {
+  overflow-x: hidden;
+  overflow-y: auto;
 }

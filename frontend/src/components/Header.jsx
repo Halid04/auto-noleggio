@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import { Search, Moon, ChevronDown } from "lucide-react";
 import Logo from "./Logo";
+import UserState from "./AuthCard";
 
 function Header() {
   const dropdownRef = useRef(null);
@@ -44,15 +45,19 @@ function Header() {
       </div>
       <div className="flex justify-center items-center w-[20%] gap-5">
         <Moon color="#192024" />
+
         <div className="flex justify-center items-baseline md:items-center md:gap-3">
-          <img
+          <UserState />
+
+          {/* Da mostrare dopo login */}
+          {/* <img
             className="w-6 md:w-8 aspect-square  rounded-full ring-1 ring-[#192024] object-cover"
             src="src/images/pearsonFace.jpg"
             alt="Bordered avatar"
             loading="lazy"
-          />
+          /> */}
 
-          <div className="relative inline-block text-left">
+          {/*<div className="relative inline-block text-left">
             <div>
               <button
                 type="button"
@@ -61,14 +66,13 @@ function Header() {
                 aria-expanded={isDropdownOpen}
                 aria-haspopup="true"
                 onClick={handleMenuButtonClick}
-                // onBlur={handleMenuClose}
               >
                 <span className="hidden md:flex">Halid Cisse</span>
                 <ChevronDown className="-mr-1 h-5 w-5" color="#192024" />
               </button>
             </div>
 
-            {/* <!-- Dropdown menu --> */}
+             <!-- Dropdown menu --> 
             {isDropdownOpen && (
               <div
                 ref={dropdownRef}
@@ -83,7 +87,6 @@ function Header() {
                     className="text-gray-700 block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
                     role="menuitem"
                     tabIndex="-1"
-                    // onClick={handleNavigateToAccount}
                   >
                     Impostazioni profilo
                   </button>
@@ -92,14 +95,13 @@ function Header() {
                     className="text-gray-700 block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
                     role="menuitem"
                     tabIndex="-1"
-                    // onClick={handleLogout}
                   >
                     Disconnessione
                   </button>
                 </div>
               </div>
             )}
-          </div>
+          </div>*/}
         </div>
       </div>
     </div>
