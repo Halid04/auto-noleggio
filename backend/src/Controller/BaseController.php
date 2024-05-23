@@ -31,7 +31,7 @@ class BaseController {
     {
         $response = [];
         try {
-            if (!isset($this->data['jwt'])) {
+            if (!isset($this->data['auth']['jwt'])) {
                 $response = array (
                     'statusCode' => 401,
                     'body' => array (
@@ -39,7 +39,7 @@ class BaseController {
                     )
                 );
             } else {
-                //$this->authenticateJWTToken($this->data["jwt"]);
+                //$this->authenticateJWTToken($this->data['auth']['jwt']);
                 switch ($this->requestMethod) {
                     case 'GET':
                         if (!isset($this->data['id'])) {
@@ -85,7 +85,7 @@ class BaseController {
                 header($httpHeader);
             }
         }
-
+        
         echo json_encode($data);
         exit();
     }

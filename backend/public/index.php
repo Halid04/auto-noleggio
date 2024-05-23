@@ -60,7 +60,7 @@
         }
     
         $conn = $database->getConnection();
-    
+        /*
         $existing_users_sql = "
                             SELECT COUNT(*) as count 
                             FROM Cliente 
@@ -92,6 +92,7 @@
             );
             return;
         }
+        */
 
         $user_gateway = new ClientGateway($database);
     
