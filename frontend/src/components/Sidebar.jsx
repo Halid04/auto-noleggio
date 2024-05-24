@@ -64,7 +64,7 @@ function Sidebar() {
   };
 
   return (
-    <div className="h-full  w-[20vw] flex flex-col justify-between items-start py-10 px-4">
+    <div className="h-full  w-[20vw] z-[100] flex flex-col justify-between items-start py-10 px-4">
       <div className="h-[80vh]  w-full flex flex-col justify-start items-start gap-5 ">
         <button
           type="button"
