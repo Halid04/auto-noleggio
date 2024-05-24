@@ -4,6 +4,7 @@ import HomePage from "./pages/HomePage.jsx";
 import Auto from "./pages/Auto.jsx";
 import AutoNoleggiate from "./pages/AutoNoleggiate.jsx";
 import Sedi from "./pages/Sedi.jsx";
+import Preferiti from "./pages/Preferiti.jsx";
 import Header from "./components/Header.jsx";
 import Sidebar from "./components/Sidebar.jsx";
 
@@ -27,6 +28,7 @@ function App() {
                 element={<AutoNoleggiate />}
               />
               <Route exact path="/sedi" element={<Sedi />} />
+              <Route exact path="/preferiti" element={<Preferiti />} />
             </Routes>
           </div>
         </div>
