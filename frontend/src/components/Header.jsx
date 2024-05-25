@@ -1,11 +1,12 @@
 import React, { useRef, useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Search, Moon, ChevronDown } from "lucide-react";
 import Logo from "./Logo";
 import UserState from "./AuthCard";
 
 function Header() {
+  const navigate = useNavigate();
   const dropdownRef = useRef(null);
-
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   useEffect(() => {
@@ -44,7 +45,7 @@ function Header() {
         />
       </div>
       <div className="flex justify-center items-center w-[20%] gap-5">
-        <Moon color="#192024" />
+        <Moon color="#192024" onClick={() => navigate("/transazione")} />
 
         <div className="flex justify-center items-baseline md:items-center md:gap-3">
           <UserState />

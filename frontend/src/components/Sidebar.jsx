@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   Info,
   CarFront,
@@ -9,125 +9,62 @@ import {
   Heart,
 } from "lucide-react";
 
+const routes = [
+  { path: "/homePage", name: "Home", icon: Home },
+  { path: "/auto", name: "Auto", icon: CarFront },
+  { path: "/autoNoleggiate", name: "Auto Noleggiate", icon: HandCoins },
+  { path: "/sedi", name: "Sedi", icon: MapPinned },
+  { path: "/preferiti", name: "Preferiti", icon: Heart },
+];
+
 function Sidebar() {
   const navigate = useNavigate();
-  const [navigateToHomePage, setNavigateToHomePage] = useState(true);
-  const [navigateToAuto, setNavigateToAuto] = useState(false);
-  const [navigateToAutoNoleggiate, setNavigateToAutoNoleggiate] =
-    useState(false);
-  const [navigateToSedi, setNavigateToSedi] = useState(false);
-  const [navigateToPreferiti, setNavigateToPreferiti] = useState(false);
+  const location = useLocation();
+  const [activePath, setActivePath] = useState(location.pathname);
 
-  const handleNavigateToHomePage = () => {
-    setNavigateToHomePage(true);
-    setNavigateToAuto(false);
-    setNavigateToAutoNoleggiate(false);
-    setNavigateToSedi(false);
-    setNavigateToPreferiti(false);
-    navigate("/homePage");
-  };
+  useEffect(() => {
+    setActivePath(location.pathname);
+  }, [location]);
 
-  const handleNavigateToAuto = () => {
-    setNavigateToAuto(true);
-    setNavigateToHomePage(false);
-    setNavigateToAutoNoleggiate(false);
-    setNavigateToSedi(false);
-    setNavigateToPreferiti(false);
-    navigate("/auto");
-  };
-
-  const handleNavigateToAutoNoleggiate = () => {
-    setNavigateToAutoNoleggiate(true);
-    setNavigateToAuto(false);
-    setNavigateToHomePage(false);
-    setNavigateToSedi(false);
-    setNavigateToPreferiti(false);
-    navigate("/autoNoleggiate");
-  };
-
-  const handleNavigateToSedi = () => {
-    setNavigateToSedi(true);
-    setNavigateToAutoNoleggiate(false);
-    setNavigateToAuto(false);
-    setNavigateToHomePage(false);
-    setNavigateToPreferiti(false);
-    navigate("/sedi");
-  };
-
-  const handleNavigateToPreferiti = () => {
-    setNavigateToPreferiti(true);
-    setNavigateToSedi(false);
-    setNavigateToAutoNoleggiate(false);
-    setNavigateToAuto(false);
-    setNavigateToHomePage(false);
-    navigate("/preferiti");
+  const handleNavigation = (path) => {
+    setActivePath(path);
+    navigate(path);
   };
 
   return (
-    <div className="h-full  w-[20vw] z-[100] flex flex-col justify-between items-start py-10 px-4">
-      <div className="h-[80vh]  w-full flex flex-col justify-start items-start gap-5 ">
-        <button
-          type="button"
-          onClick={handleNavigateToHomePage}
-          className={
-            navigateToHomePage
-              ? "transition-all w-[70%] outline-none bg-[#FF690F] flex justify-start items-center gap-3 text-md text-white px-4 py-1 rounded-lg"
-              : "transition-all w-[70%] border-none bg-transparent outline-none flex justify-start items-center gap-3 text-md text-[#192024] px-4 py-1"
-          }
-        >
-          <Home color={navigateToHomePage ? "white" : "#192024"} />
-          <span className="">Home</span>
-        </button>
-        <button
-          type="button"
-          onClick={handleNavigateToAuto}
-          className={
-            navigateToAuto
-              ? "transition-all w-[70%] outline-none bg-[#FF690F] flex justify-start items-center gap-3 text-md text-white px-4 py-1 rounded-lg"
-              : "transition-all w-[70%] border-none bg-transparent outline-none flex justify-start items-center gap-3 text-md text-[#192024] px-4 py-1"
-          }
-        >
-          <CarFront color={navigateToAuto ? "white" : "#192024"} />
-          <span className="">Auto</span>
-        </button>
-        <button
-          type="button"
-          onClick={handleNavigateToAutoNoleggiate}
-          className={
-            navigateToAutoNoleggiate
-              ? "transition-all w-[90%] outline-none bg-[#FF690F] flex justify-start items-center gap-3 text-md text-white px-4 py-1 rounded-lg"
-              : "transition-all w-[90%] border-none bg-transparent outline-none flex justify-start items-center gap-3 text-md text-[#192024] px-4 py-1"
-          }
-        >
-          <HandCoins color={navigateToAutoNoleggiate ? "white" : "#192024"} />
-          <span className="">Auto Noleggiate</span>
-        </button>
-        <button
-          type="button"
-          onClick={handleNavigateToSedi}
-          className={
-            navigateToSedi
-              ? "transition-all w-[70%] outline-none bg-[#FF690F] flex justify-start items-center gap-3 text-md text-white px-4 py-1 rounded-lg"
-              : "transition-all w-[70%] border-none bg-transparent outline-none flex justify-start items-center gap-3 text-md text-[#192024] px-4 py-1"
-          }
-        >
-          <MapPinned color={navigateToSedi ? "white" : "#192024"} />
-          <span className="">Sedi</span>
-        </button>
+    <div className="h-full w-[20vw] z-[100] flex flex-col justify-between items-start py-10 px-4">
+      <div className="h-[80vh] w-full flex flex-col justify-start items-start gap-5">
+        {routes.slice(0, 4).map((route) => (
+          <button
+            key={route.path}
+            type="button"
+            onClick={() => handleNavigation(route.path)}
+            className={`transition-all w-[90%] ${
+              activePath === route.path
+                ? "bg-[#FF690F] text-white"
+                : "bg-transparent text-[#192024]"
+            } outline-none whitespace-nowrap flex justify-start items-center gap-3 text-md px-4 py-1 rounded-lg`}
+          >
+            <route.icon
+              size={22}
+              color={activePath === route.path ? "white" : "#192024"}
+            />
+            <span>{route.name}</span>
+          </button>
+        ))}
       </div>
-
       <div className="h-[20vh] w-full flex justify-start items-start">
         <button
           type="button"
-          onClick={handleNavigateToPreferiti}
-          className={
-            navigateToPreferiti
-              ? "transition-all w-[70%] outline-none bg-[#FF690F] flex justify-start items-center gap-3 text-md text-white px-4 py-1 rounded-lg"
-              : "transition-all w-[70%] border-none bg-transparent outline-none flex justify-start items-center gap-3 text-md text-[#192024] px-4 py-1"
-          }
+          onClick={() => handleNavigation(routes[4].path)}
+          className={`transition-all w-[70%] ${
+            activePath === routes[4].path
+              ? "bg-[#FF690F] text-white"
+              : "bg-transparent text-[#192024]"
+          } outline-none flex justify-start items-center gap-3 text-md px-4 py-1 rounded-lg`}
         >
-          <Heart color={navigateToPreferiti ? "white" : "#192024"} />
-          <span className="">Preferiti</span>
+          <Heart color={activePath === routes[4].path ? "white" : "#192024"} />
+          <span>{routes[4].name}</span>
         </button>
       </div>
     </div>
