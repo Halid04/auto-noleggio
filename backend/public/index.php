@@ -5,6 +5,7 @@
     use \Firebase\JWT\JWT;
 
     use Src\Controller\ClientController;
+    use Src\Controller\VehicleController;
     use Src\Gateway\ClientGateway;
 
     header("Access-Control-Allow-Origin: *");
@@ -26,6 +27,10 @@
             break;
         case "clienti":
             $controller = new ClientController($requestMethod, $data, $database);
+            $controller->processRequest();
+            break;
+        case "veicoli":
+            $controller = new VehicleController($requestMethod, array_slice($uri, 0), $data, $database);
             $controller->processRequest();
             break;
         default:
@@ -114,7 +119,7 @@
             return;
         }
 
-        $user = $result['body']['content'];
+        $user = $result['body']['content'][0];
         
         $issuedat_claim = time(); 
         $notbefore_claim = $issuedat_claim; 
@@ -138,9 +143,12 @@
     
         echo json_encode(
             array (
+                "auth" => array (
+                    "jwt" => $token,
+                    "expireAt" => $expire_claim
+                ),
                 "message" => "Account registered succesfully.",
-                "jwt" => $token,
-                "expireAt" => $expire_claim
+                
             )
         );
         return;
@@ -174,12 +182,15 @@
         }
 
         $user = $result['body']['content'];
+        
     
-        if (!$user) {
+        if (empty($user)) {
             http_response_code(401);
             echo json_encode(["message" => "User account does not exist."]);
             return;
         }
+
+        $user = $user[0];
     
         if (!password_verify($data['password'], $user['password'])) {
             http_response_code(401);
@@ -208,9 +219,11 @@
     
         echo json_encode(
             array (
-                "message" => "Successful login.",
-                "jwt" => $token,
-                "expireAt" => $expire_claim
+                "auth" => array (
+                    "jwt" => $token,
+                    "expireAt" => $expire_claim
+                ),
+                "message" => "Successful login."
             )
         );
         return;

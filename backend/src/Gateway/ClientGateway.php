@@ -8,7 +8,7 @@ class ClientGateway extends BaseGateway {
 
     public function __construct(Database $db)
     {
-        $this->tableName = "Cliente";
+        $this->tableName = "cliente";
         parent::__construct($db);
     }
 
@@ -30,7 +30,13 @@ class ClientGateway extends BaseGateway {
                 'email' => $input["email"]
             ));
 
-            return $this->response(200, content: $statement->fetch(\PDO::FETCH_ASSOC));
+            $response = $statement->fetchAll(\PDO::FETCH_ASSOC);
+
+            if (!$response) {
+                $response = [];
+            }
+
+            return $this->response(200, content: $response);
 
         } catch (\PDOException $e) {
             error_log("Database error: " . $e->getMessage());
@@ -54,26 +60,6 @@ class ClientGateway extends BaseGateway {
 
         if (!empty($missing_keys)) {
             return $this->response(400, "Missing parameters: " . implode(", ", $missing_keys));
-        }
-
-        $existing_users_sql = "
-                            SELECT COUNT(*) as count 
-                            FROM ". $this->tableName . " 
-                            WHERE email = :email";
-
-        try {
-            $existing_users_stmt = $this->conn->prepare($existing_users_sql);
-            $existing_users_stmt->bindValue(":email", $input["email"]);
-            $existing_users_stmt->execute();
-        } catch (PDOException $e) {
-            error_log("Database error: " . $e->getMessage());
-            return $this->response(500, message: "Internal Server Error");
-        }
-    
-        $existing_users_count = $existing_users_stmt->fetch(\PDO::FETCH_ASSOC)["count"];
-    
-        if ($existing_users_count > 0) {
-            return $this->response(400, "E-mail has already been registered.");
         }
 
         $statement = "
@@ -104,6 +90,9 @@ class ClientGateway extends BaseGateway {
             return $this->response(201, "Vehicle added successfully");
 
         } catch (\PDOException $e) {
+            if ($e->getCode() == "23000") {
+                return $this->response(400, "Invalid request: User has already registered");
+            }
             error_log("Database error: " . $e->getMessage());
             return $this->response(500, "Internal Server Error");
         }    
@@ -118,12 +107,6 @@ class ClientGateway extends BaseGateway {
             "amministratore",
             "data_di_nascita",
         ];
-
-        //$superfluous_keys = array_diff(array_keys($input), $fields);
-
-        if (!empty($superfluous_keys)) {
-            return $this->response(400, message: "Superfluous parameters: " . implode(", ", $superfluous_keys));
-        }
         
         return $this->updateM($input, $fields);
     }

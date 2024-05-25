@@ -1,35 +1,22 @@
 <?php
 namespace Src\Controller;
 
-use \Src\Gateway\BaseGateway;
+use \Src\Gateway\VehicleGateway;
+use \Src\Controller\BaseController;
 
-use Firebase\JWT\JWT;
-use Firebase\JWT\Key;
+class VehicleController extends BaseController {
 
+    private $uri;
 
-class BaseController {
-    public $requestMethod;
-    public $data;
-    public BaseGateway $gateway;
-    private $dotenv;
-    public function __call($name, $arguments)
+    public function __construct($requestMethod, $uri, $data, $db)
     {
-        $this->sendOutput(statusCode: 404);
-    }
-
-    public function __construct($requestMethod, $data, $gateway)
-    {
-        $this->requestMethod = $requestMethod;
-        $this->data = $data;
-        $this->gateway = $gateway; 
-        $this->dotenv = \Dotenv\Dotenv::createImmutable("../");
-        $this->dotenv->load();
-    
+        $this->uri = $uri;
+        parent::__construct($requestMethod, $data, new VehicleGateway($db));
     }
 
     public function processRequest()
     {
-        $response = [];
+
         try {
             if (!isset($this->data['auth']['jwt'])) {
                 $response = array (
@@ -39,14 +26,27 @@ class BaseController {
                     )
                 );
             } else {
-                //$this->authenticateJWTToken($this->data['auth']['jwt']);
+                $this->authenticateJWTToken($this->data['auth']['jwt']);
                 switch ($this->requestMethod) {
                     case 'GET':
-                        if (!isset($this->data['id'])) {
-                            $response = $this->gateway->findAll($this->data);
+                        if (isset($this->uri[1])) {
+                            switch ($this->uri[1]){
+                                case "filtra":
+                                    $response = $this->gateway->filter($this->data);
+                                    break;
+                                default:
+                                    $this->sendOutput(array('Content-Type: application/json'), statusCode: 404);
+                                    break;
+                                    return;
+                            }
                         } else {
-                            $response = $this->gateway->find($this->data);
-                        };
+                            if (!isset($this->data['id'])) {
+                                $response = $this->gateway->findAll($this->data);
+                            } else {
+                                $response = $this->gateway->find($this->data);
+                            };
+                        }
+                        
                         break;
                     case 'POST':
                         $response = $this->gateway->insert($this->data);
@@ -75,23 +75,4 @@ class BaseController {
 
     }
 
-    protected function sendOutput($httpHeaders, $data=[], $statusCode=200)
-    {
-
-        http_response_code($statusCode);
-
-        if (is_array($httpHeaders) && count($httpHeaders)) {
-            foreach ($httpHeaders as $httpHeader) {
-                header($httpHeader);
-            }
-        }
-        
-        echo json_encode($data);
-        exit();
-    }
-
-    public function authenticateJWTToken($jwt_token)
-        {
-            return JWT::decode($jwt_token, new Key($_ENV["SECRET_KEY"], 'HS256'));
-        }
 }

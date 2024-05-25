@@ -23,11 +23,16 @@ class BaseGateway {
             $statement = $this->conn->prepare($statement);
             $statement->execute();
 
-            return $this->response(200, content: $statement->fetchAll(\PDO::FETCH_ASSOC));
+            $response = $statement->fetchAll(\PDO::FETCH_ASSOC);
+
+            if (!$response) {
+                $response = [];
+            }
+
+            return $this->response(200, content: $response);
 
         } catch (\PDOException $e) {
             error_log("Database error: " . $e->getMessage());
-
             return $this->response(500, message: "Internal Server Error");
         }
     }
@@ -46,6 +51,14 @@ class BaseGateway {
             $statement->execute(array(
                 'id' => (int) $input["id"]
             ));
+
+            $response = $statement->fetchAll(\PDO::FETCH_ASSOC);
+
+            if (!$response) {
+                $response = [];
+            }
+
+            return $this->response(200, content: $response);
 
             return $this->response(200, content: $statement->fetch(\PDO::FETCH_ASSOC));
 
