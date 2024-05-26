@@ -8,19 +8,14 @@ class ClientGateway extends BaseGateway {
 
     public function __construct(Database $db)
     {
-        $this->tableName = "Cliente";
+        $this->tableName = "cliente";
         parent::__construct($db);
     }
 
     public function findByEmail($input)
     {
         if (!isset($input["email"])) {
-            return array (
-                'statusCode' => 400,
-                'body' => array (
-                    'message' => "Missing parameters: email"
-                )
-            );
+            return $this->response(400, message: "Missing parameters: email");
         }
         
         $statement = "
@@ -35,19 +30,17 @@ class ClientGateway extends BaseGateway {
                 'email' => $input["email"]
             ));
 
-            return array (
-                "statusCode" => 200,
-                "body" => array (
-                    "content" => $statement->fetch(\PDO::FETCH_ASSOC)
-                )
-            );
+            $response = $statement->fetchAll(\PDO::FETCH_ASSOC);
+
+            if (!$response) {
+                $response = [];
+            }
+
+            return $this->response(200, content: $response);
+
         } catch (\PDOException $e) {
-            return array (
-                "statusCode" => 500,
-                "body" => array (
-                    "message" => $e->getMessage()
-                )
-            );
+            error_log("Database error: " . $e->getMessage());
+            return $this->response(500, message: "Internal Server Error");
         }    
     }
 
@@ -63,17 +56,10 @@ class ClientGateway extends BaseGateway {
             "amministratore"
         ];
     
-        $request_keys = array_keys($input);
-    
-        $missing_keys = array_diff($required_parameters, $request_keys);
-    
-        if (count($missing_keys) !== 0) {
-            return array (
-                "statusCode" => 400,
-                "body" => array (
-                    "message" => "Missing parameters: " . implode(",", $missing_keys)
-                )
-            );
+        $missing_keys = $this->validateRequiredParameters($input, $required_parameters);
+
+        if (!empty($missing_keys)) {
+            return $this->response(400, "Missing parameters: " . implode(", ", $missing_keys));
         }
 
         $statement = "
@@ -101,202 +87,85 @@ class ClientGateway extends BaseGateway {
                 'amministratore' => $input['amministratore'],
             ));
 
-            return array (
-                "statusCode" => 201,
-                "body" => array (
-                    "content" => $statement->rowCount()
-                )
-            );
+            return $this->response(201, "Vehicle added successfully");
+
         } catch (\PDOException $e) {
-            return array (
-                "statusCode" => 500,
-                "body" => array (
-                    "message" => $e->getMessage()
-                )
-            );
+            if ($e->getCode() == "23000") {
+                return $this->response(400, "Invalid request: User has already registered");
+            }
+            error_log("Database error: " . $e->getMessage());
+            return $this->response(500, "Internal Server Error");
         }    
     }
 
-    public function update(Array $input)
-    {
+    public function update(array $input) {
+
         if (!isset($input["id"])) {
-            return array (
-                'statusCode' => 400,
-                'body' => array (
-                    'message' => "Missing parameters: id"
-                )
-            );
+            return $this->response(400, "Missing parameter: id");
         }
 
-        $update_name_statement = "
-            UPDATE Cliente
-            SET 
-                nome = :nome
-            WHERE id_". $this->tableName. " = :id;
-        ";
+        $fields = [
+            "nome",
+            "cognome",
+            "telefono",
+            "amministratore",
+            "data_di_nascita",
+        ];
+        
 
-        $update_cognome_statement = "
-            UPDATE Cliente
-            SET 
-                cognome = :cognome
-            WHERE id_". $this->tableName. " = :id;
-        ";
 
-        $update_name_statement = "
-            UPDATE Cliente
-            SET 
-                nome = :nome
-            WHERE id_". $this->tableName. " = :id;
-        ";
-
-        $update_telefono_statement = "
-            UPDATE Cliente
-            SET 
-                telefono = :telefono
-            WHERE id_". $this->tableName. " = :id;
-        ";
-
-        $update_dob_statement = "
-            UPDATE Cliente
-            SET 
-                data_di_nascita = :data_di_nascita
-            WHERE id_". $this->tableName. " = :id;
-        ";
+        $response = $this->updateM($input, $fields);
 
         $update_password_statement = "
-            UPDATE Cliente
+            UPDATE cliente
             SET 
                 password = :password
-            WHERE id_". $this->tableName. " = :id;
+            WHERE id_cliente = :id;
         ";
 
         $get_current_password_statement = "
             SELECT password
-            FROM Cliente
-            WHERE id_". $this->tableName. " = :id;
+            FROM cliente
+            WHERE id_cliente = :id;
         ";
 
-        if (isset($input["nome"])) {
-            try {
-                $statement = $this->conn->prepare($update_nome_statement);
-                $statement->execute(array(
-                    'id' => (int) $input["id"],
-                    'nome' => $input['nome'],
-                ));
-            } catch (\PDOException $e) {
-                $result['body']['message'] = $e->getMessage();
-                $result['statusCode'] = 500;
-                return $result;
-            }    
-        }
-
-        if (isset($input["cognome"])) {
-            try {
-                $statement = $this->conn->prepare($update_cognome_statement);
-                $statement->execute(array(
-                    'id' => (int) $id,
-                    'cognome' => $input['cognome'],
-                ));
-
-            } catch (\PDOException $e) {
-                return array (
-                    "statusCode" => 500,
-                    "body" => array (
-                        "message" => $e->getMessage()
-                    )
-                );
-            }    
-        }
-
-        if (isset($input["telefono"])) {
-            try {
-                $statement = $this->conn->prepare($update_telefono_statement);
-                $statement->execute(array(
-                    'id' => (int) $id,
-                    'telefono' => $input['telefono'],
-                ));
-
-            } catch (\PDOException $e) {
-                return array (
-                    "statusCode" => 500,
-                    "body" => array (
-                        "message" => $e->getMessage()
-                    )
-                );
-            }    
-        }
-
-        if (isset($input["dob"])) {
-            try {
-                $statement = $this->conn->prepare($update_dob_statement);
-                $statement->execute(array(
-                    'id' => (int) $id,
-                    'data_di_nascita' => $input['dob'],
-                ));
-
-            } catch (\PDOException $e) {
-                return array (
-                    "statusCode" => 500,
-                    "body" => array (
-                        "message" => $e->getMessage()
-                    )
-                );
-            }    
+        if ($response['statusCode'] != 200) {
+            $this->response($response['statusCode'], message: $response['body']['message']);
         }
 
         if (isset($input["new_password"])) {
 
             if (!isset($input['password'])) {
-                return array (
-                    "statusCode" => 400,
-                    "body" => array (
-                        "message" => "Enter current password."
-                    )
-                );
+                return $this->response(400, "Invalid request: Enter current password");
             }
-        
-    
+
             try {
+
                 $get_current_password_statement = $this->conn->prepare($get_current_password_statement);
                 $get_current_password_statement->execute(array(
-                    'id' => (int) $id,
+                    'id' => (int) $input['id'],
                 ));
 
-                $current_password = $statement->fetch(\PDO::FETCH_ASSOC)["password"];
+                $current_password = $get_current_password_statement->fetch(\PDO::FETCH_ASSOC)["password"];
 
-                if (password_verify($current_password, $input['password'])) {
+                if (password_verify($input['password'], $current_password)) {
 
                     $statement = $this->conn->prepare($update_password_statement);
                     $statement->execute(array(
-                        'id' => (int) $id,
+                        'id' => (int) $input['id'],
                         'password' => password_hash($input['new_password'], PASSWORD_DEFAULT),
                     ));
 
                 } else {
-                    return array (
-                        "statusCode" => 401,
-                        "body" => array (
-                            "message" => "Current password does not match."
-                        )
-                    );
+                    return $this->response(400, "Invalid request: Current password does not match");
                 }
 
             } catch (\PDOException $e) {
-                return array (
-                    "statusCode" => 500,
-                    "body" => array (
-                        "message" => $e->getMessage()
-                    )
-                );
+                error_log("Database error: " . $e->getMessage());
+                return $this->response(500, "Internal Server Error");
             }    
         }
 
-        return array (
-            "statusCode" => 200,
-            "body" => array (
-                "message" => "Successfully updated information"
-            )
-        );
-        
+        return $this->response(200, "Information updated successfully");
     }
 }

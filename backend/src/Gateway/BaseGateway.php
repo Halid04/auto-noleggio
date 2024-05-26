@@ -22,20 +22,18 @@ class BaseGateway {
         try {
             $statement = $this->conn->prepare($statement);
             $statement->execute();
-            
-            return array (
-                "statusCode" => 200,
-                "body" => array (
-                    "content" => $statement->fetchAll(\PDO::FETCH_ASSOC)
-                )
-            );
+
+            $response = $statement->fetchAll(\PDO::FETCH_ASSOC);
+
+            if (!$response) {
+                $response = [];
+            }
+
+            return $this->response(200, content: $response);
+
         } catch (\PDOException $e) {
-            return array (
-                "statusCode" => 500,
-                "body" => array (
-                    "message" => $e->getMessage()
-                )
-            );
+            error_log("Database error: " . $e->getMessage());
+            return $this->response(500, message: "Internal Server Error");
         }
     }
 
@@ -54,19 +52,19 @@ class BaseGateway {
                 'id' => (int) $input["id"]
             ));
 
-            return array (
-                "statusCode" => 200,
-                "body" => array (
-                    "content" => $statement->fetch(\PDO::FETCH_ASSOC)
-                )
-            );
+            $response = $statement->fetchAll(\PDO::FETCH_ASSOC);
+
+            if (!$response) {
+                $response = [];
+            }
+
+            return $this->response(200, content: $response);
+
+            return $this->response(200, content: $statement->fetch(\PDO::FETCH_ASSOC));
+
         } catch (\PDOException $e) {
-            return array (
-                "statusCode" => 500,
-                "body" => array (
-                    "message" => $e->getMessage()
-                )
-            );
+            error_log("Database error: " . $e->getMessage());
+            return $this->response(500, message: "Internal Server Error");
         }    
     }
 
@@ -79,12 +77,7 @@ class BaseGateway {
         ";
 
         if (!isset($input["id"])) {
-            return array (
-                'statusCode' => 400,
-                'body' => array (
-                    'message' => "Missing parameters: id"
-                )
-            );
+            return $this->response(400, message: "Missing parameters:  id");
         }
 
         try {
@@ -93,19 +86,67 @@ class BaseGateway {
                 'id' => (int) $input["id"]
             ));
 
-            return array (
-                "statusCode" => 200,
-                "body" => array (
-                    "content" => $statement->rowCount()
-                )
-            );
+            return $this->response(200, content: $statement->rowCount());
+
         } catch (\PDOException $e) {
-            return array (
-                "statusCode" => 500,
-                "body" => array (
-                    "message" => $e->getMessage()
-                )
-            );
+            error_log("Database error: " . $e->getMessage());
+            return $this->response(500, message: "Internal Server Error");
         }    
+    }
+    
+    public function updateM(array $input, $fields)
+    {
+        if (!isset($input["id"])) {
+            return $this->response(400, "Missing parameter: id");
+        }
+
+        $id = (int) $input["id"];
+        
+        $setClause = [];
+        $params = ['id' => $id];
+
+        foreach ($fields as $field) {
+            if (isset($input[$field])) {
+                $setClause[] = "$field = :$field";
+                $params[$field] = $input[$field];
+            }
+        }
+
+        if (empty($setClause)) {
+            return $this->response(400, "No fields to update");
+        }
+
+        $setClauseStr = implode(", ", $setClause);
+        $statementStr = "
+            UPDATE " . $this->tableName . "
+            SET $setClauseStr
+            WHERE id_" . $this->tableName . " = :id;
+        ";
+
+        try {
+            $statement = $this->conn->prepare($statementStr);
+            $statement->execute($params);
+
+            return $this->response(200, "Information successfully updated");
+        } catch (\PDOException $e) {
+            error_log("Database error: " . $e->getMessage());
+            return $this->response(500, "Internal Server Error");
+        }
+    }
+
+    public function validateRequiredParameters(array $input, array $required_parameters)
+    {
+        return array_diff($required_parameters, array_keys($input));
+    }
+
+    public function response($statusCode, $message = "", $content = [])
+    {
+        return array (
+            "statusCode" => $statusCode,
+            "body" => array (
+                "message" => $message,
+                "content" => $content
+            )
+        );
     }
 }
