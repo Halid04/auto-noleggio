@@ -3,6 +3,7 @@ import CardAuto from "../components/CardAuto";
 import { ChevronDown, SlidersHorizontal } from "lucide-react";
 
 function Auto() {
+  const [auto, setAuto] = useState([]);
   const dropdownGeneralFiltriRef = useRef(null);
   const dropdownMarcaFiltriRef = useRef(null);
   const dropdownTipoMacchinaFiltriRef = useRef(null);
@@ -31,6 +32,7 @@ function Auto() {
     useState(false);
 
   useEffect(() => {
+    getAllAuto();
     const handleClickOutsideGeneralFiltri = (event) => {
       if (
         dropdownGeneralFiltriRef.current &&
@@ -127,6 +129,33 @@ function Auto() {
     isDropdownVicinoATeFiltriOpen,
   ]);
 
+  const getAllAuto = () => {
+    const url = "http://localhost/auto-noleggio/backend/public/veicoli";
+
+    const headers = {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    };
+
+    fetch(url, {
+      method: "GET",
+      headers: headers,
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log(data);
+        setAuto(data);
+      })
+      .catch((error) =>
+        console.error("Errore durante il recupero delle auto:", error)
+      );
+  };
+
   const handleMenuButtonClickGeneralFiltri = (event) => {
     event.stopPropagation();
     setIsDropdownGeneralFiltriOpen(!isDropdownGeneralFiltriOpen);
@@ -210,7 +239,7 @@ function Auto() {
 
   return (
     <div className=" h-full w-full shrink-0 bg-[#F0F3F5] overflow-x-hidden overflow-y-auto flex flex-col py-5 justify-between items-start ">
-      <div className="filtri-section shrink-0 h-[10vh] gap-5 px-5 sm:px-10  w-full flex justify-start items-center">
+      <form className="filtri-section shrink-0 h-[10vh] gap-5 px-5 sm:px-10  w-full flex justify-start items-center">
         {/* Filtri generali */}
         <div className="relative inline-block text-left">
           <div>
@@ -228,7 +257,7 @@ function Auto() {
 
           {/* <!-- Dropdown General Filtri menu --> */}
           {isDropdownGeneralFiltriOpen && (
-            <form
+            <div
               ref={dropdownGeneralFiltriRef}
               className="flex flex-col shrink-0 text-[#192024] justify-start items-start absolute left-0 z-10 mt-2 w-60 sm:w-72 h-96 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
               role="menu"
@@ -509,7 +538,7 @@ function Auto() {
                   Reimposta
                 </button>
               </div>
-            </form>
+            </div>
           )}
         </div>
 
@@ -526,7 +555,7 @@ function Auto() {
             >
               <span className=" font-bold text-[#192024]">Marca</span>
               <ChevronDown
-                className={`mr-1 h-5 w-5 transition-transform duration-300 ${
+                className={`mr-1 h-5 w-5 transition-transdiv duration-300 ${
                   isDropdownMarcaFiltriOpen ? "rotate-180" : "rotate-0"
                 }`}
                 color="#192024"
@@ -536,7 +565,7 @@ function Auto() {
 
           {/* <!-- Dropdown Filtri marca menu --> */}
           {isDropdownMarcaFiltriOpen && (
-            <form
+            <div
               ref={dropdownMarcaFiltriRef}
               className="flex flex-col shrink-0 text-[#192024] justify-start items-start absolute left-0 z-10 mt-2 w-72 h-80 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
               role="menu"
@@ -629,7 +658,7 @@ function Auto() {
                   Reimposta
                 </button>
               </div>
-            </form>
+            </div>
           )}
         </div>
 
@@ -648,7 +677,7 @@ function Auto() {
                 Tipo di macchina
               </span>
               <ChevronDown
-                className={`mr-1 h-5 w-5 transition-transform duration-300 ${
+                className={`mr-1 h-5 w-5 transition-transdiv duration-300 ${
                   isDropdownTipoMacchinaFiltriOpen ? "rotate-180" : "rotate-0"
                 }`}
                 color="#192024"
@@ -658,7 +687,7 @@ function Auto() {
 
           {/* <!-- Dropdown Filtri Tipo Macchina menu --> */}
           {isDropdownTipoMacchinaFiltriOpen && (
-            <form
+            <div
               ref={dropdownTipoMacchinaFiltriRef}
               className="flex flex-col shrink-0 text-[#192024] justify-start items-start absolute left-0 z-10 mt-2 w-72 h-80 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
               role="menu"
@@ -723,7 +752,7 @@ function Auto() {
                   Reimposta
                 </button>
               </div>
-            </form>
+            </div>
           )}
         </div>
 
@@ -740,7 +769,7 @@ function Auto() {
             >
               <span className=" font-bold text-[#192024]">Prezzo</span>
               <ChevronDown
-                className={`mr-1 h-5 w-5 transition-transform duration-300 ${
+                className={`mr-1 h-5 w-5 transition-transdiv duration-300 ${
                   isDropdownPrezzoFiltriOpen ? "rotate-180" : "rotate-0"
                 }`}
                 color="#192024"
@@ -750,7 +779,7 @@ function Auto() {
 
           {/* <!-- Dropdown Filtri prezzo menu --> */}
           {isDropdownPrezzoFiltriOpen && (
-            <form
+            <div
               ref={dropdownPrezzoFiltriRef}
               className="flex flex-col shrink-0 text-[#192024] justify-start items-start absolute right-0 lg:left-0 z-10 mt-2 w-72 h-52 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
               role="menu"
@@ -825,7 +854,7 @@ function Auto() {
                   Reimposta
                 </button>
               </div>
-            </form>
+            </div>
           )}
         </div>
 
@@ -842,7 +871,7 @@ function Auto() {
             >
               <span className=" font-bold text-[#192024]">Anno</span>
               <ChevronDown
-                className={`mr-1 h-5 w-5 transition-transform duration-300 ${
+                className={`mr-1 h-5 w-5 transition-transdiv duration-300 ${
                   isDropdownAnnoFiltriOpen ? "rotate-180" : "rotate-0"
                 }`}
                 color="#192024"
@@ -852,7 +881,7 @@ function Auto() {
 
           {/* <!-- Dropdown Filtri Anno menu --> */}
           {isDropdownAnnoFiltriOpen && (
-            <form
+            <div
               ref={dropdownAnnoFiltriRef}
               className="flex flex-col shrink-0 text-[#192024] justify-start items-start absolute right-0 xl:left-0 z-10 mt-2 w-72 h-80 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
               role="menu"
@@ -915,7 +944,7 @@ function Auto() {
                   Reimposta
                 </button>
               </div>
-            </form>
+            </div>
           )}
         </div>
 
@@ -932,7 +961,7 @@ function Auto() {
             >
               <span className=" font-bold text-[#192024]">Tipo carburante</span>
               <ChevronDown
-                className={`mr-1 h-5 w-5 transition-transform duration-300 ${
+                className={`mr-1 h-5 w-5 transition-transdiv duration-300 ${
                   isDropdownTipoCarburanteFiltriOpen ? "rotate-180" : "rotate-0"
                 }`}
                 color="#192024"
@@ -942,7 +971,7 @@ function Auto() {
 
           {/* <!-- Dropdown Filtri Tipo carburante menu --> */}
           {isDropdownTipoCarburanteFiltriOpen && (
-            <form
+            <div
               ref={dropdownTipoCarburanteFiltriRef}
               className="flex flex-col shrink-0 text-[#192024] justify-start items-start absolute right-0 xl:left-0 z-10 mt-2 w-72 h-80 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
               role="menu"
@@ -996,7 +1025,7 @@ function Auto() {
                   Reimposta
                 </button>
               </div>
-            </form>
+            </div>
           )}
         </div>
 
@@ -1013,7 +1042,7 @@ function Auto() {
             >
               <span className=" font-bold text-[#192024]">Vicino a te</span>
               <ChevronDown
-                className={`mr-1 h-5 w-5 transition-transform duration-300 ${
+                className={`mr-1 h-5 w-5 transition-transdiv duration-300 ${
                   isDropdownVicinoATeFiltriOpen ? "rotate-180" : "rotate-0"
                 }`}
                 color="#192024"
@@ -1044,7 +1073,7 @@ function Auto() {
             </div>
           )}
         </div>
-      </div>
+      </form>
       <div className="auto-section shrink-0 h-[90vh] px-5 sm:px-10 py-5 w-full flex items-start justify-start flex-wrap gap-x-16 gap-y-5">
         <CardAuto />
         <CardAuto />
