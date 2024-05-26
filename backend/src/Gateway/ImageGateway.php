@@ -76,12 +76,14 @@ class ImageGateway extends BaseGateway {
 
     public function insert(array $input)
     {
+        echo var_dump($input);
+        
         if (!isset($input["images"])) {
             return $this->response(400, message: "Invalid request: Missing parameters: images");
         }
 
         $image_statement = "
-            INSERT INTO FotoVeicolo
+            INSERT INTO fotoveicolo
             (id_veicolo, nome_foto) VALUES ";
 
         if (!empty($input['images'])) {
@@ -90,7 +92,6 @@ class ImageGateway extends BaseGateway {
 
                 $required_parameters = [
                     "nome_foto",
-                    "id_veicolo"
                 ];
         
                 $missing_keys = $this->validateRequiredParameters($image, $required_parameters);
@@ -99,7 +100,7 @@ class ImageGateway extends BaseGateway {
                     return $this->response(400, "Invalid request: Invalid image array: Missing parameters: " . implode(", ", $missing_keys));
                 }
     
-                $image_statement .= "('" . $image['id_veicolo'] . "', '" . $image['nome_foto'] ."'), ";
+                $image_statement .= "('" . ($image['id_veicolo'] ?? $input['id_veicolo']) . "', '" . $image['nome_foto'] ."'), ";
             }
 
             try {   

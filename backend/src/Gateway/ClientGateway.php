@@ -100,6 +100,10 @@ class ClientGateway extends BaseGateway {
 
     public function update(array $input) {
 
+        if (!isset($input["id"])) {
+            return $this->response(400, "Missing parameter: id");
+        }
+
         $fields = [
             "nome",
             "cognome",
@@ -108,6 +112,60 @@ class ClientGateway extends BaseGateway {
             "data_di_nascita",
         ];
         
-        return $this->updateM($input, $fields);
+
+
+        $response = $this->updateM($input, $fields);
+
+        $update_password_statement = "
+            UPDATE cliente
+            SET 
+                password = :password
+            WHERE id_cliente = :id;
+        ";
+
+        $get_current_password_statement = "
+            SELECT password
+            FROM cliente
+            WHERE id_cliente = :id;
+        ";
+
+        if ($response['statusCode'] != 200) {
+            $this->response($response['statusCode'], message: $response['body']['message']);
+        }
+
+        if (isset($input["new_password"])) {
+
+            if (!isset($input['password'])) {
+                return $this->response(400, "Invalid request: Enter current password");
+            }
+
+            try {
+
+                $get_current_password_statement = $this->conn->prepare($get_current_password_statement);
+                $get_current_password_statement->execute(array(
+                    'id' => (int) $input['id'],
+                ));
+
+                $current_password = $get_current_password_statement->fetch(\PDO::FETCH_ASSOC)["password"];
+
+                if (password_verify($input['password'], $current_password)) {
+
+                    $statement = $this->conn->prepare($update_password_statement);
+                    $statement->execute(array(
+                        'id' => (int) $input['id'],
+                        'password' => password_hash($input['new_password'], PASSWORD_DEFAULT),
+                    ));
+
+                } else {
+                    return $this->response(400, "Invalid request: Current password does not match");
+                }
+
+            } catch (\PDOException $e) {
+                error_log("Database error: " . $e->getMessage());
+                return $this->response(500, "Internal Server Error");
+            }    
+        }
+
+        return $this->response(200, "Information updated successfully");
     }
 }

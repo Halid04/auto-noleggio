@@ -18,15 +18,13 @@ class VehicleController extends BaseController {
     {
 
         try {
-            if (!isset($this->data['auth']['jwt'])) {
-                $response = array (
-                    'statusCode' => 401,
-                    'body' => array (
-                        'message' => "Missing JWT."
-                    )
-                );
+
+            $auth = $this->authenticateRequest($this->data);
+
+            if (!$auth['status']) {
+                $response = $auth['response_obj'];
             } else {
-                $this->authenticateJWTToken($this->data['auth']['jwt']);
+                
                 switch ($this->requestMethod) {
                     case 'GET':
                         if (isset($this->uri[1])) {
@@ -45,8 +43,7 @@ class VehicleController extends BaseController {
                             } else {
                                 $response = $this->gateway->find($this->data);
                             };
-                        }
-                        
+                        }      
                         break;
                     case 'POST':
                         $response = $this->gateway->insert($this->data);
