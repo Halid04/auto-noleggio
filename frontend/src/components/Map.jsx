@@ -10,7 +10,7 @@ export default function Map() {
   maptilersdk.config.apiKey = "YOUR_API_KEY";
 
   useEffect(() => {
-    if (map.current) return; // stops map from intializing more than once
+    if (map.current) return;
 
     map.current = new maptilersdk.Map({
       container: mapContainer.current,

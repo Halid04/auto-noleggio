@@ -4,6 +4,7 @@ import { MapPin } from "lucide-react";
 
 const CarDetail = () => {
   const { idAuto } = useParams();
+  const navigate = useNavigate();
   const [carDetail, setCarDetail] = useState([]);
   const [carImages, setCarImages] = useState([]);
   const [imgNewPath, setImgNewPath] = useState([]);
@@ -20,7 +21,7 @@ const CarDetail = () => {
         return `/${baseName}/${img.nome_foto}`;
       });
       setImgNewPath(newPaths);
-      setMainImage(newPaths[0]); // Imposta l'immagine principale iniziale
+      setMainImage(newPaths[0]);
     }
   }, [carImages]);
 
@@ -59,50 +60,56 @@ const CarDetail = () => {
   };
 
   if (!carDetail || carDetail.length === 0) {
-    return <p>Loading...</p>; // o qualsiasi altro messaggio di caricamento
+    return <p>Loading...</p>;
   }
 
   return (
-    <div className="flex flex-col md:flex-row p-6">
-      <div className="flex-1">
+    <div className="flex flex-col justify-start md:flex-row p-6 w-full h-[100vh] overflow-x-hidden overflow-y-auto">
+      <div className="flex flex-col w-full md:w-1/2">
         {mainImage && (
           <img
             src={`/src/progettoGPOAutoImages${mainImage}.jpg`}
             alt={mainImage}
-            className="w-full h-auto rounded-lg"
+            className="w-full h-[10rem] md:h-[20rem] rounded-lg object-cover"
           />
         )}
         <div className="flex justify-around mt-4">
-          {imgNewPath &&
+          {imgNewPath.length > 0 &&
             imgNewPath.map((image, index) => (
               <img
                 key={index}
                 src={`/src/progettoGPOAutoImages${image}.jpg`}
                 alt={`Thumbnail ${image}`}
-                className="w-16 h-16 rounded-lg cursor-pointer"
+                className={`${
+                  image === mainImage ? "brightness-75" : ""
+                } w-14 h-14 md:w-20 md:h-20 border-[1.5px] border-[#EEEEEE]  object-cover hover:brightness-75 transition-all rounded-lg cursor-pointer`}
                 onClick={() => setMainImage(image)}
               />
             ))}
         </div>
       </div>
-      <div className="flex-1 md:ml-6 mt-6 md:mt-0">
+
+      <div className="flex flex-col w-full md:w-1/2 md:ml-6 mt-6 md:mt-0">
         <div className="space-y-4">
-          <h1 className="text-2xl font-bold">
+          <h1 className="text-3xl font-bold">
             {carDetail[0].marca} {carDetail[0].modello}
           </h1>
-          <p className="text-gray-600">
+          <p className="text-[#192024] text-lg">
             <strong>Data di acquisto:</strong>{" "}
             {carDetail[0].anno_immatricolazione}
           </p>
-          <p className="text-gray-600">
+          <p className="text-[#192024] text-lg">
             <strong>Tipo di carburante:</strong>{" "}
             {carDetail[0].tipo_carburazione}
           </p>
-          <p className="text-gray-600">
+          <p className="text-[#192024] text-lg">
             <strong>Chilometri:</strong> {carDetail[0].chilometraggio} km
           </p>
-          <p className="text-gray-600">
-            <strong>Prezzo:</strong> €{carDetail[0].costo_giornaliero}
+          <p className="text-[#192024] text-lg">
+            <strong>Prezzo:</strong> {carDetail[0].costo_giornaliero} €/G
+          </p>
+          <p className="text-[#192024] text-lg">
+            <strong>Numero posti:</strong> {carDetail[0].numero_posti}
           </p>
           <div className="space-x-2">
             <span className="inline-flex items-center px-3 h-7 text-sm font-normal text-center text-white bg-[#FF690F] rounded-lg hover:bg-[#d55508]">
@@ -117,12 +124,20 @@ const CarDetail = () => {
           </div>
           <div className="flex items-center text-gray-700 dark:text-gray-400">
             <MapPin className="mr-1" />
-            <p>{carDetail[0].nome_sede}</p>
+            <p>
+              {carDetail[0].città}, {carDetail[0].indirizzo}
+            </p>
           </div>
         </div>
-        <div className="mt-6">
-          <button className="w-full text-white bg-[#FF690F] hover:bg-[#d55508] focus:ring-4 focus:outline-none focus:ring-orange-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">
+        <div className="mt-6 flex justify-between items-center gap-3">
+          <button className="w-1/2 whitespace-nowrap outline-none text-white border-[1.5px] border-transparent bg-[#FF690F] hover:bg-[#d55508] focus:ring-4 focus:outline-none focus:ring-orange-300 font-medium rounded-lg  px-5 py-2 text-center">
             Noleggia
+          </button>
+          <button
+            onClick={() => navigate("/auto")}
+            className="w-1/2 whitespace-nowrap text-[#FF690F] border-[1.5px] border-[#FF690F] outline-none bg-transparent hover:bg-[#EEEEEE] focus:ring-4 focus:outline-none focus:ring-orange-300 font-medium rounded-lg  px-5 py-2 text-center"
+          >
+            Torna indietro
           </button>
         </div>
       </div>

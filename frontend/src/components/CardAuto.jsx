@@ -55,7 +55,7 @@ function CardAuto({
       <img
         className="rounded-t-lg w-full h-[10rem] object-cover"
         src={`/src/progettoGPOAutoImages${randomImage}.jpg`}
-        alt="auto"
+        alt={randomImage}
         loading="lazy"
       />
       <div className="px-2 py-5 flex flex-col justify-start items-start gap-2">
