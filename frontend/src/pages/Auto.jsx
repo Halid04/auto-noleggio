@@ -148,11 +148,8 @@ function Auto() {
         return response.json();
       })
       .then((data) => {
-        console.log(data.content);
+        // console.log(data.content);
         setAuto(data.content);
-        if (data.content && data.content.length > 0) {
-          console.log("auto", data.content);
-        }
       })
       .catch((error) => {
         console.error("Errore durante il recupero delle auto:", error);
