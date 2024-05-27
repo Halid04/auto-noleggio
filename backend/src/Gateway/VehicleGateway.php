@@ -172,7 +172,7 @@ class VehicleGateway extends BaseGateway {
     {
         $statement = "
             SELECT 
-                veicolo.*, sede.nome
+                veicolo.*, sede.nome as nome_sede
             FROM " . $this->tableName .
             " JOIN sede on veicolo.id_sede = sede.id_sede
              WHERE id_". $this->tableName. " = :id;
