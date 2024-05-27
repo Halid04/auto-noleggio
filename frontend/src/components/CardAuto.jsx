@@ -12,6 +12,8 @@ function CardAuto({
   colore_veicolo,
   costo_giornaliero,
   images,
+  citta,
+  indirizzo,
 }) {
   const [randomImage, setRandomImage] = useState("");
   const [imgNewPath, setImgNewPath] = useState([]);
@@ -74,7 +76,7 @@ function CardAuto({
           <MapPin />{" "}
           <p className="whitespace-nowrap font-normal text-[#192024] dark:text-gray-400">
             {" "}
-            Brescia, Via BLa bla
+            {citta}, {indirizzo}
           </p>
         </div>
       </div>

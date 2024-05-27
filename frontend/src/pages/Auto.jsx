@@ -1092,6 +1092,8 @@ function Auto() {
               colore_veicolo={auto.colore_veicolo}
               costo_giornaliero={auto.costo_giornaliero}
               images={auto.images}
+              citta={auto.città}
+              indirizzo={auto.indirizzo}
             />
           ))
         ) : (
