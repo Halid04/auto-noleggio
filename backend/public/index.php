@@ -19,7 +19,7 @@
 
     
 
-    if (uri[0] == "register" || $uri[0] == "login") {
+    if ($uri[0] == "register" || $uri[0] == "login") {
         switch ($uri[0]) {
             case "register":
                 registerUser($data, $database);

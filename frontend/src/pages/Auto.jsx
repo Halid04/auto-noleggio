@@ -130,7 +130,7 @@ function Auto() {
   ]);
 
   const getAllAuto = () => {
-    const url = "http://localhost/auto-noleggio/backend/public/veicoli";
+    const url = "http://localhost/auto-noleggio/backend/public/veicoli?json=\"\"";
 
     const headers = {
       Accept: "application/json",
@@ -151,9 +151,7 @@ function Auto() {
         console.log(data);
         setAuto(data);
       })
-      .catch((error) =>
-        console.error("Errore durante il recupero delle auto:", error)
-      );
+      
   };
 
   const handleMenuButtonClickGeneralFiltri = (event) => {
