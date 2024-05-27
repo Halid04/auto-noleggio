@@ -66,7 +66,7 @@ class BaseController {
                         $response = $this->gateway->delete($this->data);
                         break;
                     default:
-                        $this->sendOutput(array('Content-Type: application/json'), statusCode: 404);
+                        $this->sendOutput(array('Content-Type: application/json'), statusCode: 404, data: ["message" => "Resource not found"]);
                         return;
                 }
             }

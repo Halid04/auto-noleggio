@@ -32,8 +32,14 @@ class VehicleController extends BaseController {
                                 case "filtra":
                                     $response = $this->gateway->filter($this->data);
                                     break;
+                                case "marche":
+                                    $response = $this->gateway->getMakes($this->data);
+                                    break;
+                                case "carburazioni":
+                                    $response = $this->gateway->getFuelTypes($this->data);
+                                    break;
                                 default:
-                                    $this->sendOutput(array('Content-Type: application/json'), statusCode: 404);
+                                    $this->sendOutput(array('Content-Type: application/json'), statusCode: 404, data: ["message" => "Resource not found"]);
                                     break;
                                     return;
                             }
@@ -55,7 +61,7 @@ class VehicleController extends BaseController {
                         $response = $this->gateway->delete($this->data);
                         break;
                     default:
-                        $this->sendOutput(array('Content-Type: application/json'), statusCode: 404);
+                        $this->sendOutput(array('Content-Type: application/json'), statusCode: 404, data: ["message" => "Resource not found"]);
                         return;
                 }
             }

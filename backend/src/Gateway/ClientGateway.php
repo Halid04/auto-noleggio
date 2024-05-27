@@ -53,7 +53,7 @@ class ClientGateway extends BaseGateway {
             "password",
             "telefono",
             "data_di_nascita",
-            "amministratore"
+            "admin"
         ];
     
         $missing_keys = $this->validateRequiredParameters($input, $required_parameters);
@@ -64,7 +64,7 @@ class ClientGateway extends BaseGateway {
 
         $statement = "
             INSERT INTO " . $this->tableName . "
-                (nome, cognome, email, password, telefono, data_di_nascita, amministratore)
+                (nome, cognome, email, password, telefono, data_di_nascita, admin)
             VALUES (
                 :nome,
                 :cognome, 
@@ -72,7 +72,7 @@ class ClientGateway extends BaseGateway {
                 :password, 
                 :telefono, 
                 :data_di_nascita,
-                :amministratore
+                :admin
             )";
         
         try {
@@ -84,10 +84,10 @@ class ClientGateway extends BaseGateway {
                 'password' => password_hash($input['password'], PASSWORD_DEFAULT),
                 'telefono' => $input['telefono'],
                 'data_di_nascita' => $input['data_di_nascita'],
-                'amministratore' => $input['amministratore'],
+                'admin' => $input['admin'],
             ));
 
-            return $this->response(201, "Vehicle added successfully");
+            return $this->response(201, "Clienti added successfully");
 
         } catch (\PDOException $e) {
             if ($e->getCode() == "23000") {
