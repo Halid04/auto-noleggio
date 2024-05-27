@@ -130,7 +130,8 @@ function Auto() {
   ]);
 
   const getAllAuto = () => {
-    const url = "http://localhost/auto-noleggio/backend/public/veicoli";
+    const url =
+      'http://localhost/auto-noleggio/backend/public/veicoli?json="{}"';
 
     const headers = {
       Accept: "application/json",
@@ -142,9 +143,9 @@ function Auto() {
       headers: headers,
     })
       .then((response) => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
+        // if (!response.ok) {
+        //   throw new Error(`HTTP error! status: ${response.status}`);
+        // }
         return response.json();
       })
       .then((data) => {

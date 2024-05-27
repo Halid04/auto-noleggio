@@ -19,6 +19,7 @@ function App() {
   // }, [location]);
 
   const isTransactionPage = location.pathname === "/transazione";
+  // const isImpostazioniProfiliAdminPage = location.pathname === "/impostazioniProfiliAdmin";
 
   return (
     <div className="h-[100vh] w-full bg-white flex flex-col justify-between items-center">
