@@ -6,6 +6,7 @@ import AutoNoleggiate from "./pages/AutoNoleggiate.jsx";
 import Sedi from "./pages/Sedi.jsx";
 import Preferiti from "./pages/Preferiti.jsx";
 import Transazione from "./pages/Transazione.jsx";
+import CarDetail from "./pages/CarDetail.jsx";
 import Header from "./components/Header.jsx";
 import Sidebar from "./components/Sidebar.jsx";
 
@@ -43,6 +44,7 @@ function App() {
             <Route path="/sedi" element={<Sedi />} />
             <Route path="/preferiti" element={<Preferiti />} />
             <Route path="/transazione" element={<Transazione />} />
+            <Route path="/carDetail/:idAuto" element={<CarDetail />} />
           </Routes>
         </div>
       </div>

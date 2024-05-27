@@ -1,12 +1,49 @@
-import React, { useState } from 'react';
-import { MapPin } from 'lucide-react';
+import React, { useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { MapPin } from "lucide-react";
 
-const CarDetail = ({ car }) => {
-  const [mainImage, setMainImage] = useState(car.images[0]);
+const CarDetail = () => {
+  const { idAuto } = useParams();
+  const [carDetail, setCarDetail] = useState([]);
+  // const [mainImage, setMainImage] = useState(car.images[0]);
+
+  const getCarDetail = () => {
+    const requestParams = { id: idAuto };
+    const url = `http://localhost/auto-noleggio/backend/public/veicoli?json=${encodeURIComponent(
+      requestParams
+    )}`;
+
+    const headers = {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    };
+
+    fetch(url, {
+      method: "GET",
+      headers: headers,
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log(data.content);
+        setCarDetail(data.content);
+      })
+      .catch((error) => {
+        console.error(
+          "Errore durante il recupero dei dettagli dell'auto:",
+          error
+        );
+      });
+  };
 
   return (
     <div className="flex flex-col md:flex-row p-6">
-      <div className="flex-1">
+      <h1 className="text-4xl text-black">{idAuto}</h1>
+      {/* <div className="flex-1">
         <img src={mainImage} alt={car.name} className="w-full h-auto rounded-lg" />
         <div className="flex justify-around mt-4">
           {car.images.map((image, index) => (
@@ -56,7 +93,7 @@ const CarDetail = ({ car }) => {
               Noleggia
           </button>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

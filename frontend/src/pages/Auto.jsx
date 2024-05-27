@@ -1082,6 +1082,7 @@ function Auto() {
           auto.map((auto, index) => (
             <CardAuto
               key={index}
+              idAuto={auto.id_veicolo}
               marca={auto.marca}
               modello={auto.modello}
               anno_immatricolazione={auto.anno_immatricolazione}

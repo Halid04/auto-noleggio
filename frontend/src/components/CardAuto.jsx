@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { MapPin } from "lucide-react";
 
 function CardAuto({
+  idAuto,
   marca,
   modello,
   anno_immatricolazione,
@@ -15,6 +17,7 @@ function CardAuto({
   citta,
   indirizzo,
 }) {
+  const navigate = useNavigate();
   const [randomImage, setRandomImage] = useState("");
   const [imgNewPath, setImgNewPath] = useState([]);
 
@@ -40,8 +43,15 @@ function CardAuto({
     }
   }, [imgNewPath]);
 
+  const handleNavigateToCarDetail = (id) => {
+    navigate(`/carDetail/${id}`);
+  };
+
   return (
-    <div className=" w-64 cursor-pointer bg-white border border-gray-200 rounded-lg shadow hover:scale-[.95] transition-transform duration-300 ease-in-out">
+    <div
+      onClick={() => handleNavigateToCarDetail(idAuto)}
+      className=" w-64 cursor-pointer bg-white border border-gray-200 rounded-lg shadow hover:scale-[.95] transition-transform duration-300 ease-in-out"
+    >
       <img
         className="rounded-t-lg w-full h-[10rem] object-cover"
         src={`/src/progettoGPOAutoImages${randomImage}.jpg`}
