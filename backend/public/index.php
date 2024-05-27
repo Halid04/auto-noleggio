@@ -17,9 +17,6 @@
     $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
     $uri = array_slice(explode( '/', $uri ), 4);
     
-
-    
-
     if ($uri[0] == "register" || $uri[0] == "login") {
         switch ($uri[0]) {
             case "register":
@@ -228,7 +225,7 @@
             "data" => array (
                 "user_id" => $user["id_cliente"],
                 "email" => $user["email"],
-                "admin" => $user["amministratore"]
+                "admin" => $user["admin"]
                     )
             );
     

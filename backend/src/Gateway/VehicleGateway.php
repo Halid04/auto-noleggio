@@ -174,7 +174,7 @@ class VehicleGateway extends BaseGateway {
             SELECT 
                 veicolo.*, sede.nome
             FROM " . $this->tableName .
-            "JOIN sede on veicolo.id_sede = sede.id_sede
+            " JOIN sede on veicolo.id_sede = sede.id_sede
              WHERE id_". $this->tableName. " = :id;
             ";
 

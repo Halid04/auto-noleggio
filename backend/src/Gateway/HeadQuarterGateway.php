@@ -1,11 +1,10 @@
 <?php
 namespace Src\Gateway;
-use \Src\Database;
-use \Src\Gateway\BaseGateway;
+use Src\Database;
+use Src\Gateway\BaseGateway;
 
-class HeadQuarterGateway extends BaseGateway {
-
-
+class HeadQuarterGateway extends BaseGateway
+{
     public function __construct(Database $db)
     {
         $this->tableName = "sede";
@@ -14,21 +13,21 @@ class HeadQuarterGateway extends BaseGateway {
 
     public function insert(array $input)
     {
-        $fields = [
-            "nome",
-            "indirizzo",
-            "città",
-            "cap",
-            "telefono"
-        ];
+        $fields = ["nome", "indirizzo", "città", "cap", "telefono"];
 
         $insert_response = $this->insertM($input, $fields);
 
-        if ($insert_response['statusCode'] != 201) {
-            return $this->response($insert_response['statusCode'], message: $insert_response['body']['message']);
+        if ($insert_response["statusCode"] != 201) {
+            return $this->response(
+                $insert_response["statusCode"],
+                message: $insert_response["body"]["message"]
+            );
         }
 
-        return $this->response(201, message: "Headquarter inserted successfully");
+        return $this->response(
+            201,
+            message: "Headquarter inserted successfully"
+        );
     }
 
     public function validateInput(array $input)
@@ -47,20 +46,15 @@ class HeadQuarterGateway extends BaseGateway {
         return $errors;
     }
 
-
     public function update(array $input)
     {
-        
-        $fields = [
-            "id_veicolo",
-            "percorso_foto"
-        ];
+        $fields = ["id_veicolo", "percorso_foto"];
 
         //$validationErrors = $this->validateInput($input);
         if (!empty($validationErrors)) {
             return $this->response(400, $validationErrors);
         }
-        
+
         return $this->updateM($input, $fields);
     }
 }
