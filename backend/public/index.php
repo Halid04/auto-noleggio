@@ -17,34 +17,44 @@
     $uri = array_slice(explode( '/', $uri ), 4);
     
 
-    $data['auth']['jwt'] = getBearerToken();
+    
 
-    switch ($uri[0]) {
-        case "register":
-            registerUser($data, $database);
-            break;
-        case "login":
-            authenticateUser($data, $database);
-            break;
-        case "clienti":
-            $controller = new ClientController($requestMethod, $data, $database);
-            $controller->processRequest();
-            break;
-        case "veicoli":
-            $controller = new VehicleController($requestMethod, array_slice($uri, 0), $data, $database);
-            $controller->processRequest();
-            break;
-        case "immagini":
-            $controller = new ImageController($requestMethod, $data, $database);
-            $controller->processRequest();
-        default:
-            http_response_code(404);
-            echo json_encode( array (
-                    "message" => "Not found"
-                )
-            );
-            break;
+    if (uri[0] == "register" || $uri[0] == "login") {
+        switch ($uri[0]) {
+            case "register":
+                registerUser($data, $database);
+                break;
+            case "login":
+                authenticateUser($data, $database);
+                break;
+        }
+    } else {
+        $data['auth']['jwt'] = getBearerToken();
+
+        switch ($uri[0]) {
+
+            case "clienti":
+                $controller = new ClientController($requestMethod, $data, $database);
+                $controller->processRequest();
+                break;
+            case "veicoli":
+                $controller = new VehicleController($requestMethod, array_slice($uri, 0), $data, $database);
+                $controller->processRequest();
+                break;
+            case "immagini":
+                $controller = new ImageController($requestMethod, $data, $database);
+                $controller->processRequest();
+            default:
+                http_response_code(404);
+                echo json_encode( array (
+                        "message" => "Not found"
+                    )
+                );
+                break;
+        }
     }
+
+    
 
     exit();
 

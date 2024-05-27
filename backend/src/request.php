@@ -21,6 +21,10 @@
 
     $requestMethod = $_SERVER['REQUEST_METHOD'];
 
+    header("Access-Control-Allow-Origin: *");
+    header('Access-Control-Allow-Credentials: true');
+    header('Access-Control-Max-Age: 86400');
+
     if ($requestMethod == "GET") {
         $data = json_decode($_GET['json'] ?? "", true);
     } else {
@@ -34,9 +38,7 @@
         exit();
     }
 
-    header("Access-Control-Allow-Origin: *");
-    header('Access-Control-Allow-Credentials: true');
-    header('Access-Control-Max-Age: 86400');
+    
     
     /*
     // Access-Control headers are received during OPTIONS requests
