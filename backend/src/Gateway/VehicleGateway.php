@@ -75,7 +75,7 @@ class VehicleGateway extends BaseGateway {
 
         $statement = "
             SELECT 
-                veicolo.*, sede.nome
+                veicolo.*, sede.nome as nome_sede
             FROM " . $this->tableName . " JOIN sede on veicolo.id_sede = sede.id_sede " .
             " WHERE 1 
             ";
@@ -93,10 +93,8 @@ class VehicleGateway extends BaseGateway {
             }
 
             if ($filter['type'] == "list") {
-                foreach ($filter['params'] as $list) {
-                    $statement .= " AND " . $filter['name'] . " IN (" . str_repeat('?,', count($list) - 1) . '?)';
-                    $params = array_merge($params, $list);
-                }
+                $statement .= " AND " . $filter['name'] . ($filter['params']['exclude'] ? " NOT" : "") ." IN (" . str_repeat('?,', count($filter['params']['list']) - 1) . '?)';
+                $params = array_merge($params, $filter['params']['list']);
             }
         }
 
@@ -135,7 +133,7 @@ class VehicleGateway extends BaseGateway {
     {
         $statement = "
             SELECT 
-                veicolo.*, sede.*
+                veicolo.*, sede.nome as nome_sede
             FROM " . $this->tableName . " JOIN sede on veicolo.id_sede = sede.id_sede";
 
         try {
@@ -172,9 +170,9 @@ class VehicleGateway extends BaseGateway {
     {
         $statement = "
             SELECT 
-                veicolo.*, sede.nome
+                veicolo.*, sede.nome as nome_sede
             FROM " . $this->tableName .
-            "JOIN sede on veicolo.id_sede = sede.id_sede
+            " JOIN sede on veicolo.id_sede = sede.id_sede
              WHERE id_". $this->tableName. " = :id;
             ";
 
@@ -308,14 +306,16 @@ class VehicleGateway extends BaseGateway {
                 "name" => "marca",
                 "type" => "list",
                 "keys" => [
-                    "makes"
+                    "list",
+                    "exclude"
                 ]
             ],
             [
                 "name" => "tipocarburante",
                 "type" => "list",
                 "keys" => [
-                    "fueltypes"
+                    "list",
+                    "exclude"
                 ]
             ]
                 ];
@@ -329,31 +329,56 @@ class VehicleGateway extends BaseGateway {
             if (isset($input[$filter['name']])) {
                 if ($filter['type'] == "numeric") {
                     $missing_params = array_diff(array_keys($input[$filter['name']]), $filter['keys']);
-                    if (count($missing_params) <= 1) {
+                    if (count($missing_params) < 2) {
                         foreach ($input[$filter['name']] as $key => $value){
                             if (!is_numeric($value)) {
                                 $response_obj['status'] = false;
-                                $response_obj['obj'] = $this->response(400, message: "Invalid request: Invalid filter object: field '" . $key ."' must be numeric");
-                                return $response_obj;
+                                $response_obj['obj'] = $this->response(400, message: "Invalid request: The 'key' parameter must be numeric");
+                            return $response_obj;
                             }
                         }
-                    } 
+                    } else {
+                        $response_obj['status'] = false;
+                        $response_obj['obj'] = $this->response(400, message: "Invalid request: You must specify a bound");
+                        return $response_obj;
+                    }
+                    $filter_obj[] = [
+                        "name" => $filter['name'],
+                        "type" => $filter['type'],
+                        "params" => $input[$filter['name']]
+                    ];
                 } else {
-                    foreach ($filter['keys'] as $key) {
-                        if (isset($input[$filter['name']][$key])) {
-                            if (!is_array($input[$filter['name']][$key])) {
-                                $response_obj['status'] = false;
-                                $response_obj['obj'] = $this->response(400, message: "Invalid request: Invalid filter object: keys " . implode(", ", $filter['keys']) . " must be arrays");
-                                return $response_obj;
-                            }
+
+                    if (!isset($input[$filter['name']]["list"])) {
+                        $response_obj['status'] = false;
+                        $response_obj['obj'] = $this->response(400, message: "Invalid request: The 'list' parameter must be defined");
+                        return $response_obj;
+                    }
+
+                    if (!is_array($input[$filter['name']]["list"])) {
+                        $response_obj['status'] = false;
+                        $response_obj['obj'] = $this->response(400, message: "Invalid request: The 'list' parameter must be an array");
+                        return $response_obj;
+                    }
+
+                    if (isset($input[$filter['name']]["exclude"])) {
+                        if (!is_bool($input[$filter['name']]["exclude"])) {
+                            $response_obj['status'] = false;
+                            $response_obj['obj'] = $this->response(400, message: "Invalid request: The 'exclude' parameter must be a boolean");
+                            return $response_obj;
                         }
                     }
+
+                    $filter_obj[] = [
+                        "name" => $filter['name'],
+                        "type" => $filter['type'],
+                        "params" => [
+                            "list" => $input[$filter['name']]['list'],
+                            "exclude" => $input[$filter['name']]['exclude'] ?? false
+                            ]
+                    ];
                 }
-                $filter_obj[] = [
-                    "name" => $filter['name'],
-                    "type" => $filter['type'],
-                    "params" => $input[$filter['name']]
-                ];
+                
             }
         }
 
