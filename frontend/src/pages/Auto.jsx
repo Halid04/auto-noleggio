@@ -130,7 +130,7 @@ function Auto() {
   ]);
 
   const getAllAuto = () => {
-    const url = 'http://localhost/auto-noleggio/backend/public/veicoli?json=""';
+    const url = "http://localhost/auto-noleggio/backend/public/veicoli";
 
     const headers = {
       Accept: "application/json",
@@ -142,14 +142,20 @@ function Auto() {
       headers: headers,
     })
       .then((response) => {
-        // if (!response.ok) {
-        //   throw new Error(`HTTP error! status: ${response.status}`);
-        // }
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
         return response.json();
       })
       .then((data) => {
-        console.log(data);
-        setAuto(data);
+        console.log(data.content);
+        setAuto(data.content);
+        if (data.content && data.content.length > 0) {
+          console.log("auto", data.content);
+        }
+      })
+      .catch((error) => {
+        console.error("Errore durante il recupero delle auto:", error);
       });
   };
 
@@ -1072,13 +1078,11 @@ function Auto() {
         </div>
       </form>
       <div className="auto-section shrink-0 h-[90vh] px-5 sm:px-10 py-5 w-full flex items-start justify-start flex-wrap gap-x-16 gap-y-5">
-        <CardAuto />
-        <CardAuto />
-        <CardAuto />
-        <CardAuto />
-        <CardAuto />
-        <CardAuto />
-        <CardAuto />
+        {auto && auto.length > 0 ? (
+          auto.map((auto, index) => <CardAuto key={index} marca={auto.marca} />)
+        ) : (
+          <p>Nessuna auto disponibile</p>
+        )}
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
 import React from "react";
 import { MapPin } from "lucide-react";
 
-function CardAuto() {
+function CardAuto({ marca }) {
   return (
     <div className=" w-64 cursor-pointer bg-white border border-gray-200 rounded-lg shadow hover:scale-[.95] transition-transform duration-300 ease-in-out">
       <img
@@ -13,7 +13,7 @@ function CardAuto() {
       <div className="px-2 py-5 flex flex-col justify-start items-start gap-2">
         <a href="#" className="infoCar flex items-baseline gap-1">
           <h5 className="whitespace-nowrap text-xl font-bold tracking-tight text-gray-900 dark:text-white">
-            Nuova Polo
+            {marca}
           </h5>
           <p className="whitespace-nowrap text-sm font-normal text-gray-700 dark:text-gray-400">
             - 1.0 TSI Edition
