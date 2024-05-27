@@ -130,7 +130,7 @@ function Auto() {
   ]);
 
   const getAllAuto = () => {
-    const url = "http://localhost/auto-noleggio/backend/public/veicoli?json=\"\"";
+    const url = "http://localhost/auto-noleggio/backend/public/veicoli";
 
     const headers = {
       Accept: "application/json",
