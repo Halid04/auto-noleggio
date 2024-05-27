@@ -31,7 +31,7 @@
         $data = json_decode(file_get_contents('php://input'), true);
     }
 
-    if (!is_array($data)) {
+    if ($data !== null && !is_array($data)) {
         http_response_code(400);
         
         echo json_encode(["message" => "Invalid JSON data"]);
