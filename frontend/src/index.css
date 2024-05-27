@@ -30,6 +30,7 @@ body {
 .carpic {
   border-radius: 7px 7px 0px 0px;
   width: 100%;
+  height: 100rem;
   height: auto;
   object-fit: cover;
 }

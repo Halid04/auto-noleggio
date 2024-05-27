@@ -1079,7 +1079,21 @@ function Auto() {
       </form>
       <div className="auto-section shrink-0 h-[90vh] px-5 sm:px-10 py-5 w-full flex items-start justify-start flex-wrap gap-x-16 gap-y-5">
         {auto && auto.length > 0 ? (
-          auto.map((auto, index) => <CardAuto key={index} marca={auto.marca} />)
+          auto.map((auto, index) => (
+            <CardAuto
+              key={index}
+              marca={auto.marca}
+              modello={auto.modello}
+              anno_immatricolazione={auto.anno_immatricolazione}
+              tipo_veicolo={auto.tipo_veicolo}
+              tipo_carburazione={auto.tipo_carburazione}
+              chilometraggio={auto.chilometraggio}
+              numero_posti={auto.numero_posti}
+              colore_veicolo={auto.colore_veicolo}
+              costo_giornaliero={auto.costo_giornaliero}
+              images={auto.images}
+            />
+          ))
         ) : (
           <p>Nessuna auto disponibile</p>
         )}
