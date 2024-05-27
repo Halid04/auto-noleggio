@@ -17,6 +17,10 @@ class VehicleGateway extends BaseGateway {
 
     public function filter($input)
     {
+        if (!isset($input["filters"])) {
+            return $this->response(400, message: "Invalid request: Missing parameters: filters");
+        }
+        
         $response = $this->validateFilterObject($input);
 
         if (!$response['status']) {
