@@ -15,6 +15,52 @@ class VehicleGateway extends BaseGateway {
         parent::__construct($db);
     }
 
+    public function getFuelTypes($input) {
+        $statement = "
+            SELECT DISTINCT
+                tipo_carburazione
+            FROM " . $this->tableName;
+        try {
+            $statement = $this->conn->prepare($statement);
+            $statement->execute();
+
+            $response = $statement->fetchAll(\PDO::FETCH_ASSOC);
+
+            if (!$response) {
+                $response = [];
+            }
+
+            return $this->response(200, content: $response);
+
+        } catch (\PDOException $e) {
+            error_log("Database error: " . $e->getMessage());
+            return $this->response(500, message: "Internal Server Error");
+        }
+    }
+
+    public function getMakes($input) {
+        $statement = "
+            SELECT DISTINCT
+                marca
+            FROM " . $this->tableName;
+        try {
+            $statement = $this->conn->prepare($statement);
+            $statement->execute();
+
+            $response = $statement->fetchAll(\PDO::FETCH_ASSOC);
+
+            if (!$response) {
+                $response = [];
+            }
+
+            return $this->response(200, content: $response);
+
+        } catch (\PDOException $e) {
+            error_log("Database error: " . $e->getMessage());
+            return $this->response(500, message: "Internal Server Error");
+        }
+    }
+
     public function filter($input)
     {
         if (!isset($input["filters"])) {
@@ -29,8 +75,8 @@ class VehicleGateway extends BaseGateway {
 
         $statement = "
             SELECT 
-                *
-            FROM " . $this->tableName .
+                veicolo.*, sede.nome
+            FROM " . $this->tableName . " JOIN sede on veicolo.id_sede = sede.id_sede " .
             " WHERE 1 
             ";
 
@@ -89,8 +135,8 @@ class VehicleGateway extends BaseGateway {
     {
         $statement = "
             SELECT 
-                *
-            FROM " . $this->tableName;
+                veicolo.*, sede.*
+            FROM " . $this->tableName . " JOIN sede on veicolo.id_sede = sede.id_sede";
 
         try {
             $statement = $this->conn->prepare($statement);
@@ -111,11 +157,9 @@ class VehicleGateway extends BaseGateway {
 
                     $vehicle['images'] = $image_response['body']['content'];
                 }
-
-                
+     
             }
             
-
             return $this->response(200, content: $response);
 
         } catch (\PDOException $e) {
@@ -128,9 +172,10 @@ class VehicleGateway extends BaseGateway {
     {
         $statement = "
             SELECT 
-                *
+                veicolo.*, sede.nome
             FROM " . $this->tableName .
-            " WHERE id_". $this->tableName. " = :id;
+            "JOIN sede on veicolo.id_sede = sede.id_sede
+             WHERE id_". $this->tableName. " = :id;
             ";
 
         try {
@@ -318,7 +363,7 @@ class VehicleGateway extends BaseGateway {
         return $response_obj;
     }
 
-    private function validateInput(array $input)
+    public function validateInput(array $input)
     {
         $errors = [];
 

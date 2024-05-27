@@ -120,7 +120,7 @@ class ImageGateway extends BaseGateway {
         return $this->response(400, "Invalid request: Empty image array");
     }
 
-    private function validateInput(array $input)
+    public function validateInput(array $input)
     {
         $errors = [];
 

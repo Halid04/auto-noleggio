@@ -7,6 +7,7 @@
     use Src\Controller\ClientController;
     use Src\Controller\VehicleController;
     use Src\Controller\ImageController;
+    use Src\Controller\HeadQuarterController;
     use Src\Gateway\ClientGateway;
     
     
@@ -44,6 +45,10 @@
             case "immagini":
                 $controller = new ImageController($requestMethod, $data, $database);
                 $controller->processRequest();
+            case "sedi":
+                $controller = new HeadQuarterController($requestMethod, $data, $database);
+                $controller->processRequest();
+                break;
             default:
                 http_response_code(404);
                 echo json_encode( array (
@@ -146,7 +151,7 @@
             "data" => array (
                 "user_id" => $user["id_cliente"],
                 "email" => $user["email"],
-                "admin" => $user["amministratore"]
+                "admin" => $user["admin"]
                 )
             );
 

@@ -93,6 +93,46 @@ class BaseGateway {
             return $this->response(500, message: "Internal Server Error");
         }    
     }
+
+    public function insertM(array $input, $fields)
+    {
+        $missing_keys = $this->validateRequiredParameters($input, $fields);
+        if (!empty($missing_keys)) {
+            return $this->response(400, "Missing parameters: " . implode(", ", $missing_keys));
+        }
+
+        $validationErrors = $this->validateInput($input);
+        if (!empty($validationErrors)) {
+            return $this->response(400, $validationErrors);
+        }
+
+        $insertValues = "(" . implode(", ", $fields) . ")";
+        $insertClause = "(" . str_repeat('?,', count($fields) - 1) . "?)";
+    
+        $params = [];
+
+        foreach ($fields as $field) {
+            $params[] = $input[$field];
+        }
+
+        $statementStr = "
+            INSERT INTO " . $this->tableName . " " . $insertValues .
+           " VALUES  " . $insertClause . ";"
+        ;
+
+        try {
+            $statement = $this->conn->prepare($statementStr);
+            $statement->execute($params);
+
+            return $this->response(201, "$this->tableName inserted");
+        } catch (\PDOException $e) {
+            if ($e->getCode() == "23000") {
+                return $this->response(400, "Invalid request: Constraint not valid");
+            }
+            error_log("Database error: " . $e->getMessage());
+            return $this->response(500, "Internal Server Error");
+        }
+    }
     
     public function updateM(array $input, $fields)
     {
@@ -132,6 +172,11 @@ class BaseGateway {
             error_log("Database error: " . $e->getMessage());
             return $this->response(500, "Internal Server Error");
         }
+    }
+
+    public function validateInput(array $input)
+    {
+        return [];
     }
 
     public function validateRequiredParameters(array $input, array $required_parameters)
