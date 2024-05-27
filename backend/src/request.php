@@ -9,10 +9,7 @@
     */
     
     
-    $requestMethod = $_SERVER['REQUEST_METHOD'];
-    /*
     
-    */
 
     // Allow from any origin
     if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
@@ -22,8 +19,14 @@
         exit(0);
     }
 
+    $requestMethod = $_SERVER['REQUEST_METHOD'];
+
+    header("Access-Control-Allow-Origin: *");
+    header('Access-Control-Allow-Credentials: true');
+    header('Access-Control-Max-Age: 86400');
+
     if ($requestMethod == "GET") {
-        $data = json_decode($_GET['json'], true);
+        $data = json_decode($_GET['json'] ?? "", true);
     } else {
         $data = json_decode(file_get_contents('php://input'), true);
     }
@@ -35,9 +38,7 @@
         exit();
     }
 
-    header("Access-Control-Allow-Origin: *");
-    header('Access-Control-Allow-Credentials: true');
-    header('Access-Control-Max-Age: 86400');
+    
     
     /*
     // Access-Control headers are received during OPTIONS requests
