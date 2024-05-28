@@ -26,12 +26,12 @@
     header('Access-Control-Max-Age: 86400');
 
     if ($requestMethod == "GET") {
-        $data = json_decode($_GET['json'] ?? "", true);
+        $data = json_decode($_GET['json'] ?? "{\"nothing\":\"nothing\"}", true);
     } else {
         $data = json_decode(file_get_contents('php://input'), true);
     }
 
-    if ($data !== null && !is_array($data)) {
+    if ($data === null || !is_array($data)) {
         http_response_code(400);
         
         echo json_encode(["message" => "Invalid JSON data"]);
