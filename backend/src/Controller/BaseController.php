@@ -50,7 +50,7 @@ class BaseController {
             } else {
                 switch ($this->requestMethod) {
                     case 'GET':
-                        if (!isset($this->data['id'])) {
+                        if ($this->data['all']) {
                             $response = $this->gateway->findAll($this->data);
                         } else {
                             $response = $this->gateway->find($this->data);
@@ -126,39 +126,4 @@ class BaseController {
         return $response_obj;
     }
 
-    public function authenticateRequest (&$request)
-    {
-        $response_obj = [];
-        $response_obj['status'] = false;
-
-        if ($this->requestMethod != "GET") {
-            $auth_info = $this->authenticateToken($request);
-
-            if (!$auth_info['status']) {
-                $response_obj['obj'] = $auth_info['obj'];
-                return $response_obj;
-            }
-
-            $auth_info = $auth_info['obj'];
-
-            if ((int) $auth_info['data']['admin'] != 1 && $this->requestMethod != "GET") {
-                $response_obj['obj'] =  array (
-                    'statusCode' => 401,
-                    'body' => array (
-                        'message' => "You do not have permission to edit this resource"
-                    )
-                );
-
-                return $response_obj;
-            }
-
-            $response_obj['status'] = true;
-            $response_obj['obj'] = $auth_info;
-        }
-
-        $response_obj['status'] = true;
-        
-
-        return $response_obj;
-    }
 }
