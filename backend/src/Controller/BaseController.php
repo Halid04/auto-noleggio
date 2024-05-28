@@ -50,7 +50,7 @@ class BaseController {
             } else {
                 switch ($this->requestMethod) {
                     case 'GET':
-                        if (!isset($this->data['id'])) {
+                        if ($this->data['all'] || (!isset($this->data['all']) && !isset($this->data['id']))) {
                             $response = $this->gateway->findAll($this->data);
                         } else {
                             $response = $this->gateway->find($this->data);
