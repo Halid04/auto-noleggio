@@ -15,6 +15,41 @@ import "./App.css";
 function App() {
   const location = useLocation();
 
+  useEffect(() => {
+    const token = localStorage.getItem("userToken");
+    token && fetchUserData(token);
+  }, []);
+
+  const fetchUserData = (token) => {
+    const url = "http://localhost/auto-noleggio/backend/public/clienti";
+
+    const headers = {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    };
+
+    fetch(url, {
+      method: "GET",
+      headers: headers,
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setAuto(data.content);
+      })
+      .catch((error) => {
+        console.error(
+          "Errore durante il recupero dei dati dell'utente:",
+          error
+        );
+      });
+  };
+
   // useEffect(() => {
   //   console.log("Current route:", location.pathname);
   // }, [location]);
