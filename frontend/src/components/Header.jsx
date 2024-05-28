@@ -48,61 +48,59 @@ function Header() {
         <Moon color="#192024" onClick={() => navigate("/transazione")} />
 
         <div className="flex justify-center items-baseline md:items-center md:gap-3">
-          <UserState />
+          {!localStorage.getItem("userToken") && <UserState />}
 
-          {/* Da mostrare dopo login */}
-          {/* <img
-            className="w-6 md:w-8 aspect-square  rounded-full ring-1 ring-[#192024] object-cover"
-            src="src/images/pearsonFace.jpg"
-            alt="Bordered avatar"
-            loading="lazy"
-          /> */}
+          {localStorage.getItem("userToken") && (
+            <img
+              className="w-6 md:w-8 aspect-square  rounded-full ring-1 ring-[#192024] object-cover"
+              src="src/images/pearsonFace.jpg"
+              alt="Bordered avatar"
+              loading="lazy"
+            />
+          )}
 
-          {/*<div className="relative inline-block text-left">
-            <div>
-              <button
-                type="button"
-                className="inline-flex whitespace-nowrap w-full justify-center items-center outline-none bg-trasparent  text-[#192024]"
-                id="menu-button"
-                aria-expanded={isDropdownOpen}
-                aria-haspopup="true"
-                onClick={handleMenuButtonClick}
-              >
-                <span className="hidden md:flex">Halid Cisse</span>
-                <ChevronDown className="-mr-1 h-5 w-5" color="#192024" />
-              </button>
-            </div>
-
-             <!-- Dropdown menu --> 
-            {isDropdownOpen && (
-              <div
-                ref={dropdownRef}
-                className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
-                role="menu"
-                aria-orientation="vertical"
-                aria-labelledby="menu-button"
-              >
-                <div className="py-1" role="none">
-                  <button
-                    type="button"
-                    className="text-gray-700 block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
-                    role="menuitem"
-                    tabIndex="-1"
-                  >
-                    Impostazioni profilo
-                  </button>
-                  <button
-                    type="button"
-                    className="text-gray-700 block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
-                    role="menuitem"
-                    tabIndex="-1"
-                  >
-                    Disconnessione
-                  </button>
-                </div>
+          {localStorage.getItem("userToken") && (
+            <div className="relative inline-block text-left">
+              <div>
+                <button
+                  type="button"
+                  className="inline-flex whitespace-nowrap w-full justify-center items-center outline-none bg-trasparent text-[#192024]"
+                  id="menu-button"
+                  aria-expanded={isDropdownOpen}
+                  aria-haspopup="true"
+                  onClick={handleMenuButtonClick}
+                >
+                  <span className="hidden md:flex">Halid Cisse</span>
+                  <ChevronDown className="-mr-1 h-5 w-5" color="#192024" />
+                </button>
               </div>
-            )}
-          </div>*/}
+
+              {isDropdownOpen && (
+                <div
+                  ref={dropdownRef}
+                  className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+                  role="menu"
+                  aria-orientation="vertical"
+                  aria-labelledby="menu-button"
+                >
+                  <div className="py-1" role="none">
+                    <button
+                      type="button"
+                      className="text-gray-700 block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
+                      role="menuitem"
+                      tabIndex="-1"
+                      onClick={() => {
+                        localStorage.removeItem("userToken");
+                        window.location.reload();
+                      }}
+                    >
+                      Disconnessione
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>

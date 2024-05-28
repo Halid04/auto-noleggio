@@ -94,21 +94,24 @@ const CarDetail = () => {
           <h1 className="text-3xl font-bold">
             {carDetail[0].marca} {carDetail[0].modello}
           </h1>
-          <p className="text-[#192024] text-lg">
+          <p className="text-[#192024] text-base">
             <strong>Data di acquisto:</strong>{" "}
             {carDetail[0].anno_immatricolazione}
           </p>
-          <p className="text-[#192024] text-lg">
+          <p className="text-[#192024] text-base">
             <strong>Tipo di carburante:</strong>{" "}
             {carDetail[0].tipo_carburazione}
           </p>
-          <p className="text-[#192024] text-lg">
+          <p className="text-[#192024] text-base">
             <strong>Chilometri:</strong> {carDetail[0].chilometraggio} km
           </p>
-          <p className="text-[#192024] text-lg">
+          <p className="text-[#192024] text-base">
             <strong>Prezzo:</strong> {carDetail[0].costo_giornaliero} €/G
           </p>
-          <p className="text-[#192024] text-lg">
+          <p className="text-[#192024] text-base">
+            <strong>Targa:</strong> {carDetail[0].targa}
+          </p>
+          <p className="text-[#192024] text-base">
             <strong>Numero posti:</strong> {carDetail[0].numero_posti}
           </p>
           <div className="space-x-2">

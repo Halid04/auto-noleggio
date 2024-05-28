@@ -7,10 +7,10 @@ export default function Map() {
   const map = useRef(null);
   const milan = { lng: 9.18854, lat: 45.464664 };
   const [zoom] = useState(14);
-  maptilersdk.config.apiKey = "YOUR_API_KEY";
+  maptilersdk.config.apiKey = "zKTSY8Huqpuc98tNjLwq";
 
   useEffect(() => {
-    if (map.current) return;
+    if (map.current) return; // stops map from intializing more than once
 
     map.current = new maptilersdk.Map({
       container: mapContainer.current,
