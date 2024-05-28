@@ -153,7 +153,7 @@
             );
 
         header('Content-Type: application/json');
-        http_response_code(200);
+        http_response_code(201);
     
         $token = JWT::encode($payload, $_ENV["SECRET_KEY"], 'HS256');
     
