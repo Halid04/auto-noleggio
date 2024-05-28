@@ -8,6 +8,15 @@ function Header() {
   const navigate = useNavigate();
   const dropdownRef = useRef(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [userName, setUserName] = useState("");
+  const [userSurname, setUserSurname] = useState("");
+
+  useEffect(() => {
+    if (localStorage.getItem("userToken")) {
+      setUserName(localStorage.getItem("userName") || "Nome");
+      setUserSurname(localStorage.getItem("userSurname") || "Cognome");
+    }
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -21,7 +30,7 @@ function Header() {
     return () => {
       document.removeEventListener("click", handleClickOutside);
     };
-  }, [isDropdownOpen]);
+  }, []);
 
   const handleMenuButtonClick = (event) => {
     event.stopPropagation();
@@ -31,10 +40,11 @@ function Header() {
   const handleMenuClose = () => {
     setIsDropdownOpen(false);
   };
+
   return (
-    <div className=" bg-white text-black sticky shadow-md top-0 flex-wrap z-[100] mx-auto flex w-full items-center justify-between p-4">
+    <div className="bg-white text-black sticky shadow-md top-0 flex-wrap z-[100] mx-auto flex w-full items-center justify-between p-4">
       <Logo />
-      <div className="w-[40%] h-[2.3rem] flex justify-between  items-center px-3 rounded-lg border-[1.5px] border-[#808080rgb(128, 128, 128)]">
+      <div className="w-[40%] h-[2.3rem] flex justify-between items-center px-3 rounded-lg border-[1.5px] border-[#808080rgb(128, 128, 128)]">
         <Search color="#FF690F" />
         <input
           type="text"
@@ -45,18 +55,18 @@ function Header() {
         />
       </div>
       <div className="flex justify-center items-center w-[20%] gap-5">
-        <Moon color="#192024" onClick={() => navigate("/transazione")} />
+        <Moon color="#192024" className="cursor-pointer" />
 
         <div className="flex justify-center items-baseline md:items-center md:gap-3">
           {!localStorage.getItem("userToken") && <UserState />}
 
           {localStorage.getItem("userToken") && (
-            <img
-              className="w-6 md:w-8 aspect-square  rounded-full ring-1 ring-[#192024] object-cover"
-              src="src/images/pearsonFace.jpg"
-              alt="Bordered avatar"
-              loading="lazy"
-            />
+            <div className="flex items-center justify-center w-6 h-6 md:w-8 md:h-8 text-base md:text-lg text-white bg-[#FF690F] rounded-full">
+              {userName && userName.charAt(0).toUpperCase()}{" "}
+              <span className="hidden md:flex">
+                {userSurname && userSurname.charAt(0).toUpperCase()}
+              </span>
+            </div>
           )}
 
           {localStorage.getItem("userToken") && (
@@ -64,14 +74,16 @@ function Header() {
               <div>
                 <button
                   type="button"
-                  className="inline-flex whitespace-nowrap w-full justify-center items-center outline-none bg-trasparent text-[#192024]"
+                  className="inline-flex whitespace-nowrap w-full justify-center items-end outline-none bg-trasparent text-[#192024]"
                   id="menu-button"
                   aria-expanded={isDropdownOpen}
                   aria-haspopup="true"
                   onClick={handleMenuButtonClick}
                 >
-                  <span className="hidden md:flex">Halid Cisse</span>
-                  <ChevronDown className="-mr-1 h-5 w-5" color="#192024" />
+                  <span className="hidden md:flex">
+                    {userName} {userSurname}
+                  </span>
+                  <ChevronDown size={20} className="mr-1" color="#192024" />
                 </button>
               </div>
 
@@ -90,7 +102,7 @@ function Header() {
                       role="menuitem"
                       tabIndex="-1"
                       onClick={() => {
-                        localStorage.removeItem("userToken");
+                        localStorage.clear();
                         window.location.reload();
                       }}
                     >

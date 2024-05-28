@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useCallback } from "react";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import HomePage from "./pages/HomePage.jsx";
 import Auto from "./pages/Auto.jsx";
@@ -15,12 +15,7 @@ import "./App.css";
 function App() {
   const location = useLocation();
 
-  useEffect(() => {
-    const token = localStorage.getItem("userToken");
-    token && fetchUserData(token);
-  }, []);
-
-  const fetchUserData = (token) => {
+  const fetchUserData = useCallback((token) => {
     const url = "http://localhost/auto-noleggio/backend/public/clienti";
 
     const headers = {
@@ -40,7 +35,15 @@ function App() {
         return response.json();
       })
       .then((data) => {
-        console.log(data);
+        if (data && data.content.length > 0) {
+          const user = data.content[0];
+          localStorage.setItem("userID", user.id_cliente);
+          localStorage.setItem("userName", user.nome);
+          localStorage.setItem("userSurname", user.cognome);
+          localStorage.setItem("userPhone", user.telefono);
+          localStorage.setItem("userEmail", user.email);
+          localStorage.setItem("userBirthdate", user.data_di_nascita);
+        }
       })
       .catch((error) => {
         console.error(
@@ -48,14 +51,16 @@ function App() {
           error
         );
       });
-  };
+  }, []);
 
-  // useEffect(() => {
-  //   console.log("Current route:", location.pathname);
-  // }, [location]);
+  useEffect(() => {
+    const token = localStorage.getItem("userToken");
+    if (token) {
+      fetchUserData(token);
+    }
+  }, [fetchUserData]);
 
   const isTransactionPage = location.pathname.startsWith("/transazione");
-  // const isImpostazioniProfiliAdminPage = location.pathname === "/impostazioniProfiliAdmin";
 
   return (
     <div className="h-[100vh] w-full bg-white flex flex-col justify-between items-center">
