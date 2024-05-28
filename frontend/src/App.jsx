@@ -40,7 +40,7 @@ function App() {
         return response.json();
       })
       .then((data) => {
-        setAuto(data.content);
+        console.log(data);
       })
       .catch((error) => {
         console.error(
@@ -54,7 +54,7 @@ function App() {
   //   console.log("Current route:", location.pathname);
   // }, [location]);
 
-  const isTransactionPage = location.pathname === "/transazione";
+  const isTransactionPage = location.pathname.startsWith("/transazione");
   // const isImpostazioniProfiliAdminPage = location.pathname === "/impostazioniProfiliAdmin";
 
   return (
@@ -78,7 +78,7 @@ function App() {
             <Route path="/autoNoleggiate" element={<AutoNoleggiate />} />
             <Route path="/sedi" element={<Sedi />} />
             <Route path="/preferiti" element={<Preferiti />} />
-            <Route path="/transazione" element={<Transazione />} />
+            <Route path="/transazione/:idAuto" element={<Transazione />} />
             <Route path="/carDetail/:idAuto" element={<CarDetail />} />
           </Routes>
         </div>

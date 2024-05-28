@@ -63,6 +63,18 @@ const CarDetail = () => {
     return <p>Loading...</p>;
   }
 
+  const handleNavigateToTransaction = (id) => {
+    const token = localStorage.getItem("userToken");
+
+    if (token) {
+      navigate(`/transazione/${id}`);
+    } else {
+      alert(
+        "Devi effettuare il login per procedere con al noleggio dell'auto."
+      );
+    }
+  };
+
   return (
     <div className="flex flex-col justify-start md:flex-row p-6 w-full h-[100vh] overflow-x-hidden overflow-y-auto">
       <div className="flex flex-col w-full md:w-1/2">
@@ -133,7 +145,10 @@ const CarDetail = () => {
           </div>
         </div>
         <div className="mt-6 flex justify-between items-center gap-3">
-          <button className="w-1/2 whitespace-nowrap outline-none text-white border-[1.5px] border-transparent bg-[#FF690F] hover:bg-[#d55508] focus:ring-4 focus:outline-none focus:ring-orange-300 font-medium rounded-lg  px-5 py-2 text-center">
+          <button
+            onClick={() => handleNavigateToTransaction(idAuto)}
+            className="w-1/2 whitespace-nowrap outline-none text-white border-[1.5px] border-transparent bg-[#FF690F] hover:bg-[#d55508] focus:ring-4 focus:outline-none focus:ring-orange-300 font-medium rounded-lg  px-5 py-2 text-center"
+          >
             Noleggia
           </button>
           <button
