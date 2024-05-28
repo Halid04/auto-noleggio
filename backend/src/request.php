@@ -26,7 +26,7 @@
     header('Access-Control-Max-Age: 86400');
 
     if ($requestMethod == "GET") {
-        $data = json_decode($_GET['json'] ?? "", true);
+        $data = json_decode($_GET['json'] ?? "{\"nothing\":\"nothing\"}", true);
     } else {
         $data = json_decode(file_get_contents('php://input'), true);
     }

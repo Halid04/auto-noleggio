@@ -56,8 +56,6 @@
         }
     }
 
-    
-
     exit();
 
     function registerUser ($data, $database) {
@@ -81,39 +79,6 @@
         }
     
         $conn = $database->getConnection();
-        /*
-        $existing_users_sql = "
-                            SELECT COUNT(*) as count 
-                            FROM Cliente 
-                            WHERE email = :email";
-
-        try {
-            $existing_users_stmt = $conn->prepare($existing_users_sql);
-            $existing_users_stmt->bindValue(":email", $data["email"]);
-            $existing_users_stmt->execute();
-        } catch (PDOException $e) {
-            header('Content-Type: application/json');
-            http_response_code(500);
-            echo json_encode (
-                array (
-                    "message" => $e->getMessage()
-                )
-            );
-            return;
-        }
-    
-        $existing_users_count = $existing_users_stmt->fetch(PDO::FETCH_ASSOC)["count"];
-    
-        if ($existing_users_count > 0) {
-            http_response_code(400);
-            echo json_encode (
-                array (
-                    "message" => "E-mail has already been registered."
-                )
-            );
-            return;
-        }
-        */
 
         $user_gateway = new ClientGateway($database);
     

@@ -18,6 +18,7 @@ class ClientController extends BaseController {
         $auth_info = $this->authenticateToken($request);
 
         
+        
 
         if (!$auth_info['status']) {
             $response_obj['obj'] = $auth_info['obj'];
@@ -25,6 +26,10 @@ class ClientController extends BaseController {
         }
 
         $auth_info = $auth_info['obj'];
+
+        if (!isset($request['id'])) {
+            $request['id'] = $auth_info['data']['user_id'];
+        }
 
         if ($auth_info['data']['user_id'] != ($request['id'] ?? -1) && $auth_info['data']['admin'] == 0) {
 
