@@ -11,14 +11,11 @@ class ClientController extends BaseController {
         parent::__construct($requestMethod, $data, new ClientGateway($db));
     }
 
-    public function authenticateRequest ($request) {
+    public function authenticateRequest (&$request) {
         $response_obj = [];
         $response_obj['status'] = false;
         
         $auth_info = $this->authenticateToken($request);
-
-        
-        
 
         if (!$auth_info['status']) {
             $response_obj['obj'] = $auth_info['obj'];
@@ -44,6 +41,7 @@ class ClientController extends BaseController {
         }
 
         $response_obj['status'] = true;
+        $response_obj['obj'] = $auth_info;
 
         return $response_obj;
     }

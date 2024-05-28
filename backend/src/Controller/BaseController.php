@@ -126,7 +126,7 @@ class BaseController {
         return $response_obj;
     }
 
-    public function authenticateRequest ($request)
+    public function authenticateRequest (&$request)
     {
         $response_obj = [];
         $response_obj['status'] = false;
