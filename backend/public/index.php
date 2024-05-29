@@ -54,7 +54,7 @@
             default:
                 http_response_code(404);
                 echo json_encode( array (
-                        "message" => "Not found"
+                        "message" => "Risorsa non trovata"
                     )
                 );
                 break;
@@ -133,7 +133,7 @@
                     "jwt" => $token,
                     "expireAt" => $expire_claim
                 ),
-                "message" => "Account registered succesfully.",
+                "message" => "Account registrato",
                 
             )
         );
@@ -172,7 +172,7 @@
     
         if (empty($user)) {
             http_response_code(401);
-            echo json_encode(["message" => "User account does not exist."]);
+            echo json_encode(["message" => "L'account specificato non esiste"]);
             return;
         }
 
@@ -180,7 +180,7 @@
     
         if (!password_verify($data['password'], $user['password'])) {
             http_response_code(401);
-            echo json_encode(["message" => "Password is incorrect."]);
+            echo json_encode(["message" => "E-mail o password incorrette"]);
             return;
         }
     
@@ -209,7 +209,7 @@
                     "jwt" => $token,
                     "expireAt" => $expire_claim
                 ),
-                "message" => "Successful login."
+                "message" => "Login effettuato"
             )
         );
         return;
