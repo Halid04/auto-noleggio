@@ -8,15 +8,11 @@ function Header() {
   const navigate = useNavigate();
   const dropdownRef = useRef(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [userName, setUserName] = useState("");
-  const [userSurname, setUserSurname] = useState("");
-
-  useEffect(() => {
-    if (localStorage.getItem("userToken")) {
-      setUserName(localStorage.getItem("userName") || "Nome");
-      setUserSurname(localStorage.getItem("userSurname") || "Cognome");
-    }
-  }, []);
+  const [userName, setUserName] = useState(localStorage.getItem("userName"));
+  const [userSurname, setUserSurname] = useState(
+    localStorage.getItem("userSurname")
+  );
+  const [isAdmin, setIsAdmin] = useState(localStorage.getItem("isAdmin"));
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -62,9 +58,11 @@ function Header() {
 
           {localStorage.getItem("userToken") && (
             <div className="flex items-center justify-center w-6 h-6 md:w-8 md:h-8 text-base md:text-lg text-white bg-[#FF690F] rounded-full">
-              {userName && userName.charAt(0).toUpperCase()}{" "}
+              {localStorage.getItem("userName") &&
+                localStorage.getItem("userName").charAt(0).toUpperCase()}{" "}
               <span className="hidden md:flex">
-                {userSurname && userSurname.charAt(0).toUpperCase()}
+                {localStorage.getItem("userSurname") &&
+                  localStorage.getItem("userSurname").charAt(0).toUpperCase()}
               </span>
             </div>
           )}
@@ -81,7 +79,8 @@ function Header() {
                   onClick={handleMenuButtonClick}
                 >
                   <span className="hidden md:flex">
-                    {userName} {userSurname}
+                    {localStorage.getItem("userName")}{" "}
+                    {localStorage.getItem("userSurname")}
                   </span>
                   <ChevronDown size={20} className="mr-1" color="#192024" />
                 </button>
@@ -96,6 +95,27 @@ function Header() {
                   aria-labelledby="menu-button"
                 >
                   <div className="py-1" role="none">
+                    {localStorage.getItem("isAdmin") == "1" ? (
+                      <button
+                        type="button"
+                        className="text-gray-700 block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
+                        role="menuitem"
+                        tabIndex="-1"
+                        onClick={() => navigate("/dashboard")}
+                      >
+                        Dashboard
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        className="text-gray-700 block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
+                        role="menuitem"
+                        tabIndex="-1"
+                        onClick={() => navigate("/impostazioniProfilo")}
+                      >
+                        Impostazioni profilo
+                      </button>
+                    )}
                     <button
                       type="button"
                       className="text-gray-700 block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
@@ -103,6 +123,7 @@ function Header() {
                       tabIndex="-1"
                       onClick={() => {
                         localStorage.clear();
+                        navigate("/auto");
                         window.location.reload();
                       }}
                     >

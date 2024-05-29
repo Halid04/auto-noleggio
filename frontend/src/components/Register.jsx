@@ -69,24 +69,33 @@ function Register({ viewLogin, setVisible }) {
       body: JSON.stringify(requestBody),
     })
       .then((response) => {
-        if (response.status === 201) {
+        if (!response.ok) {
+          return response.text().then((text) => {
+            throw new Error(text);
+          });
+        } else {
           toast.success("Registrazione avvenuta con successo", {
             duration: 1500,
           });
 
-          setTimeout(() => {
-            setVisible(false);
-            navigate("/auto");
-          }, 1500);
+          return response.json(); // Moved inside the else block
         }
-
-        return response.json();
       })
       .then((data) => {
-        console.log("data", data);
+        console.log(data);
+        localStorage.setItem("userToken", data.auth.jwt);
+
+        setTimeout(() => {
+          setVisible(false);
+          window.location.reload();
+        }, 1000);
       })
       .catch((error) => {
-        console.log(error);
+        const errorString = error.message.replace("Error: ", "");
+        const errorObject = JSON.parse(errorString);
+        toast.error(errorObject.message, {
+          duration: 1500,
+        });
       });
   };
 
