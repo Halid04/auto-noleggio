@@ -80,7 +80,7 @@ const CarDetail = () => {
       <div className="flex flex-col w-full md:w-1/2">
         {mainImage && (
           <img
-            src={`/src/progettoGPOAutoImages${mainImage}.jpg`}
+            src={`/src/progettoGPOAutoImages${mainImage}.png`}
             alt={mainImage}
             className="w-full h-[10rem] md:h-[20rem] rounded-lg object-cover"
           />
@@ -90,7 +90,7 @@ const CarDetail = () => {
             imgNewPath.map((image, index) => (
               <img
                 key={index}
-                src={`/src/progettoGPOAutoImages${image}.jpg`}
+                src={`/src/progettoGPOAutoImages${image}.png`}
                 alt={`Thumbnail ${image}`}
                 className={`${
                   image === mainImage ? "brightness-75" : ""

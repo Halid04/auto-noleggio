@@ -31,18 +31,6 @@ function CardAuto({
     }
   }, [images]); // Run this effect whenever `images` changes
 
-  const getRandomImage = (imageArray) => {
-    const randomIndex = Math.floor(Math.random() * imageArray.length);
-    return imageArray[randomIndex];
-  };
-
-  // Update random image path when `imgNewPath` changes
-  useEffect(() => {
-    if (imgNewPath && imgNewPath.length > 0) {
-      setRandomImage(getRandomImage(imgNewPath));
-    }
-  }, [imgNewPath]);
-
   const handleNavigateToCarDetail = (id) => {
     navigate(`/carDetail/${id}`);
   };
@@ -54,8 +42,8 @@ function CardAuto({
     >
       <img
         className="rounded-t-lg w-full h-[10rem] object-cover"
-        src={`/src/progettoGPOAutoImages${randomImage}.jpg`}
-        alt={randomImage}
+        src={`/src/progettoGPOAutoImages${imgNewPath[0]}.png`}
+        alt={imgNewPath[0]}
         loading="lazy"
       />
       <div className="px-2 py-5 flex flex-col justify-start items-start gap-2">

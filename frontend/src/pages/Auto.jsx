@@ -8,13 +8,11 @@ function Auto() {
   const [filtriTipoMacchina, setFiltriTipoMacchina] = useState([]);
   const [filtriTipoCarburante, setFiltriTipoCarburante] = useState([]);
   const [prezzoMassimo, setPrezzoMassimo] = useState(1000);
-  const [annoMinimo, setAnnoMinimo] = useState(2000);
-  const [annoMassimo, setAnnoMassimo] = useState(2024);
   const [chilometraggioMassimo, setChilometraggioMassimo] = useState(300000);
   const [selezioniMarca, setSelezioniMarca] = useState({});
   const [selezioniTipoMacchina, setSelezioniTipoMacchina] = useState({});
   const [selezioniTipoCarburante, setSelezioniTipoCarburante] = useState({});
-
+  const [selezioniAnno, setSelezioniAnno] = useState([]);
   const dropdownGeneralFiltriRef = useRef(null);
   const dropdownMarcaFiltriRef = useRef(null);
   const dropdownTipoMacchinaFiltriRef = useRef(null);
@@ -293,17 +291,14 @@ function Auto() {
       selezioniTipoCarburante
     ).filter((tipo) => selezioniTipoCarburante[tipo]);
 
-    const rquestObj = {
+    const requestObj = {
       marche: selezionateMarche,
       tipiMacchina: selezionatiTipiMacchina,
       prezzo: {
         prezzoMassimo,
         prezzoMinimo: 0,
       },
-      anno: {
-        annoMinimo,
-        annoMassimo,
-      },
+      anno: selezioniAnno.map((range) => `${range.min}-${range.max}`),
       chilometraggio: {
         chilometraggioMassimo,
         chilometraggioMinimo: 0,
@@ -311,12 +306,12 @@ function Auto() {
       tipicarburante: selezionatiTipiCarburante,
     };
 
-    console.log(rquestObj);
+    console.log(requestObj);
 
     // fetch(url, {
     //   method: "POST",
     //   headers: headers,
-    //   body: JSON.stringify(requestBody),
+    //   body: JSON.stringify(requestObj),
     // })
     //   .then((response) => {
     //     if (!response.ok) {
@@ -420,9 +415,18 @@ function Auto() {
     setChilometraggioMassimo(event.target.value);
   };
 
-  const handleYearRangeChange = (min, max) => {
-    setAnnoMinimo(min);
-    setAnnoMassimo(max);
+  const handleYearRangeChange = (min, max, isChecked) => {
+    setSelezioniAnno((prevState) => {
+      const updatedSelection = [...prevState];
+      if (isChecked) {
+        updatedSelection.push({ min, max });
+      } else {
+        return updatedSelection.filter(
+          (range) => range.min !== min || range.max !== max
+        );
+      }
+      return updatedSelection;
+    });
   };
 
   const handleCheckboxChange = (tipo, valore, isChecked) => {
@@ -588,44 +592,37 @@ function Auto() {
                 {/* Anno Filtri */}
                 <div className="shrink-0 w-full flex flex-col justify-start items-start mt-5">
                   <h2 className="font-bold mb-2 px-2 text-lg">Anno</h2>
-                  <div className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]">
-                    <p className="w-[80%]">2005-2010</p>
-                    <input
-                      className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
-                      type="checkbox"
-                      defaultChecked
-                      onClick={() => handleYearRangeChange(2005, 2010)}
-                    />
-                  </div>
-                  <div className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]">
-                    <p className="w-[80%]">2010-2015</p>
-                    <input
-                      className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
-                      type="checkbox"
-                      defaultChecked
-                      onClick={() => handleYearRangeChange(2010, 2015)}
-                    />
-                  </div>
-                  <div className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]">
-                    <p className="w-[80%]">2015-2020</p>
-                    <input
-                      className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
-                      type="checkbox"
-                      defaultChecked
-                      onClick={() => handleYearRangeChange(2015, 2020)}
-                    />
-                  </div>
-                  <div className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]">
-                    <p className="w-[80%]">2020-oggi</p>
-                    <input
-                      className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
-                      type="checkbox"
-                      defaultChecked
-                      onClick={() =>
-                        handleYearRangeChange(2020, new Date().getFullYear())
-                      }
-                    />
-                  </div>
+                  {[
+                    { label: "2005-2010", min: 2005, max: 2010 },
+                    { label: "2010-2015", min: 2010, max: 2015 },
+                    { label: "2015-2020", min: 2015, max: 2020 },
+                    {
+                      label: "2020-oggi",
+                      min: 2020,
+                      max: new Date().getFullYear(),
+                    },
+                  ].map((range, index) => (
+                    <div
+                      key={index}
+                      className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]"
+                    >
+                      <p className="w-[80%]">{range.label}</p>
+                      <input
+                        className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
+                        type="checkbox"
+                        checked={selezioniAnno.some(
+                          (r) => r.min === range.min && r.max === range.max
+                        )}
+                        onChange={(e) =>
+                          handleYearRangeChange(
+                            range.min,
+                            range.max,
+                            e.target.checked
+                          )
+                        }
+                      />
+                    </div>
+                  ))}
                 </div>
 
                 {/* Chilometraggio Filtri */}
