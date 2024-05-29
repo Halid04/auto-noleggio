@@ -7,8 +7,10 @@ import Sedi from "./pages/Sedi.jsx";
 import Preferiti from "./pages/Preferiti.jsx";
 import Transazione from "./pages/Transazione.jsx";
 import CarDetail from "./pages/CarDetail.jsx";
+import Dashboard from "./pages/Dashboard.jsx";
 import Header from "./components/Header.jsx";
 import Sidebar from "./components/Sidebar.jsx";
+
 
 import "./App.css";
 
@@ -83,6 +85,7 @@ function App() {
             <Route path="/autoNoleggiate" element={<AutoNoleggiate />} />
             <Route path="/sedi" element={<Sedi />} />
             <Route path="/preferiti" element={<Preferiti />} />
+            <Route path="/Dashboard" element={<Dashboard />} />
             <Route path="/transazione/:idAuto" element={<Transazione />} />
             <Route path="/carDetail/:idAuto" element={<CarDetail />} />
           </Routes>
