@@ -17,7 +17,7 @@ class BaseController {
     private $dotenv;
     public function __call($name, $arguments)
     {
-        $this->sendOutput(statusCode: 404);
+        $this->sendOutput(array('Content-Type: application/json'), statusCode: 404);
     }
 
     public function __construct($requestMethod, $data, $gateway)
@@ -73,9 +73,9 @@ class BaseController {
             
         } catch (\Exception $e) {
             $response = array (
-                'statusCode' => 401,
+                'statusCode' => 403,
                 'body' => array (
-                    'message' => $e->getMessage()
+                    'message' => "Access forbidden: " . $e->getMessage()
                 )
             );
         }
@@ -110,7 +110,7 @@ class BaseController {
             $response_obj['obj'] = array (
                 'statusCode' => 401,
                 'body' => array (
-                    'message' => "Missing JWT."
+                    'message' => "Unauthenticated: Missing JWT."
                 )
             );
 
@@ -143,9 +143,9 @@ class BaseController {
 
             if ((int) $auth_info['data']['admin'] != 1 && $this->requestMethod != "GET") {
                 $response_obj['obj'] =  array (
-                    'statusCode' => 401,
+                    'statusCode' => 403,
                     'body' => array (
-                        'message' => "You do not have permission to edit this resource"
+                        'message' => "Access forbidden: You do not have permission to edit this resource"
                     )
                 );
 
