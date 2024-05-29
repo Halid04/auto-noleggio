@@ -29,13 +29,13 @@ function Login({ viewRegister, setVisible }) {
       headers: headers,
       body: JSON.stringify(requestBody),
     })
-      .then((response) => {
+      .then(async (response) => {
         if (!response.ok) {
           return response.text().then((text) => {
             throw new Error(text);
           });
         } else {
-          toast.success("Login avvenuta con successo", {
+          toast.success("Login avvenuto con successo", {
             duration: 1500,
           });
 
@@ -48,9 +48,8 @@ function Login({ viewRegister, setVisible }) {
 
         setTimeout(() => {
           setVisible(false);
-          navigate("/auto");
           window.location.reload();
-        }, 700);
+        }, 1000);
       })
       .catch((error) => {
         const errorString = error.message.replace("Error: ", "");

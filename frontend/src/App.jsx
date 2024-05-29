@@ -8,9 +8,9 @@ import Preferiti from "./pages/Preferiti.jsx";
 import Transazione from "./pages/Transazione.jsx";
 import CarDetail from "./pages/CarDetail.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
+import ImpostazioniProfilo from "./pages/ImpostazioniProfilo.jsx";
 import Header from "./components/Header.jsx";
 import Sidebar from "./components/Sidebar.jsx";
-
 
 import "./App.css";
 
@@ -37,6 +37,7 @@ function App() {
         return response.json();
       })
       .then((data) => {
+        console.log(data);
         if (data && data.content.length > 0) {
           const user = data.content[0];
           localStorage.setItem("userID", user.id_cliente);
@@ -45,6 +46,7 @@ function App() {
           localStorage.setItem("userPhone", user.telefono);
           localStorage.setItem("userEmail", user.email);
           localStorage.setItem("userBirthdate", user.data_di_nascita);
+          localStorage.setItem("isAdmin", user.admin);
         }
       })
       .catch((error) => {
@@ -63,19 +65,31 @@ function App() {
   }, [fetchUserData]);
 
   const isTransactionPage = location.pathname.startsWith("/transazione");
+  const isAdminDashboard = location.pathname.startsWith("/dashboard");
+  const impostazioniProfilo = location.pathname.startsWith(
+    "/impostazioniProfilo"
+  );
 
   return (
     <div className="h-[100vh] w-full bg-white flex flex-col justify-between items-center">
-      {!isTransactionPage && <Header />}
+      {!isTransactionPage && !isAdminDashboard && !impostazioniProfilo && (
+        <Header />
+      )}
       <div
         className={`h-full w-full flex ${
-          isTransactionPage ? "" : "justify-between items-start"
+          isTransactionPage || isAdminDashboard || impostazioniProfilo
+            ? ""
+            : "justify-between items-start"
         }`}
       >
-        {!isTransactionPage && <Sidebar />}
+        {!isTransactionPage && !isAdminDashboard && !impostazioniProfilo && (
+          <Sidebar />
+        )}
         <div
           className={`h-full ${
-            isTransactionPage ? "w-full" : "w-[80vw]"
+            isTransactionPage || isAdminDashboard || impostazioniProfilo
+              ? "w-full"
+              : "w-[80vw]"
           } flex justify-start items-start`}
         >
           <Routes>
@@ -85,7 +99,11 @@ function App() {
             <Route path="/autoNoleggiate" element={<AutoNoleggiate />} />
             <Route path="/sedi" element={<Sedi />} />
             <Route path="/preferiti" element={<Preferiti />} />
-            <Route path="/Dashboard" element={<Dashboard />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route
+              path="/impostazioniProfilo"
+              element={<ImpostazioniProfilo />}
+            />
             <Route path="/transazione/:idAuto" element={<Transazione />} />
             <Route path="/carDetail/:idAuto" element={<CarDetail />} />
           </Routes>

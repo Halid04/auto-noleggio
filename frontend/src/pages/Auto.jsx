@@ -6,7 +6,15 @@ function Auto() {
   const [auto, setAuto] = useState([]);
   const [filtriMarca, setFiltriMarca] = useState([]);
   const [filtriTipoMacchina, setFiltriTipoMacchina] = useState([]);
-  const [filtiTipoCarburante, setFiltriTipoCarburante] = useState([]);
+  const [filtriTipoCarburante, setFiltriTipoCarburante] = useState([]);
+  const [prezzoMassimo, setPrezzoMassimo] = useState(1000);
+  const [annoMinimo, setAnnoMinimo] = useState(2000);
+  const [annoMassimo, setAnnoMassimo] = useState(2024);
+  const [chilometraggioMassimo, setChilometraggioMassimo] = useState(300000);
+  const [selezioniMarca, setSelezioniMarca] = useState({});
+  const [selezioniTipoMacchina, setSelezioniTipoMacchina] = useState({});
+  const [selezioniTipoCarburante, setSelezioniTipoCarburante] = useState({});
+
   const dropdownGeneralFiltriRef = useRef(null);
   const dropdownMarcaFiltriRef = useRef(null);
   const dropdownTipoMacchinaFiltriRef = useRef(null);
@@ -14,7 +22,6 @@ function Auto() {
   const dropdownAnnoFiltriRef = useRef(null);
   const dropdownTipoCarburanteFiltriRef = useRef(null);
   const dropdownVicinoATeFiltriRef = useRef(null);
-  const [prezzoMinimo, setPrezzoMinimo] = useState(1000);
   const [isDropdownGeneralFiltriOpen, setIsDropdownGeneralFiltriOpen] =
     useState(false);
   const [isDropdownMarcaFiltriOpen, setIsDropdownMarcaFiltriOpen] =
@@ -38,7 +45,7 @@ function Auto() {
     getAllAuto();
     getFiltiMarca();
     getFiltiTipoMacchina();
-    getFiltiTipoCarburante();
+    getFiltriTipoCarburante();
     const handleClickOutsideGeneralFiltri = (event) => {
       if (
         dropdownGeneralFiltriRef.current &&
@@ -154,7 +161,6 @@ function Auto() {
         return response.json();
       })
       .then((data) => {
-        console.log(data.content);
         setAuto(data.content);
       })
       .catch((error) => {
@@ -181,8 +187,14 @@ function Auto() {
         return response.json();
       })
       .then((data) => {
-        console.log("filtri marche", data.content);
         setFiltriMarca(data.content);
+
+        const selezioniMarcaDefault = {};
+        data.content.forEach((marca) => {
+          selezioniMarcaDefault[marca.marca] = true;
+        });
+
+        setSelezioniMarca(selezioniMarcaDefault);
       })
       .catch((error) => {
         console.error("Errore durante il recupero delle marche:", error);
@@ -208,8 +220,14 @@ function Auto() {
         return response.json();
       })
       .then((data) => {
-        console.log("filtri tipo macchina", data.content);
         setFiltriTipoMacchina(data.content);
+
+        const selezioniTipoMacchinaDefault = {};
+        data.content.forEach((tipo) => {
+          selezioniTipoMacchinaDefault[tipo.tipo_veicolo] = true;
+        });
+
+        setSelezioniTipoMacchina(selezioniTipoMacchinaDefault);
       })
       .catch((error) => {
         console.error(
@@ -219,7 +237,7 @@ function Auto() {
       });
   };
 
-  const getFiltiTipoCarburante = () => {
+  const getFiltriTipoCarburante = () => {
     const url =
       "http://localhost/auto-noleggio/backend/public/veicoli/carburazioni";
 
@@ -239,8 +257,14 @@ function Auto() {
         return response.json();
       })
       .then((data) => {
-        console.log("filtri tipo carburante", data.content);
         setFiltriTipoCarburante(data.content);
+
+        const selezioniTipoCarburanteDefault = {};
+        data.content.forEach((tipo) => {
+          selezioniTipoCarburanteDefault[tipo.tipo_carburazione] = true;
+        });
+
+        setSelezioniTipoCarburante(selezioniTipoCarburanteDefault);
       })
       .catch((error) => {
         console.error(
@@ -259,30 +283,56 @@ function Auto() {
       "Content-Type": "application/json",
     };
 
-    const requestBody = {};
+    const selezionateMarche = Object.keys(selezioniMarca).filter(
+      (marca) => selezioniMarca[marca]
+    );
+    const selezionatiTipiMacchina = Object.keys(selezioniTipoMacchina).filter(
+      (tipo) => selezioniTipoMacchina[tipo]
+    );
+    const selezionatiTipiCarburante = Object.keys(
+      selezioniTipoCarburante
+    ).filter((tipo) => selezioniTipoCarburante[tipo]);
 
-    console.log("Request body:", requestBody);
+    const rquestObj = {
+      marche: selezionateMarche,
+      tipiMacchina: selezionatiTipiMacchina,
+      prezzo: {
+        prezzoMassimo,
+        prezzoMinimo: 0,
+      },
+      anno: {
+        annoMinimo,
+        annoMassimo,
+      },
+      chilometraggio: {
+        chilometraggioMassimo,
+        chilometraggioMinimo: 0,
+      },
+      tipicarburante: selezionatiTipiCarburante,
+    };
 
-    fetch(url, {
-      method: "POST",
-      headers: headers,
-      body: JSON.stringify(requestBody),
-    })
-      .then((response) => {
-        if (!response.ok) {
-          return response.text().then((text) => {
-            throw new Error(text);
-          });
-        } else {
-          return response.json(); // Moved inside the else block
-        }
-      })
-      .then((data) => {
-        console.log(data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    console.log(rquestObj);
+
+    // fetch(url, {
+    //   method: "POST",
+    //   headers: headers,
+    //   body: JSON.stringify(requestBody),
+    // })
+    //   .then((response) => {
+    //     if (!response.ok) {
+    //       return response.text().then((text) => {
+    //         throw new Error(text);
+    //       });
+    //     } else {
+    //       return response.json(); // Moved inside the else block
+    //     }
+    //   })
+    //   .then((data) => {
+    //     console.log(data);
+    //   })
+    //   .catch((error) => {
+    //     console.log(error);
+    //   });
   };
 
   const handleMenuButtonClickGeneralFiltri = (event) => {
@@ -363,12 +413,43 @@ function Auto() {
   };
 
   const handleSliderChange = (event) => {
-    setPrezzoMinimo(event.target.value);
+    setPrezzoMassimo(event.target.value);
+  };
+
+  const handleSliderChangeChilometraggio = (event) => {
+    setChilometraggioMassimo(event.target.value);
+  };
+
+  const handleYearRangeChange = (min, max) => {
+    setAnnoMinimo(min);
+    setAnnoMassimo(max);
+  };
+
+  const handleCheckboxChange = (tipo, valore, isChecked) => {
+    if (tipo === "marca") {
+      setSelezioniMarca((prevState) => ({
+        ...prevState,
+        [valore]: isChecked,
+      }));
+    } else if (tipo === "tipoMacchina") {
+      setSelezioniTipoMacchina((prevState) => ({
+        ...prevState,
+        [valore]: isChecked,
+      }));
+    } else if (tipo === "tipoCarburante") {
+      setSelezioniTipoCarburante((prevState) => ({
+        ...prevState,
+        [valore]: isChecked,
+      }));
+    }
   };
 
   return (
     <div className=" h-full w-full shrink-0 bg-[#F0F3F5] overflow-x-hidden overflow-y-auto flex flex-col py-5 justify-between items-start ">
-      <form className="filtri-section shrink-0 h-[10vh] gap-5 px-5 sm:px-10  w-full flex justify-start items-center">
+      <form
+        onSubmit={handleApplyFilter}
+        className="filtri-section shrink-0 h-[10vh] gap-5 px-5 sm:px-10  w-full flex justify-start items-center"
+      >
         {/* Filtri generali */}
         <div className="relative inline-block text-left">
           <div>
@@ -384,7 +465,6 @@ function Auto() {
             </button>
           </div>
 
-          {/* <!-- Dropdown General Filtri menu --> */}
           {isDropdownGeneralFiltriOpen && (
             <div
               ref={dropdownGeneralFiltriRef}
@@ -396,36 +476,39 @@ function Auto() {
               <div className="filtri-list-section w-full h-[80%] shrink-0 flex flex-col overflow-y-auto overflow-x-hidden justify-start items-start p-3">
                 <h2 className="font-bold mb-5 px-2 text-lg">Tutti i filtri</h2>
 
-                {/* Marca Filti */}
+                {/* Marca Filtri */}
                 <div className="shrink-0 w-full flex flex-col justify-start items-start">
                   <h2 className="font-bold mb-2 px-2 text-lg">Marca</h2>
-                  {filtriMarca &&
-                    filtriMarca.length > 0 &&
-                    filtriMarca.map((marca, index) => (
-                      <div
-                        key={index}
-                        className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]"
-                      >
-                        <p className="w-[80%]">{marca.marca}</p>
-                        <input
-                          className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
-                          type="checkbox"
-                          defaultChecked
-                        />
-                      </div>
-                    ))}
+                  {filtriMarca.map((marca, index) => (
+                    <div
+                      key={index}
+                      className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]"
+                    >
+                      <p className="w-[80%]">{marca.marca}</p>
+                      <input
+                        className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
+                        type="checkbox"
+                        checked={selezioniMarca[marca.marca] || false}
+                        onChange={(e) =>
+                          handleCheckboxChange(
+                            "marca",
+                            marca.marca,
+                            e.target.checked
+                          )
+                        }
+                      />
+                    </div>
+                  ))}
                 </div>
 
-                {/* prezzo Filti */}
-                <div className="shrink-0 w-full  flex flex-col justify-start items-start mt-5">
+                {/* Prezzo Filtri */}
+                <div className="shrink-0 w-full flex flex-col justify-start items-start mt-5">
                   <h2 className="font-bold mb-2 px-2 text-lg">Prezzo</h2>
-
                   <div className="shrink-0 w-full gap-5 h-[5rem] px-2 rounded-lg flex flex-col justify-center items-center">
                     <p className="w-full">
-                      Prezzo minimo:{" "}
-                      <span className="font-bold">{prezzoMinimo}</span>{" "}
+                      Prezzo massimo:{" "}
+                      <span className="font-bold">{prezzoMassimo}</span>
                     </p>
-
                     <input
                       type="range"
                       className="w-full bg-transparent cursor-pointer appearance-none disabled:opacity-50 disabled:pointer-events-none focus:outline-none
@@ -462,116 +545,189 @@ function Auto() {
   [&::-moz-range-track]:h-2
   [&::-moz-range-track]:bg-gray-100
   [&::-moz-range-track]:rounded-full"
-                      id="prezzoMinimo"
+                      id="prezzoMassimo"
                       min="0"
                       max="1000"
                       step={50}
-                      value={prezzoMinimo}
+                      value={prezzoMassimo}
                       onChange={handleSliderChange}
                     />
                   </div>
                 </div>
 
-                {/* Tipo macchina Filti */}
+                {/* Tipo macchina Filtri */}
                 <div className="shrink-0 w-full flex flex-col justify-start items-start mt-5">
                   <h2 className="font-bold mb-2 px-2 text-lg">
                     Tipo di macchina
                   </h2>
-                  {filtriTipoMacchina &&
-                    filtriTipoMacchina.length > 0 &&
-                    filtriTipoMacchina.map((tipo_veicolo, index) => (
-                      <div
-                        key={index}
-                        className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]"
-                      >
-                        <p className="w-[80%]">{tipo_veicolo.tipo_veicolo}</p>
-                        <input
-                          className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
-                          type="checkbox"
-                          defaultChecked
-                        />
-                      </div>
-                    ))}
+                  {filtriTipoMacchina.map((tipo_veicolo, index) => (
+                    <div
+                      key={index}
+                      className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]"
+                    >
+                      <p className="w-[80%]">{tipo_veicolo.tipo_veicolo}</p>
+                      <input
+                        className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
+                        type="checkbox"
+                        checked={
+                          selezioniTipoMacchina[tipo_veicolo.tipo_veicolo] ||
+                          false
+                        }
+                        onChange={(e) =>
+                          handleCheckboxChange(
+                            "tipoMacchina",
+                            tipo_veicolo.tipo_veicolo,
+                            e.target.checked
+                          )
+                        }
+                      />
+                    </div>
+                  ))}
                 </div>
 
-                {/* Tipo Anno Filti */}
+                {/* Anno Filtri */}
                 <div className="shrink-0 w-full flex flex-col justify-start items-start mt-5">
                   <h2 className="font-bold mb-2 px-2 text-lg">Anno</h2>
-                  {/* 2005-2010 */}
                   <div className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]">
                     <p className="w-[80%]">2005-2010</p>
                     <input
                       className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
                       type="checkbox"
                       defaultChecked
+                      onClick={() => handleYearRangeChange(2005, 2010)}
                     />
                   </div>
-
-                  {/* 2010-2015 */}
                   <div className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]">
                     <p className="w-[80%]">2010-2015</p>
                     <input
                       className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
                       type="checkbox"
                       defaultChecked
+                      onClick={() => handleYearRangeChange(2010, 2015)}
                     />
                   </div>
-
-                  {/* 2015-2020 */}
                   <div className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]">
                     <p className="w-[80%]">2015-2020</p>
                     <input
                       className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
                       type="checkbox"
                       defaultChecked
+                      onClick={() => handleYearRangeChange(2015, 2020)}
                     />
                   </div>
-
-                  {/* 2020-oggi */}
                   <div className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]">
                     <p className="w-[80%]">2020-oggi</p>
                     <input
                       className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
                       type="checkbox"
                       defaultChecked
+                      onClick={() =>
+                        handleYearRangeChange(2020, new Date().getFullYear())
+                      }
                     />
                   </div>
                 </div>
 
-                {/* Tipo carburante Filti */}
+                {/* Chilometraggio Filtri */}
+                <div className="shrink-0 w-full flex flex-col justify-start items-start mt-5">
+                  <h2 className="font-bold mb-2 px-2 text-lg">
+                    Chilometraggio
+                  </h2>
+                  <div className="shrink-0 w-full gap-5 h-[5rem] px-2 rounded-lg flex flex-col justify-center items-center">
+                    <p className="w-full">
+                      Chilometraggio massimo:{" "}
+                      <span className="font-bold">{chilometraggioMassimo}</span>
+                    </p>
+                    <input
+                      type="range"
+                      className="w-full bg-transparent cursor-pointer appearance-none disabled:opacity-50 disabled:pointer-events-none focus:outline-none
+  [&::-webkit-slider-thumb]:w-2.5
+  [&::-webkit-slider-thumb]:h-2.5
+  [&::-webkit-slider-thumb]:-mt-0.5
+  [&::-webkit-slider-thumb]:appearance-none
+  [&::-webkit-slider-thumb]:bg-white
+  [&::-webkit-slider-thumb]:shadow-[0_0_0_4px_#192024]
+  [&::-webkit-slider-thumb]:rounded-full
+  [&::-webkit-slider-thumb]:transition-all
+  [&::-webkit-slider-thumb]:duration-150
+  [&::-webkit-slider-thumb]:ease-in-out
+  [&::-webkit-slider-thumb]:dark:bg-neutral-700
+
+  [&::-moz-range-thumb]:w-2.5
+  [&::-moz-range-thumb]:h-2.5
+  [&::-moz-range-thumb]:appearance-none
+  [&::-moz-range-thumb]:bg-white
+  [&::-moz-range-thumb]:border-4
+  [&::-moz-range-thumb]:border-[#192024]
+  [&::-moz-range-thumb]:rounded-full
+  [&::-moz-range-thumb]:transition-all
+  [&::-moz-range-thumb]:duration-150
+  [&::-moz-range-thumb]:ease-in-out
+
+  [&::-webkit-slider-runnable-track]:w-full
+  [&::-webkit-slider-runnable-track]:h-2
+  [&::-webkit-slider-runnable-track]:bg-gray-100
+  [&::-webkit-slider-runnable-track]:rounded-full
+  [&::-webkit-slider-runnable-track]:dark:bg-neutral-700
+
+  [&::-moz-range-track]:w-full
+  [&::-moz-range-track]:h-2
+  [&::-moz-range-track]:bg-gray-100
+  [&::-moz-range-track]:rounded-full"
+                      id="chilometraggioMassimo"
+                      min="0"
+                      max="300000"
+                      step={10000}
+                      value={chilometraggioMassimo}
+                      onChange={handleSliderChangeChilometraggio}
+                    />
+                  </div>
+                </div>
+
+                {/* Tipo carburante Filtri */}
                 <div className="shrink-0 w-full flex flex-col justify-start items-start mt-5">
                   <h2 className="font-bold mb-2 px-2 text-lg">
                     Tipo carburante
                   </h2>
-                  {filtiTipoCarburante &&
-                    filtiTipoCarburante.length > 0 &&
-                    filtiTipoCarburante.map((tipo_carburazione, index) => (
-                      <div
-                        key={index}
-                        className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]"
-                      >
-                        <p className="w-[80%]">
-                          {tipo_carburazione.tipo_carburazione}
-                        </p>
-                        <input
-                          className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
-                          type="checkbox"
-                          defaultChecked
-                        />
-                      </div>
-                    ))}
+                  {filtriTipoCarburante.map((tipo_carburazione, index) => (
+                    <div
+                      key={index}
+                      className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]"
+                    >
+                      <p className="w-[80%]">
+                        {tipo_carburazione.tipo_carburazione}
+                      </p>
+                      <input
+                        className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
+                        type="checkbox"
+                        checked={
+                          selezioniTipoCarburante[
+                            tipo_carburazione.tipo_carburazione
+                          ] || false
+                        }
+                        onChange={(e) =>
+                          handleCheckboxChange(
+                            "tipoCarburante",
+                            tipo_carburazione.tipo_carburazione,
+                            e.target.checked
+                          )
+                        }
+                      />
+                    </div>
+                  ))}
                 </div>
               </div>
               <div className="w-full h-[20%] flex justify-around items-center border-t-[1.5px] border-t-[#EEEEEE]">
                 <button
-                  type="button"
+                  type="submit"
                   className="bg-[#192024] border-[1.5px] outline-none hover:bg-[#0f1315] text-white font-bold py-1 px-4 sm:py-2 sm:px-7 rounded-lg"
                 >
                   Applica
                 </button>
                 <button
                   type="button"
-                  className="bg-trasparent border-[1.5px] border-[#192024] hover:bg-[#EEEEEE] text-[#192024] font-bold py-1 px-4 sm:py-2 sm:px-7 rounded-lg"
+                  className="bg-transparent border-[1.5px] border-[#192024] hover:bg-[#EEEEEE] text-[#192024] font-bold py-1 px-4 sm:py-2 sm:px-7 rounded-lg"
+                  // onClick={resetFilters}
                 >
                   Reimposta
                 </button>
@@ -752,7 +908,7 @@ function Auto() {
                 <div className="shrink-0 w-full gap-5 h-[5rem] px-2 rounded-lg flex flex-col justify-center items-center">
                   <p className="w-full">
                     Prezzo minimo:{" "}
-                    <span className="font-bold">{prezzoMinimo}</span>{" "}
+                    <span className="font-bold">{prezzoMassimo}</span>{" "}
                   </p>
 
                   <input
@@ -791,11 +947,11 @@ function Auto() {
   [&::-moz-range-track]:h-2
   [&::-moz-range-track]:bg-gray-100
   [&::-moz-range-track]:rounded-full"
-                    id="prezzoMinimo"
+                    id="prezzoMassimo"
                     min="0"
                     max="1000"
                     step={50}
-                    value={prezzoMinimo}
+                    value={prezzoMassimo}
                     onChange={handleSliderChange}
                   />
                 </div>
@@ -940,9 +1096,9 @@ function Auto() {
             >
               <div className="filtri-list-section w-full h-[80%] shrink-0 flex flex-col overflow-y-auto overflow-x-hidden justify-start items-start p-3">
                 <h2 className="font-bold mb-2 px-2 text-lg">Tipo carburante</h2>
-                {filtiTipoCarburante &&
-                  filtiTipoCarburante.length > 0 &&
-                  filtiTipoCarburante.map((tipo_carburazione, index) => (
+                {filtriTipoCarburante &&
+                  filtriTipoCarburante.length > 0 &&
+                  filtriTipoCarburante.map((tipo_carburazione, index) => (
                     <div
                       key={index}
                       className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]"
