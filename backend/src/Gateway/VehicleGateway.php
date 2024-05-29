@@ -140,7 +140,7 @@ class VehicleGateway extends BaseGateway {
                     $statement .= " AND " . $filter['name'] . " <= " . $filter['params']['upperbound'] . " ";
                 }
             }
-
+            
             if ($filter['type'] == "list") {
                 $statement .= " AND " . $filter['name'] . ($filter['params']['exclude'] ? " NOT" : "") ." IN (" . str_repeat('?,', count($filter['params']['list']) - 1) . '?)';
                 $params = array_merge($params, $filter['params']['list']);
@@ -397,19 +397,25 @@ class VehicleGateway extends BaseGateway {
                         "params" => $input[$filter['name']]
                     ];
                 } else {
-
+                    /*
                     if (!isset($input[$filter['name']]["list"])) {
                         $response_obj['status'] = false;
                         $response_obj['obj'] = $this->response(400, message: "Invalid request: The 'list' parameter must be defined");
                         return $response_obj;
                     }
-
                     if (!is_array($input[$filter['name']]["list"])) {
                         $response_obj['status'] = false;
                         $response_obj['obj'] = $this->response(400, message: "Invalid request: The 'list' parameter must be an array");
                         return $response_obj;
                     }
-
+                    */
+                    if (!is_array($input[$filter['name']])) {
+                        $response_obj['status'] = false;
+                        $response_obj['obj'] = $this->response(400, message: "Invalid request: The 'list' parameter must be an array");
+                        return $response_obj;
+                    }
+                    
+                    /*
                     if (isset($input[$filter['name']]["exclude"])) {
                         if (!is_bool($input[$filter['name']]["exclude"])) {
                             $response_obj['status'] = false;
@@ -417,17 +423,17 @@ class VehicleGateway extends BaseGateway {
                             return $response_obj;
                         }
                     }
+                    */
 
                     $filter_obj[] = [
                         "name" => $filter['name'],
                         "type" => $filter['type'],
                         "params" => [
-                            "list" => $input[$filter['name']]['list'],
+                            "list" => $input[$filter['name']],
                             "exclude" => $input[$filter['name']]['exclude'] ?? false
                             ]
                     ];
                 }
-                
             }
         }
 
