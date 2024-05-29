@@ -4,6 +4,9 @@ import { ChevronDown, SlidersHorizontal } from "lucide-react";
 
 function Auto() {
   const [auto, setAuto] = useState([]);
+  const [filtriMarca, setFiltriMarca] = useState([]);
+  const [filtriTipoMacchina, setFiltriTipoMacchina] = useState([]);
+  const [filtiTipoCarburante, setFiltriTipoCarburante] = useState([]);
   const dropdownGeneralFiltriRef = useRef(null);
   const dropdownMarcaFiltriRef = useRef(null);
   const dropdownTipoMacchinaFiltriRef = useRef(null);
@@ -11,7 +14,7 @@ function Auto() {
   const dropdownAnnoFiltriRef = useRef(null);
   const dropdownTipoCarburanteFiltriRef = useRef(null);
   const dropdownVicinoATeFiltriRef = useRef(null);
-  const [prezzoMinimo, setPrezzoMinimo] = useState(0);
+  const [prezzoMinimo, setPrezzoMinimo] = useState(1000);
   const [isDropdownGeneralFiltriOpen, setIsDropdownGeneralFiltriOpen] =
     useState(false);
   const [isDropdownMarcaFiltriOpen, setIsDropdownMarcaFiltriOpen] =
@@ -33,6 +36,9 @@ function Auto() {
 
   useEffect(() => {
     getAllAuto();
+    getFiltiMarca();
+    getFiltiTipoMacchina();
+    getFiltiTipoCarburante();
     const handleClickOutsideGeneralFiltri = (event) => {
       if (
         dropdownGeneralFiltriRef.current &&
@@ -148,11 +154,134 @@ function Auto() {
         return response.json();
       })
       .then((data) => {
-        // console.log(data.content);
+        console.log(data.content);
         setAuto(data.content);
       })
       .catch((error) => {
         console.error("Errore durante il recupero delle auto:", error);
+      });
+  };
+
+  const getFiltiMarca = () => {
+    const url = "http://localhost/auto-noleggio/backend/public/veicoli/marche";
+
+    const headers = {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    };
+
+    fetch(url, {
+      method: "GET",
+      headers: headers,
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log("filtri marche", data.content);
+        setFiltriMarca(data.content);
+      })
+      .catch((error) => {
+        console.error("Errore durante il recupero delle marche:", error);
+      });
+  };
+
+  const getFiltiTipoMacchina = () => {
+    const url = "http://localhost/auto-noleggio/backend/public/veicoli/tipi";
+
+    const headers = {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    };
+
+    fetch(url, {
+      method: "GET",
+      headers: headers,
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log("filtri tipo macchina", data.content);
+        setFiltriTipoMacchina(data.content);
+      })
+      .catch((error) => {
+        console.error(
+          "Errore durante il recupero del tipo di macchina:",
+          error
+        );
+      });
+  };
+
+  const getFiltiTipoCarburante = () => {
+    const url =
+      "http://localhost/auto-noleggio/backend/public/veicoli/carburazioni";
+
+    const headers = {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    };
+
+    fetch(url, {
+      method: "GET",
+      headers: headers,
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log("filtri tipo carburante", data.content);
+        setFiltriTipoCarburante(data.content);
+      })
+      .catch((error) => {
+        console.error(
+          "Errore durante il recupero del tipo di carburante:",
+          error
+        );
+      });
+  };
+
+  const handleApplyFilter = (e) => {
+    e.preventDefault();
+
+    const url = "http://localhost/auto-noleggio/backend/public/";
+    const headers = {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    };
+
+    const requestBody = {};
+
+    console.log("Request body:", requestBody);
+
+    fetch(url, {
+      method: "POST",
+      headers: headers,
+      body: JSON.stringify(requestBody),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          return response.text().then((text) => {
+            throw new Error(text);
+          });
+        } else {
+          return response.json(); // Moved inside the else block
+        }
+      })
+      .then((data) => {
+        console.log(data);
+      })
+      .catch((error) => {
+        console.log(error);
       });
   };
 
@@ -270,75 +399,21 @@ function Auto() {
                 {/* Marca Filti */}
                 <div className="shrink-0 w-full flex flex-col justify-start items-start">
                   <h2 className="font-bold mb-2 px-2 text-lg">Marca</h2>
-                  {/* Mercedes */}
-                  <div className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]">
-                    <p className="w-[80%]">Mercedes</p>
-                    <input
-                      className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
-                      type="checkbox"
-                      value="Mercedes"
-                    />
-                  </div>
-
-                  {/* Audi */}
-                  <div className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]">
-                    <p className="w-[80%]">Audi</p>
-                    <input
-                      className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
-                      type="checkbox"
-                      value="Audi"
-                    />
-                  </div>
-
-                  {/* Dacia */}
-                  <div className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]">
-                    <p className="w-[80%]">Dacia</p>
-                    <input
-                      className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
-                      type="checkbox"
-                      value="Dacia"
-                    />
-                  </div>
-
-                  {/* Ford */}
-                  <div className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]">
-                    <p className="w-[80%]">Ford</p>
-                    <input
-                      className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
-                      type="checkbox"
-                      value="Ford"
-                    />
-                  </div>
-
-                  {/* Lamborghini */}
-                  <div className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]">
-                    <p className="w-[80%]">Lamborghini</p>
-                    <input
-                      className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
-                      type="checkbox"
-                      value="Lamborghini"
-                    />
-                  </div>
-
-                  {/* Nissan */}
-                  <div className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]">
-                    <p className="w-[80%]">Nissan</p>
-                    <input
-                      className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
-                      type="checkbox"
-                      value="Nissan"
-                    />
-                  </div>
-
-                  {/* Fiat */}
-                  <div className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]">
-                    <p className="w-[80%]">Fiat</p>
-                    <input
-                      className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
-                      type="checkbox"
-                      value="Fiat"
-                    />
-                  </div>
+                  {filtriMarca &&
+                    filtriMarca.length > 0 &&
+                    filtriMarca.map((marca, index) => (
+                      <div
+                        key={index}
+                        className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]"
+                      >
+                        <p className="w-[80%]">{marca.marca}</p>
+                        <input
+                          className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
+                          type="checkbox"
+                          defaultChecked
+                        />
+                      </div>
+                    ))}
                 </div>
 
                 {/* prezzo Filti */}
@@ -402,45 +477,21 @@ function Auto() {
                   <h2 className="font-bold mb-2 px-2 text-lg">
                     Tipo di macchina
                   </h2>
-                  {/* Piccola */}
-                  <div className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]">
-                    <p className="w-[80%]">Piccola</p>
-                    <input
-                      className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
-                      type="checkbox"
-                      value="Piccola"
-                    />
-                  </div>
-
-                  {/* Media */}
-                  <div className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]">
-                    <p className="w-[80%]">Media</p>
-                    <input
-                      className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
-                      type="checkbox"
-                      value="Media"
-                    />
-                  </div>
-
-                  {/* Grande */}
-                  <div className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]">
-                    <p className="w-[80%]">Grande</p>
-                    <input
-                      className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
-                      type="checkbox"
-                      value="Grande"
-                    />
-                  </div>
-
-                  {/* SUV */}
-                  <div className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]">
-                    <p className="w-[80%]">SUV</p>
-                    <input
-                      className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
-                      type="checkbox"
-                      value="SUV"
-                    />
-                  </div>
+                  {filtriTipoMacchina &&
+                    filtriTipoMacchina.length > 0 &&
+                    filtriTipoMacchina.map((tipo_veicolo, index) => (
+                      <div
+                        key={index}
+                        className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]"
+                      >
+                        <p className="w-[80%]">{tipo_veicolo.tipo_veicolo}</p>
+                        <input
+                          className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
+                          type="checkbox"
+                          defaultChecked
+                        />
+                      </div>
+                    ))}
                 </div>
 
                 {/* Tipo Anno Filti */}
@@ -452,7 +503,7 @@ function Auto() {
                     <input
                       className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
                       type="checkbox"
-                      value="2005-2010"
+                      defaultChecked
                     />
                   </div>
 
@@ -462,7 +513,7 @@ function Auto() {
                     <input
                       className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
                       type="checkbox"
-                      value="2010-2015"
+                      defaultChecked
                     />
                   </div>
 
@@ -472,7 +523,7 @@ function Auto() {
                     <input
                       className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
                       type="checkbox"
-                      value="2015-2020"
+                      defaultChecked
                     />
                   </div>
 
@@ -482,7 +533,7 @@ function Auto() {
                     <input
                       className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
                       type="checkbox"
-                      value="2020-oggi"
+                      defaultChecked
                     />
                   </div>
                 </div>
@@ -492,36 +543,23 @@ function Auto() {
                   <h2 className="font-bold mb-2 px-2 text-lg">
                     Tipo carburante
                   </h2>
-
-                  {/* Benzina */}
-                  <div className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]">
-                    <p className="w-[80%]">Benzina</p>
-                    <input
-                      className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
-                      type="checkbox"
-                      value="Benzina"
-                    />
-                  </div>
-
-                  {/* Diesel */}
-                  <div className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]">
-                    <p className="w-[80%]">Diesel</p>
-                    <input
-                      className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
-                      type="checkbox"
-                      value="Diesel"
-                    />
-                  </div>
-
-                  {/* GPL */}
-                  <div className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]">
-                    <p className="w-[80%]">GPL</p>
-                    <input
-                      className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
-                      type="checkbox"
-                      value="GPL"
-                    />
-                  </div>
+                  {filtiTipoCarburante &&
+                    filtiTipoCarburante.length > 0 &&
+                    filtiTipoCarburante.map((tipo_carburazione, index) => (
+                      <div
+                        key={index}
+                        className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]"
+                      >
+                        <p className="w-[80%]">
+                          {tipo_carburazione.tipo_carburazione}
+                        </p>
+                        <input
+                          className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
+                          type="checkbox"
+                          defaultChecked
+                        />
+                      </div>
+                    ))}
                 </div>
               </div>
               <div className="w-full h-[20%] flex justify-around items-center border-t-[1.5px] border-t-[#EEEEEE]">
@@ -574,79 +612,25 @@ function Auto() {
             >
               <div className="filtri-list-section w-full h-[80%] shrink-0 flex flex-col overflow-y-auto overflow-x-hidden justify-start items-start p-3">
                 <h2 className="font-bold mb-2 px-2 text-lg">Marca</h2>
-                {/* Mercedes */}
-                <div className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]">
-                  <p className="w-[80%]">Mercedes</p>
-                  <input
-                    className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
-                    type="checkbox"
-                    value="Mercedes"
-                  />
-                </div>
-
-                {/* Audi */}
-                <div className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]">
-                  <p className="w-[80%]">Audi</p>
-                  <input
-                    className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
-                    type="checkbox"
-                    value="Audi"
-                  />
-                </div>
-
-                {/* Dacia */}
-                <div className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]">
-                  <p className="w-[80%]">Dacia</p>
-                  <input
-                    className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
-                    type="checkbox"
-                    value="Dacia"
-                  />
-                </div>
-
-                {/* Ford */}
-                <div className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]">
-                  <p className="w-[80%]">Ford</p>
-                  <input
-                    className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
-                    type="checkbox"
-                    value="Ford"
-                  />
-                </div>
-
-                {/* Lamborghini */}
-                <div className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]">
-                  <p className="w-[80%]">Lamborghini</p>
-                  <input
-                    className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
-                    type="checkbox"
-                    value="Lamborghini"
-                  />
-                </div>
-
-                {/* Nissan */}
-                <div className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]">
-                  <p className="w-[80%]">Nissan</p>
-                  <input
-                    className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
-                    type="checkbox"
-                    value="Nissan"
-                  />
-                </div>
-
-                {/* Fiat */}
-                <div className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]">
-                  <p className="w-[80%]">Fiat</p>
-                  <input
-                    className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
-                    type="checkbox"
-                    value="Fiat"
-                  />
-                </div>
+                {filtriMarca &&
+                  filtriMarca.length > 0 &&
+                  filtriMarca.map((marca, index) => (
+                    <div
+                      key={index}
+                      className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]"
+                    >
+                      <p className="w-[80%]">{marca.marca}</p>
+                      <input
+                        className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
+                        type="checkbox"
+                        defaultChecked
+                      />
+                    </div>
+                  ))}
               </div>
               <div className="w-full h-[20%] flex justify-around items-center border-t-[1.5px] border-t-[#EEEEEE]">
                 <button
-                  type="button"
+                  type="submit"
                   className="bg-[#192024] border-[1.5px] outline-none hover:bg-[#0f1315] text-white font-bold py-2 px-7 rounded-lg"
                 >
                   Applica
@@ -698,49 +682,25 @@ function Auto() {
                 <h2 className="font-bold mb-2 px-2 text-lg">
                   Tipo di macchina
                 </h2>
-                {/* Piccola */}
-                <div className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]">
-                  <p className="w-[80%]">Piccola</p>
-                  <input
-                    className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
-                    type="checkbox"
-                    value="Piccola"
-                  />
-                </div>
-
-                {/* Media */}
-                <div className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]">
-                  <p className="w-[80%]">Media</p>
-                  <input
-                    className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
-                    type="checkbox"
-                    value="Media"
-                  />
-                </div>
-
-                {/* Grande */}
-                <div className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]">
-                  <p className="w-[80%]">Grande</p>
-                  <input
-                    className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
-                    type="checkbox"
-                    value="Grande"
-                  />
-                </div>
-
-                {/* SUV */}
-                <div className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]">
-                  <p className="w-[80%]">SUV</p>
-                  <input
-                    className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
-                    type="checkbox"
-                    value="SUV"
-                  />
-                </div>
+                {filtriTipoMacchina &&
+                  filtriTipoMacchina.length > 0 &&
+                  filtriTipoMacchina.map((tipo_veicolo, index) => (
+                    <div
+                      key={index}
+                      className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]"
+                    >
+                      <p className="w-[80%]">{tipo_veicolo.tipo_veicolo}</p>
+                      <input
+                        className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
+                        type="checkbox"
+                        defaultChecked
+                      />
+                    </div>
+                  ))}
               </div>
               <div className="w-full h-[20%] flex justify-around items-center border-t-[1.5px] border-t-[#EEEEEE]">
                 <button
-                  type="button"
+                  type="submit"
                   className="bg-[#192024] border-[1.5px] outline-none hover:bg-[#0f1315] text-white font-bold py-2 px-7 rounded-lg"
                 >
                   Applica
@@ -842,7 +802,7 @@ function Auto() {
               </div>
               <div className="w-full h-[30%] flex justify-around items-center border-t-[1.5px] border-t-[#EEEEEE]">
                 <button
-                  type="button"
+                  type="submit"
                   className="bg-[#192024] border-[1.5px] outline-none hover:bg-[#0f1315] text-white font-bold py-2 px-7 rounded-lg"
                 >
                   Applica
@@ -896,7 +856,7 @@ function Auto() {
                   <input
                     className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
                     type="checkbox"
-                    value="2005-2010"
+                    defaultChecked
                   />
                 </div>
 
@@ -906,7 +866,7 @@ function Auto() {
                   <input
                     className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
                     type="checkbox"
-                    value="2010-2015"
+                    defaultChecked
                   />
                 </div>
 
@@ -916,7 +876,7 @@ function Auto() {
                   <input
                     className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
                     type="checkbox"
-                    value="2015-2020"
+                    defaultChecked
                   />
                 </div>
 
@@ -926,13 +886,13 @@ function Auto() {
                   <input
                     className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
                     type="checkbox"
-                    value="2020-oggi"
+                    defaultChecked
                   />
                 </div>
               </div>
               <div className="w-full h-[20%] flex justify-around items-center border-t-[1.5px] border-t-[#EEEEEE]">
                 <button
-                  type="button"
+                  type="submit"
                   className="bg-[#192024] border-[1.5px] outline-none hover:bg-[#0f1315] text-white font-bold py-2 px-7 rounded-lg"
                 >
                   Applica
@@ -980,40 +940,27 @@ function Auto() {
             >
               <div className="filtri-list-section w-full h-[80%] shrink-0 flex flex-col overflow-y-auto overflow-x-hidden justify-start items-start p-3">
                 <h2 className="font-bold mb-2 px-2 text-lg">Tipo carburante</h2>
-
-                {/* Benzina */}
-                <div className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]">
-                  <p className="w-[80%]">Benzina</p>
-                  <input
-                    className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
-                    type="checkbox"
-                    value="Benzina"
-                  />
-                </div>
-
-                {/* Diesel */}
-                <div className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]">
-                  <p className="w-[80%]">Diesel</p>
-                  <input
-                    className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
-                    type="checkbox"
-                    value="Diesel"
-                  />
-                </div>
-
-                {/* GPL */}
-                <div className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]">
-                  <p className="w-[80%]">GPL</p>
-                  <input
-                    className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
-                    type="checkbox"
-                    value="GPL"
-                  />
-                </div>
+                {filtiTipoCarburante &&
+                  filtiTipoCarburante.length > 0 &&
+                  filtiTipoCarburante.map((tipo_carburazione, index) => (
+                    <div
+                      key={index}
+                      className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]"
+                    >
+                      <p className="w-[80%]">
+                        {tipo_carburazione.tipo_carburazione}
+                      </p>
+                      <input
+                        className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
+                        type="checkbox"
+                        defaultChecked
+                      />
+                    </div>
+                  ))}
               </div>
               <div className="w-full h-[20%] flex justify-around items-center border-t-[1.5px] border-t-[#EEEEEE]">
                 <button
-                  type="button"
+                  type="submit"
                   className="bg-[#192024] border-[1.5px] outline-none hover:bg-[#0f1315] text-white font-bold py-2 px-7 rounded-lg"
                 >
                   Applica
