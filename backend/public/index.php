@@ -133,13 +133,6 @@
 
         $otp_challenge = $result[0];
 
-        if (time() >= strtotime($otp_challenge['data_scadenza'])) {
-            header('Content-Type: application/json');
-            http_response_code(400);
-            echo json_encode(["message" => "Challenge scaduta"]);
-            return;
-        }
-
         if ($otp_challenge['stato'] == "failed") {
             header('Content-Type: application/json');
             http_response_code(400);
@@ -151,6 +144,26 @@
             header('Content-Type: application/json');
             http_response_code(400);
             echo json_encode(["message" => "Challenge già utilizzata: Esito postivo"]);
+            return;
+        }
+
+        if (time() >= strtotime($otp_challenge['data_scadenza'])) {
+
+            $result = $otp_gateway->update([
+                'id' => $request['otp_challenge_id'],
+                'stato' => 4
+            ]);
+
+            if ($result['statusCode'] != 200) {
+                header('Content-Type: application/json');
+                http_response_code($result['statusCode']);
+                echo json_encode($result['body']);
+                return;
+            }
+
+            header('Content-Type: application/json');
+            http_response_code(400);
+            echo json_encode(["message" => "Challenge scaduta"]);
             return;
         }
 
