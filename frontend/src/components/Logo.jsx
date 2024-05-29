@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 function Logo() {
   return (
-    <Link to="/">
+    <Link to="/homePage">
       <div className="w-[3rem] sm:w-[7rem] md:w-[12rem] h-[2.5rem] flex justify-center items-baseline bg-trasparent ">
         <img
           src="/src/assets/LogoGrande.png"

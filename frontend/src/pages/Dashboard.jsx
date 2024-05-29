@@ -67,7 +67,7 @@ const Dashboard = () => {
   const map = useRef(null);
   const milan = { lng: 9.18854, lat: 45.464664 };
   const [zoom] = useState(14);
-  maptilersdk.config.apiKey = "zKTSY8Huqpuc98tNjLwq";
+  maptilersdk.config.apiKey = "";
 
   useEffect(() => {
     if (map.current) return; // stops map from intializing more than once

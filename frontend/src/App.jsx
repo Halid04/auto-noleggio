@@ -1,4 +1,5 @@
 import React, { useEffect, useCallback } from "react";
+import toast, { Toaster } from "react-hot-toast";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import HomePage from "./pages/HomePage.jsx";
 import Auto from "./pages/Auto.jsx";
@@ -75,6 +76,7 @@ function App() {
       {!isTransactionPage && !isAdminDashboard && !impostazioniProfilo && (
         <Header />
       )}
+      <Toaster />
       <div
         className={`h-full w-full flex ${
           isTransactionPage || isAdminDashboard || impostazioniProfilo
