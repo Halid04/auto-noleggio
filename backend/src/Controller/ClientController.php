@@ -28,7 +28,7 @@ class ClientController extends BaseController {
             $request['id'] = $auth_info['data']['user_id'];
         }
 
-        if ($request['all'] && $auth_info['data']['admin'] === 0) {
+        if ($request['all'] ?? false && $auth_info['data']['admin'] === 0) {
             $response_obj['obj'] =  array (
                 'statusCode' => 403,
                 'body' => array (
