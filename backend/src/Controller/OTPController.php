@@ -1,14 +1,14 @@
 <?php
 namespace Src\Controller;
 
-use \Src\Gateway\TransactionGateway;
+use \Src\Gateway\OTPGateway;
 use \Src\Controller\BaseController;
 
-class TransactionController extends BaseController {
+class OTPController extends BaseController {
 
     public function __construct($requestMethod, $data, $db)
     {
-        parent::__construct($requestMethod, $data, new TransactionGateway($db));
+        parent::__construct($requestMethod, $data, new OTPGateway($db));
     }
 
 }

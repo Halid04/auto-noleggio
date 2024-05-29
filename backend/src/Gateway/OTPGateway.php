@@ -7,13 +7,17 @@ class OTPGateway extends BaseGateway
 {
     public function __construct(Database $db)
     {
-        $this->tableName = "transazionefinanziaria";
+        $this->tableName = "codiceotp";
         parent::__construct($db);
     }
 
     public function insert(array $input)
     {
-        $fields = ["id_cartadicredito", "importo", "stato", "data_transazione", "telefono"];
+        $fields = ["codice", "data_generazione", "id_transazionefinanziaria", "data_scadenza", "stato", "id_cliente"];
+
+        if (!isset($input['id_transazionefinanziaria'])) {
+            $input['id_transazionefinanziaria'] = null;
+        }
 
         $insert_response = $this->insertM($input, $fields);
 
@@ -48,7 +52,7 @@ class OTPGateway extends BaseGateway
 
     public function update(array $input)
     {
-        $fields = ["id_veicolo", "percorso_foto"];
+        $fields = ["stato"];
 
         //$validationErrors = $this->validateInput($input);
         if (!empty($validationErrors)) {
