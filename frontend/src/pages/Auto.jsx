@@ -148,10 +148,12 @@ function Auto() {
         return response.json();
       })
       .then((data) => {
-        console.log(data);
-        setAuto(data);
+        // console.log(data.content);
+        setAuto(data.content);
       })
-      
+      .catch((error) => {
+        console.error("Errore durante il recupero delle auto:", error);
+      });
   };
 
   const handleMenuButtonClickGeneralFiltri = (event) => {
@@ -1073,13 +1075,28 @@ function Auto() {
         </div>
       </form>
       <div className="auto-section shrink-0 h-[90vh] px-5 sm:px-10 py-5 w-full flex items-start justify-start flex-wrap gap-x-16 gap-y-5">
-        <CardAuto />
-        <CardAuto />
-        <CardAuto />
-        <CardAuto />
-        <CardAuto />
-        <CardAuto />
-        <CardAuto />
+        {auto && auto.length > 0 ? (
+          auto.map((auto, index) => (
+            <CardAuto
+              key={index}
+              idAuto={auto.id_veicolo}
+              marca={auto.marca}
+              modello={auto.modello}
+              anno_immatricolazione={auto.anno_immatricolazione}
+              tipo_veicolo={auto.tipo_veicolo}
+              tipo_carburazione={auto.tipo_carburazione}
+              chilometraggio={auto.chilometraggio}
+              numero_posti={auto.numero_posti}
+              colore_veicolo={auto.colore_veicolo}
+              costo_giornaliero={auto.costo_giornaliero}
+              images={auto.images}
+              citta={auto.città}
+              indirizzo={auto.indirizzo}
+            />
+          ))
+        ) : (
+          <p>Nessuna auto disponibile</p>
+        )}
       </div>
     </div>
   );

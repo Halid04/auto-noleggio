@@ -1,43 +1,92 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { MapPin } from "lucide-react";
 
-function CardAuto() {
+function CardAuto({
+  idAuto,
+  marca,
+  modello,
+  anno_immatricolazione,
+  tipo_carburazione,
+  chilometraggio,
+  tipo_veicolo,
+  numero_posti,
+  colore_veicolo,
+  costo_giornaliero,
+  images,
+  citta,
+  indirizzo,
+}) {
+  const navigate = useNavigate();
+  const [randomImage, setRandomImage] = useState("");
+  const [imgNewPath, setImgNewPath] = useState([]);
+
+  useEffect(() => {
+    if (images && images.length > 0) {
+      const newPaths = images.map((img) => {
+        const baseName = img.nome_foto.slice(0, -1);
+        return `/${baseName}/${img.nome_foto}`;
+      });
+      setImgNewPath(newPaths);
+    }
+  }, [images]); // Run this effect whenever `images` changes
+
+  const getRandomImage = (imageArray) => {
+    const randomIndex = Math.floor(Math.random() * imageArray.length);
+    return imageArray[randomIndex];
+  };
+
+  // Update random image path when `imgNewPath` changes
+  useEffect(() => {
+    if (imgNewPath && imgNewPath.length > 0) {
+      setRandomImage(getRandomImage(imgNewPath));
+    }
+  }, [imgNewPath]);
+
+  const handleNavigateToCarDetail = (id) => {
+    navigate(`/carDetail/${id}`);
+  };
+
   return (
-    <div className=" w-64 cursor-pointer bg-white border border-gray-200 rounded-lg shadow hover:scale-[.95] transition-transform duration-300 ease-in-out">
+    <div
+      onClick={() => handleNavigateToCarDetail(idAuto)}
+      className=" w-64 cursor-pointer bg-white border border-gray-200 rounded-lg shadow hover:scale-[.95] transition-transform duration-300 ease-in-out"
+    >
       <img
-        className="carpic"
-        src="https://assets.volkswagen.com/is/image/volkswagenag/NuovaPolo-1920x1080-Promo?Zml0PWNyb3AsMSZmbXQ9d2VicCZxbHQ9Nzkmd2lkPTE5MjAmaGVpPTEwODAmYWxpZ249MC4wMCwwLjAwJmJmYz1vZmYmM2E1Nw=="
-        alt="auto"
+        className="rounded-t-lg w-full h-[10rem] object-cover"
+        src={`/src/progettoGPOAutoImages${randomImage}.jpg`}
+        alt={randomImage}
         loading="lazy"
       />
       <div className="px-2 py-5 flex flex-col justify-start items-start gap-2">
         <a href="#" className="infoCar flex items-baseline gap-1">
           <h5 className="whitespace-nowrap text-xl font-bold tracking-tight text-gray-900 dark:text-white">
-            Nuova Polo
+            {marca}
           </h5>
-          <p className="whitespace-nowrap text-sm font-normal text-gray-700 dark:text-gray-400">
-            - 1.0 TSI Edition
+          <p className="whitespace-nowrap text-sm font-normal text-[#192024] dark:text-gray-400">
+            - {modello}
           </p>
         </a>
-        <p className="text-sm font-normal text-gray-700 dark:text-gray-400">
-          05/10/2015 | Deisel | 80.000 km
+        <p className="text-sm font-normal text-[#192024] dark:text-gray-400">
+          {anno_immatricolazione} | {chilometraggio} km |{" "}
+          <span className="font-bold text-lg">{costo_giornaliero} €/G</span>
         </p>
         <div className="tags flex gap-1 mb-2">
-          <span className=" inline-flex items-center px-3 h-7 text-sm font-normal text-center text-white bg-[#FF690F] rounded-lg hover:bg-[#d55508] ">
-            Family
+          <span className="whitespace-nowrap inline-flex items-center px-3 h-7 text-sm font-normal text-center text-white bg-[#FF690F] rounded-lg hover:bg-[#d55508] ">
+            {tipo_veicolo}
           </span>
-          <span className="inline-flex items-center px-3 h-7 text-sm font-normal text-center text-white bg-[#FF690F] rounded-lg hover:bg-[#d55508] ">
-            Spaziosa
+          <span className="whitespace-nowrap inline-flex items-center px-3 h-7 text-sm font-normal text-center text-white bg-[#FF690F] rounded-lg hover:bg-[#d55508] ">
+            {tipo_carburazione}
           </span>
-          <span className="inline-flex items-center px-3 h-7 text-sm font-normal text-center text-white bg-[#FF690F] rounded-lg hover:bg-[#d55508] ">
-            Blu
+          <span className="whitespace-nowrap inline-flex items-center px-3 h-7 text-sm font-normal text-center text-white bg-[#FF690F] rounded-lg hover:bg-[#d55508] ">
+            {colore_veicolo}
           </span>
         </div>
         <div className="oneline">
           <MapPin />{" "}
-          <p className=" font-normal text-gray-700 dark:text-gray-400">
+          <p className="whitespace-nowrap font-normal text-[#192024] dark:text-gray-400">
             {" "}
-            Brescia, Via BLa bla
+            {citta}, {indirizzo}
           </p>
         </div>
       </div>

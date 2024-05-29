@@ -1,13 +1,102 @@
-import React from "react";
+import React, { useState } from "react";
+import toast, { Toaster } from "react-hot-toast";
+import { useParams, useNavigate } from "react-router-dom";
 import { X } from "lucide-react";
 
 function Register({ viewLogin, setVisible }) {
+  const navigate = useNavigate();
+  const [nome, setNome] = useState("");
+  const [cognome, setCognome] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [telefono, setTelefono] = useState("");
+  const [dataDiNascita, setDataDiNascita] = useState("");
+
+  const calculateAge = (birthDate) => {
+    const today = new Date();
+    const birthDateObj = new Date(birthDate);
+    let age = today.getFullYear() - birthDateObj.getFullYear();
+    const monthDifference = today.getMonth() - birthDateObj.getMonth();
+
+    if (
+      monthDifference < 0 ||
+      (monthDifference === 0 && today.getDate() < birthDateObj.getDate())
+    ) {
+      age--;
+    }
+    return age;
+  };
+
+  const handleRegistrationSubmit = (e) => {
+    e.preventDefault();
+
+    const age = calculateAge(dataDiNascita);
+    if (age < 16) {
+      toast.error("Devi avere almeno 16 anni per registrarti.", {
+        duration: 1500,
+      });
+      return;
+    }
+
+    if (password.length < 8) {
+      toast.error("La password deve contenere almeno 8 caratteri.", {
+        duration: 1500,
+      });
+      return;
+    }
+
+    const url = "http://localhost/auto-noleggio/backend/public/register";
+    const headers = {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    };
+
+    const requestBody = {
+      nome: nome,
+      cognome: cognome,
+      email: email,
+      password: password,
+      telefono: telefono,
+      data_di_nascita: dataDiNascita,
+      admin: 0,
+    };
+
+    console.log("Request body:", requestBody);
+
+    fetch(url, {
+      method: "POST",
+      headers: headers,
+      body: JSON.stringify(requestBody),
+    })
+      .then((response) => {
+        if (response.status === 201) {
+          toast.success("Registrazione avvenuta con successo", {
+            duration: 1500,
+          });
+
+          setTimeout(() => {
+            setVisible(false);
+            navigate("/auto");
+          }, 1500);
+        }
+
+        return response.json();
+      })
+      .then((data) => {
+        console.log("data", data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
   return (
-    <div className="authCard flex z-20 flex-col justify-start items-start  md:w-[40vw] p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-6 md:px-8 md:py-4 ">
+    <div className="authCard flex z-20 flex-col justify-start items-start md:w-[40vw] p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-6 md:px-8 md:py-4">
+      <Toaster />
       <div className="w-full flex justify-end items-center py-2">
         <X className="cursor-pointer" onClick={() => setVisible(false)} />
       </div>
-      <form className="space-y-6 w-full" action="#">
+      <form className="space-y-6 w-full" onSubmit={handleRegistrationSubmit}>
         <h5 className="text-xl font-medium text-gray-900 dark:text-white">
           Registrati a Autonoleggio.itis
         </h5>
@@ -22,7 +111,9 @@ function Register({ viewLogin, setVisible }) {
             type="text"
             name="nome"
             id="nome"
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-orange-500 focus:border-orange-500 block w-full p-2.5 "
+            value={nome}
+            onChange={(e) => setNome(e.target.value)}
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-orange-500 focus:border-orange-500 block w-full p-2.5"
             placeholder="Mario"
             required
           />
@@ -38,7 +129,9 @@ function Register({ viewLogin, setVisible }) {
             type="text"
             name="cognome"
             id="cognome"
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-orange-500 focus:border-orange-500 block w-full p-2.5 "
+            value={cognome}
+            onChange={(e) => setCognome(e.target.value)}
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-orange-500 focus:border-orange-500 block w-full p-2.5"
             placeholder="Rossi"
             required
           />
@@ -51,11 +144,14 @@ function Register({ viewLogin, setVisible }) {
             Numero di telefono
           </label>
           <input
-            type="text"
+            type="tel"
             name="telefono"
             id="telefono"
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-orange-500 focus:border-orange-500 block w-full p-2.5 "
-            placeholder="33333333333"
+            value={telefono}
+            onChange={(e) => setTelefono(e.target.value)}
+            pattern="^\+39\d{10}$"
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-orange-500 focus:border-orange-500 block w-full p-2.5"
+            placeholder="+391234567890"
             required
           />
         </div>
@@ -70,7 +166,10 @@ function Register({ viewLogin, setVisible }) {
             type="email"
             name="email"
             id="email"
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-orange-500 focus:border-orange-500 block w-full p-2.5 "
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-orange-500 focus:border-orange-500 block w-full p-2.5"
             placeholder="name@company.com"
             required
           />
@@ -86,8 +185,10 @@ function Register({ viewLogin, setVisible }) {
             type="password"
             name="password"
             id="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             placeholder="••••••••"
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-orange-500 focus:border-orange-500 block w-full p-2.5  "
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-orange-500 focus:border-orange-500 block w-full p-2.5"
             required
           />
         </div>
@@ -102,6 +203,8 @@ function Register({ viewLogin, setVisible }) {
             type="date"
             name="dataDiNascita"
             id="dataDiNascita"
+            value={dataDiNascita}
+            onChange={(e) => setDataDiNascita(e.target.value)}
             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-orange-500 focus:border-orange-500 block w-full p-2.5"
             required
           />
@@ -117,7 +220,7 @@ function Register({ viewLogin, setVisible }) {
           <a
             href="#"
             onClick={() => viewLogin()}
-            className="text-[#FF690F] hover:underline "
+            className="text-[#FF690F] hover:underline"
           >
             Accedi
           </a>
