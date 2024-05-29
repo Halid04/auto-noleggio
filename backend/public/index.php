@@ -8,6 +8,7 @@
     use Src\Controller\VehicleController;
     use Src\Controller\ImageController;
     use Src\Controller\HeadQuarterController;
+    use Src\Controller\TransactionController;
     use Src\Gateway\ClientGateway;
     
     
@@ -44,6 +45,10 @@
                 $controller->processRequest();
             case "sedi":
                 $controller = new HeadQuarterController($requestMethod, $data, $database);
+                $controller->processRequest();
+                break;
+            case "transazioni":
+                $controller = new TransactionController($requestMethod, $data, $database);
                 $controller->processRequest();
                 break;
             default:

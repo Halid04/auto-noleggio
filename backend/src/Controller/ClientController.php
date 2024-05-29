@@ -28,12 +28,22 @@ class ClientController extends BaseController {
             $request['id'] = $auth_info['data']['user_id'];
         }
 
+        if ($request['all'] && $auth_info['data']['admin'] === 0) {
+            $response_obj['obj'] =  array (
+                'statusCode' => 403,
+                'body' => array (
+                    'message' => "Access forbidden: You do not have permission to access this resource"
+                )
+            );
+            return $response_obj;
+        }
+
         if ($auth_info['data']['user_id'] != ($request['id'] ?? -1) && $auth_info['data']['admin'] == 0) {
 
             $response_obj['obj'] =  array (
-                'statusCode' => 401,
+                'statusCode' => 403,
                 'body' => array (
-                    'message' => "You do not have permission to access this resource"
+                    'message' => "Access forbidden: You do not have permission to access this resource"
                 )
             );
 

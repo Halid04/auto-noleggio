@@ -35,6 +35,13 @@ class VehicleController extends BaseController {
                                 case "marche":
                                     $response = $this->gateway->getMakes($this->data);
                                     break;
+                                case "anni":
+                                    $response = $this->gateway->getYears($this->data);
+                                    break;
+
+                                case "tipi":
+                                    $response = $this->gateway->getTypes($this->data);
+                                    break;
                                 case "carburazioni":
                                     $response = $this->gateway->getFuelTypes($this->data);
                                     break;

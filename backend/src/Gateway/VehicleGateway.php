@@ -15,7 +15,56 @@ class VehicleGateway extends BaseGateway {
         parent::__construct($db);
     }
 
-    public function getFuelTypes($input) {
+    public function getTypes($input) 
+    {
+        $statement = "
+            SELECT DISTINCT
+                tipo_veicolo
+            FROM " . $this->tableName;
+        try {
+            $statement = $this->conn->prepare($statement);
+            $statement->execute();
+
+            $response = $statement->fetchAll(\PDO::FETCH_ASSOC);
+
+            if (!$response) {
+                $response = [];
+            }
+
+            return $this->response(200, content: $response);
+
+        } catch (\PDOException $e) {
+            error_log("Database error: " . $e->getMessage());
+            return $this->response(500, message: "Internal Server Error");
+        }
+    }
+
+    public function getYears($input) 
+    {
+        $statement = "
+            SELECT DISTINCT
+                anno_immatricolazione
+            FROM " . $this->tableName;
+        try {
+            $statement = $this->conn->prepare($statement);
+            $statement->execute();
+
+            $response = $statement->fetchAll(\PDO::FETCH_ASSOC);
+
+            if (!$response) {
+                $response = [];
+            }
+
+            return $this->response(200, content: $response);
+
+        } catch (\PDOException $e) {
+            error_log("Database error: " . $e->getMessage());
+            return $this->response(500, message: "Internal Server Error");
+        }
+    }
+
+    public function getFuelTypes($input) 
+    {
         $statement = "
             SELECT DISTINCT
                 tipo_carburazione
