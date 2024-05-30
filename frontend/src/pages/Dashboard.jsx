@@ -12,6 +12,7 @@ import {
 import { Doughnut, Line } from "react-chartjs-2";
 import * as maptilersdk from "@maptiler/sdk";
 import "@maptiler/sdk/dist/maptiler-sdk.css";
+import InsertCar from "../components/InsertCar"; // Adjust the path as needed
 
 ChartJS.register(
   ArcElement,
@@ -114,7 +115,9 @@ const Dashboard = () => {
       <div className="grid grid-cols-2 gap-4 mb-4">
         <div className="bg-white p-4 rounded-lg shadow-md">
           <h2 className="text-lg font-semibold mb-2">Vehicle Status</h2>
-          <Doughnut data={doughnutData} />
+          <div className="small-chart">
+            <Doughnut data={doughnutData} />
+          </div>
         </div>
         <div className="bg-white p-4 rounded-lg shadow-md">
           <h2 className="text-lg font-semibold mb-2">Sales Status</h2>
@@ -202,24 +205,20 @@ const Dashboard = () => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Email
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Phone
-                </th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               <tr>
                 <td className="px-6 py-4 whitespace-nowrap">1</td>
                 <td className="px-6 py-4 whitespace-nowrap">John Doe</td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  john.doe@example.com
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">123-456-7890</td>
+                <td className="px-6 py-4 whitespace-nowrap">john@example.com</td>
               </tr>
             </tbody>
           </table>
         </div>
       </div>
+
+      {isOpen && <InsertCar setVisible={setIsOpen} />}
     </div>
   );
 };
