@@ -358,7 +358,11 @@ class VehicleGateway extends BaseGateway {
                 "type" => "list",
             ],
             [
-                "name" => "tipocarburante",
+                "name" => "tipo_carburante",
+                "type" => "list",
+            ],
+            [
+                "name" => "tipo_veicolo",
                 "type" => "list",
             ]
         ];

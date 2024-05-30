@@ -77,20 +77,6 @@
 
     function verifyChallenge($request, $database)
     {
-
-        $required_parameters = ["otp_code", "otp_challenge_id"];
-
-        $request_keys = array_keys($request);
-    
-        $missing_keys = array_diff($required_parameters, $request_keys);
-    
-        if (count($missing_keys) !== 0) {
-            header('Content-Type: application/json');
-            http_response_code(400);
-            echo json_encode(["message" => "Missing parameters: " . implode(",", $missing_keys)]);
-            return;
-        }
-
         if ($request['auth']['jwt'] == "") {
             header('Content-Type: application/json');
             http_response_code(401);
@@ -105,7 +91,20 @@
             http_response_code(403);
             echo json_encode(["message" => "Access forbidden: " . $e->getMessage()]);
             return;
-        } 
+        }
+        
+        $required_parameters = ["otp_code", "otp_challenge_id"];
+
+        $request_keys = array_keys($request);
+    
+        $missing_keys = array_diff($required_parameters, $request_keys);
+    
+        if (count($missing_keys) !== 0) {
+            header('Content-Type: application/json');
+            http_response_code(400);
+            echo json_encode(["message" => "Missing parameters: " . implode(",", $missing_keys)]);
+            return;
+        }
 
         $auth_info['data'] = (array)$auth_info['data'];
         $auth_info = $auth_info['data'];
@@ -126,12 +125,19 @@
 
         if (empty($result)) {
             header('Content-Type: application/json');
-            http_response_code(500);
-            echo json_encode(["message" => "Internal Server Error"]);
+            http_response_code(404);
+            echo json_encode(["message" => "Challenge non trovata"]);
             return;
         }
 
         $otp_challenge = $result[0];
+
+        if ($otp_challenge['id_cliente'] != $auth_info['user_id']) {
+            header('Content-Type: application/json');
+            http_response_code(403);
+            echo json_encode(["message" => "Non hai il permesso di risolvere questa challenge"]);
+            return;
+        }
 
         if ($otp_challenge['stato'] == "failed") {
             header('Content-Type: application/json');
@@ -143,7 +149,14 @@
         if ($otp_challenge['stato'] == "successful") {
             header('Content-Type: application/json');
             http_response_code(400);
-            echo json_encode(["message" => "Challenge già utilizzata: Esito postivo"]);
+            echo json_encode(["message" => "Challenge già utilizzata: Esito positivo"]);
+            return;
+        }
+
+        if ($otp_challenge['stato'] == "expired") {
+            header('Content-Type: application/json');
+            http_response_code(400);
+            echo json_encode(["message" => "Challenge scaduta"]);
             return;
         }
 
@@ -174,15 +187,7 @@
             return;
         }
 
-        if ($otp_challenge['id_cliente'] != $auth_info['user_id']) {
-            echo var_dump($auth_info);
-            header('Content-Type: application/json');
-            http_response_code(403);
-            echo json_encode(["message" => "Non hai il permesso di risolvere questa challenge"]);
-            return;
-        }
-
-        if ($otp_challenge['codice'] != $request['otp_code']) {
+        if (!password_verify($request['otp_code'], $otp_challenge['codice'])) {
 
 
             $result = $otp_gateway->update([
@@ -259,8 +264,10 @@
         
         $status = 1;
 
+        echo $otp_code;
+
         $result = $otp_gateway->insert([
-            "codice" => $otp_code,
+            "codice" => password_hash($otp_code, PASSWORD_DEFAULT),
             "data_generazione" => $date,
             "data_scadenza" => $expiry_date,
             "stato" => $status,
@@ -295,7 +302,7 @@
         $challenge_id = $result[0]['id_codiceotp'];
 
         header('Content-Type: application/json');
-        http_response_code($result['statusCode']);
+        http_response_code(500);
         echo json_encode(["challenge_id" => $challenge_id]);
         return;
     }
