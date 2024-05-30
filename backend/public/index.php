@@ -180,7 +180,7 @@
             return;
         }
 
-        if ($otp_challenge['used'] == "used") {
+        if ($otp_challenge['stato'] == "used") {
             header('Content-Type: application/json');
             http_response_code(400);
             echo json_encode(["message" => "Challenge già utilizzata: Transazione già eseguita"]);
