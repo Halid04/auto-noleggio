@@ -62,7 +62,7 @@ function Login({ viewRegister, setVisible }) {
 
   return (
     <div className="login-card flex z-20 flex-col justify-start items-start w-full max-w-sm md:w-[40vw] p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-6 md:px-8 md:py-4 ">
-      <Toaster />
+      {/* <Toaster /> */}
       <div className="w-full flex justify-end items-center py-2">
         <X className="cursor-pointer" onClick={() => setVisible(false)} />
       </div>
