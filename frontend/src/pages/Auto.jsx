@@ -218,6 +218,7 @@ function Auto() {
         return response.json();
       })
       .then((data) => {
+        console.log("get all auto", data.content);
         localStorage.removeItem("selezioniMarca");
         localStorage.removeItem("selezioniTipoMacchina");
         localStorage.removeItem("selezioniTipoCarburante");
