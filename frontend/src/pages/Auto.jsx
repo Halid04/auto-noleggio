@@ -1378,6 +1378,7 @@ function Auto() {
               images={auto.images}
               citta={auto.città}
               indirizzo={auto.indirizzo}
+              favorited={auto.favorited}
             />
           ))
         ) : (
