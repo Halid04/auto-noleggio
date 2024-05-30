@@ -247,7 +247,7 @@ class VehicleGateway extends BaseGateway {
                 END as favorited
             FROM " . $this->tableName .
             " JOIN sede on veicolo.id_sede = sede.id_sede LEFT JOIN preferire ON veicolo.id_veicolo = preferire.id_veicolo
-             WHERE id_". $this->tableName. " = :id;
+             WHERE " .$this->tableName . ".id_". $this->tableName. " = :id;
             ";
 
         try {
