@@ -11,6 +11,7 @@
     use Src\Controller\HeadQuarterController;
     use Src\Controller\TransactionController;
     use Src\Controller\OTPController;
+    use Src\Controller\FavoriteController;
     use Src\Gateway\ClientGateway;
     use Src\Gateway\OTPGateway;
     
@@ -54,8 +55,8 @@
                 $controller = new TransactionController($requestMethod, $data, $database);
                 $controller->processRequest();
                 break;
-            case "new_transaction":
-                $controller = new TransactionController($requestMethod, $data, $database);
+            case "preferiti":
+                $controller = new FavoriteController($requestMethod, $data, $database);
                 $controller->processRequest();
                 break;
             case "otp":
