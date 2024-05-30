@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { MapPin } from "lucide-react";
+import { MapPin, Heart } from "lucide-react";
 
 function CardAuto({
   idAuto,
@@ -38,8 +38,11 @@ function CardAuto({
   return (
     <div
       onClick={() => handleNavigateToCarDetail(idAuto)}
-      className=" w-64 cursor-pointer bg-white border border-gray-200 rounded-lg shadow hover:scale-[.95] transition-transform duration-300 ease-in-out"
+      className=" w-64 cursor-pointer bg-white border border-gray-200 rounded-lg shadow hover:scale-[.95] transition-all duration-300 ease-in-out"
     >
+      <div className=" absolute top-2 left-2 z-50">
+        <Heart size={25} color="#192024" className="fill-[#1920242a]" />
+      </div>
       <img
         className="rounded-t-lg w-full h-[10rem] object-cover"
         src={`/src/progettoGPOAutoImages${imgNewPath[0]}.png`}
