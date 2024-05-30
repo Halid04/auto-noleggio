@@ -11,9 +11,101 @@ class TransactionGateway extends BaseGateway
         parent::__construct($db);
     }
 
+    public function findAll()
+    {
+        $statement = "
+            SELECT 
+                *
+            FROM " . $this->tableName . "
+            WHERE id_cliente = :user_id;";
+        
+        try {
+            $statement = $this->conn->prepare($statement);
+
+            $statement->execute([
+                'user_id' => (int) $input['user_id']
+            ]);
+
+            $response = $statement->fetchAll(\PDO::FETCH_ASSOC);
+
+            if (!$response) {
+                $response = [];
+            }
+
+            return $this->response(200, content: $response);
+
+        } catch (\PDOException $e) {
+            error_log("Database error: " . $e->getMessage());
+            return $this->response(500, message: "Internal Server Error");
+        }
+    }
+
+    public function findLatest()
+    {
+        $statement = "
+            SELECT 
+                *
+            FROM " . $this->tableName .
+            "WHERE id_cliente = :user_id ORDER BY id_" . $this->tableName . " DESC LIMIT 1;";
+
+        try {
+            $statement = $this->conn->prepare($statement);
+
+            $statement = $this->conn->execute([
+                'user_id' => (int) $input['user_id']
+            ]);
+
+            $response = $statement->fetchAll(\PDO::FETCH_ASSOC);
+
+            if (!$response) {
+                $response = [];
+            }
+
+            return $this->response(200, content: $response);
+
+            return $this->response(200, content: $statement->fetch(\PDO::FETCH_ASSOC));
+
+        } catch (\PDOException $e) {
+            error_log("Database error: " . $e->getMessage());
+            return $this->response(500, message: "Internal Server Error");
+        }    
+    }
+
+    public function find($input)
+    {
+        $statement = "
+            SELECT 
+                *
+            FROM " . $this->tableName .
+            " WHERE id_". $this->tableName. " = :id AND id_cliente = :user_id;
+            ";
+
+        try {
+            $statement = $this->conn->prepare($statement);
+            $statement->execute(array(
+                'id' => (int) $input["id"],
+                'user_id' => (int) $input['user_id']
+            ));
+
+            $response = $statement->fetchAll(\PDO::FETCH_ASSOC);
+
+            if (!$response) {
+                $response = [];
+            }
+
+            return $this->response(200, content: $response);
+
+            return $this->response(200, content: $statement->fetch(\PDO::FETCH_ASSOC));
+
+        } catch (\PDOException $e) {
+            error_log("Database error: " . $e->getMessage());
+            return $this->response(500, message: "Internal Server Error");
+        }    
+    }
+
     public function insert(array $input)
     {
-        $fields = ["id_cartadicredito", "importo", "stato", "data_transazione", "telefono"];
+        $fields = ["id_cartadicredito", "importo", "stato", "data_transazione", "telefono", "id_cliente"];
 
         $insert_response = $this->insertM($input, $fields);
 

@@ -12,7 +12,7 @@ class BaseGateway {
         $this->conn = $db->getConnection();
     }
 
-    public function findAll()
+    public function findAll($request)
     {
         $statement = "
             SELECT 

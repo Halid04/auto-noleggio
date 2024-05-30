@@ -131,15 +131,22 @@ class BaseController {
         $response_obj = [];
         $response_obj['status'] = false;
 
+        $auth_info;
+        $user_id;
+
         if ($this->requestMethod != "GET") {
             $auth_info = $this->authenticateToken($request);
-
+            
             if (!$auth_info['status']) {
                 $response_obj['obj'] = $auth_info['obj'];
                 return $response_obj;
             }
 
+
+
             $auth_info = $auth_info['obj'];
+
+            $user_id = $auth_info['data']['user_id'];
 
             if ((int) $auth_info['data']['admin'] != 1 && $this->requestMethod != "GET") {
                 $response_obj['obj'] =  array (
@@ -154,7 +161,22 @@ class BaseController {
 
             $response_obj['status'] = true;
             $response_obj['obj'] = $auth_info;
+        } else {
+
+            if ($this->data['auth']['jwt'] != "" ) {
+                $auth_info = $this->authenticateToken($request);
+
+                if ($auth_info['status']) {
+                $user_id = $auth_info['obj']['data']['user_id'];
+                }
+            }
+
+            
         }
+
+        if (isset($user_id)) {
+            $request['user_id'] = $user_id;
+         }
 
         $response_obj['status'] = true;
         
