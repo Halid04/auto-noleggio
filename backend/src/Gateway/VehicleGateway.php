@@ -191,12 +191,15 @@ class VehicleGateway extends BaseGateway {
         }    
     }
 
-    public function findAll()
+    public function findAll($request)
     {
         $statement = "
             SELECT 
-                veicolo.*, sede.*
-            FROM " . $this->tableName . " JOIN sede on veicolo.id_sede = sede.id_sede";
+                veicolo.*, sede.*, CASE
+                WHEN preferire.id_cliente = " . ($request['user_id'] ?? -1) . " THEN true
+                ELSE false
+            END as favorited 
+            FROM " . $this->tableName . " JOIN sede on veicolo.id_sede = sede.id_sede LEFT JOIN preferire ON veicolo.id_veicolo = preferire.id_veicolo";
 
         try {
             $statement = $this->conn->prepare($statement);
@@ -342,7 +345,7 @@ class VehicleGateway extends BaseGateway {
         
         $filters = [
             [
-                "name" => "prezzo",
+                "name" => "costo_giornaliero",
                 "type" => "numeric",
                 "keys" => [
                     "upperbound",
@@ -366,7 +369,7 @@ class VehicleGateway extends BaseGateway {
                 "type" => "list",
             ],
             [
-                "name" => "tipo_carburante",
+                "name" => "tipo_carburazione",
                 "type" => "list",
             ],
             [

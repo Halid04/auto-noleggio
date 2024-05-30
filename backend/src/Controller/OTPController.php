@@ -2,12 +2,18 @@
 namespace Src\Controller;
 
 use \Src\Gateway\OTPGateway;
+use \Src\Gateway\TransactionGateway;
 use \Src\Controller\BaseController;
 
 class OTPController extends BaseController {
 
-    public function __construct($requestMethod, $data, $db)
+    private $uri;
+    private $transactionGateway;
+
+    public function __construct($requestMethod, $uri, $data, $db)
     {
+        $this->uri = $uri;
+        $this->transactionGateway = new TransactionGateway($db);
         parent::__construct($requestMethod, $data, new OTPGateway($db));
     }
 
@@ -23,48 +29,29 @@ class OTPController extends BaseController {
             } else {
                 switch ($this->requestMethod) {
                     case 'GET':
-                        if (isset($this->uri[1])) {
-                            switch ($this->uri[1]){
-                                case "getChallenge":
-                                    $response = $this->gateway->generateChallenge($this->data, $auth_info);
-                                    break;
-                                default:
-                                    $this->sendOutput(array('Content-Type: application/json'), statusCode: 404, data: ["message" => "Resource not found"]);
-                                    break;
-                                    return;
-                            }
-                        } else {
-                            if ($this->data['all'] ?? false || (!isset($this->data['id']))) {
-                                $response = $this->gateway->findAll($this->data);
-                            } else {
-                                $response = $this->gateway->find($this->data);
-                            };
-                        }      
+                        switch ($this->uri[1] ?? null){
+                            case "getChallenge":
+                                $response = $this->generateChallenge($this->data, $auth['obj']);
+                                break;
+                            default:
+                                $this->sendOutput(array('Content-Type: application/json'), statusCode: 404, data: ["message" => "Resource not found"]);
+                                break;
+                                return;
+                        }   
                         break;
                     case 'POST':
-                        if (isset($this->uri[1])) {
-                            switch ($this->uri[1]){
-                                case "solveChallenge":
-                                    $response = $this->gateway->verifyChallenge($this->data, $auth_info);
-                                    break;
-                                default:
-                                    $this->sendOutput(array('Content-Type: application/json'), statusCode: 404, data: ["message" => "Resource not found"]);
-                                    break;
-                                    return;
-                            }
-                        } else {
-                            if ($this->data['all'] ?? false || (!isset($this->data['id']))) {
-                                $response = $this->gateway->findAll($this->data);
-                            } else {
-                                $response = $this->gateway->find($this->data);
-                            };
-                        }      
-                        break;
-                    case 'PUT':
-                        $response = $this->gateway->update($this->data);
-                        break;
-                    case 'DELETE':
-                        $response = $this->gateway->delete($this->data);
+                        switch ($this->uri[1] ?? null){
+                            case "solveChallenge":
+                                $response = $this->verifyChallenge($this->data, $auth['obj']);
+                                break;
+                            case "newTransaction":
+                                $response = $this->newTransaction($this->data, $auth['obj']);
+                                break;
+                            default:
+                                $this->sendOutput(array('Content-Type: application/json'), statusCode: 404, data: ["message" => "Resource not found"]);
+                                break;
+                                return;
+                        }  
                         break;
                     default:
                         $this->sendOutput(array('Content-Type: application/json'), statusCode: 404, data: ["message" => "Resource not found"]);
@@ -84,7 +71,8 @@ class OTPController extends BaseController {
 
     }
 
-    public function authenticateRequest (&$request) {
+    public function authenticateRequest (&$request)
+    {
         $response_obj = [];
         $response_obj['status'] = false;
         
@@ -131,7 +119,11 @@ class OTPController extends BaseController {
 
     private function generateChallenge($request, $auth_info)
     {
-        $otp_code = generateOTP($_ENV['SECRET_KEY']);
+        $auth_info = $auth_info['data'];
+
+        $otp_code = $this->generateOTP($_ENV['SECRET_KEY']);
+
+        echo $otp_code;
 
         $date = date('Y-m-d H:i:s', time());
 
@@ -154,7 +146,7 @@ class OTPController extends BaseController {
         $result = $this->gateway->findLatest();
 
         if ($result['statusCode'] != 200) {
-            return result;
+            return $result;
         }
 
         $result = $result['body']['content'];
@@ -182,7 +174,8 @@ class OTPController extends BaseController {
 
     function verifyChallenge($request, $auth_info)
     {
-        
+        $auth_info = $auth_info['data'];
+
         $required_parameters = ["otp_code", "otp_challenge_id"];
 
         $request_keys = array_keys($request);
@@ -198,7 +191,7 @@ class OTPController extends BaseController {
             ];
         }
 
-        $result = $this->gatewat->find(["id" => $request['otp_challenge_id']]);
+        $result = $this->gateway->find(["id" => $request['otp_challenge_id']]);
 
         $result = $result['body']['content'];
 
@@ -213,103 +206,271 @@ class OTPController extends BaseController {
 
         $otp_challenge = $result[0];
 
+        if ($otp_challenge['stato'] == "void") {
+            return [
+                'statusCode' => 400,
+                'body' => [
+                    'message' => "Challenge invalida"
+                ]
+            ];
+        }
+
         if ($otp_challenge['id_cliente'] != $auth_info['user_id']) {
-            header('Content-Type: application/json');
-            http_response_code(403);
-            echo json_encode(["message" => "Non hai il permesso di risolvere questa challenge"]);
-            return;
+            $result = $this->gateway->update([
+                'id' => $request['otp_challenge_id'],
+                'stato' => 6
+            ]);
+
+            if ($result['statusCode'] != 200) {
+                return $result;
+            }
+
+            return [
+                'statusCode' => 403,
+                'body' => [
+                    'message' => "Non hai il permesso di risolvere questa challenge"
+                ]
+            ];
         }
 
         if ($otp_challenge['stato'] == "failed") {
-            header('Content-Type: application/json');
-            http_response_code(400);
-            echo json_encode(["message" => "Challenge già utilizzata: Esito negativo"]);
-            return;
+            return [
+                'statusCode' => 400,
+                'body' => [
+                    'message' => "Challenge già utilizzata: Esito negativo"
+                ]
+            ];
         }
 
         if ($otp_challenge['stato'] == "successful") {
-            header('Content-Type: application/json');
-            http_response_code(400);
-            echo json_encode(["message" => "Challenge già utilizzata: Esito positivo"]);
-            return;
+            return [
+                'statusCode' => 400,
+                'body' => [
+                    'message' => "Challenge già utilizzata: Esito positivo"
+                ]
+            ];
         }
 
         if ($otp_challenge['stato'] == "expired") {
-            header('Content-Type: application/json');
-            http_response_code(400);
-            echo json_encode(["message" => "Challenge scaduta"]);
-            return;
+            return [
+                'statusCode' => 400,
+                'body' => [
+                    'message' => "Challenge scaduta"
+                ]
+            ];
         }
 
         if (time() >= strtotime($otp_challenge['data_scadenza'])) {
 
-            $result = $otp_gateway->update([
+            $result = $this->gateway->update([
                 'id' => $request['otp_challenge_id'],
                 'stato' => 4
             ]);
 
             if ($result['statusCode'] != 200) {
-                header('Content-Type: application/json');
-                http_response_code($result['statusCode']);
-                echo json_encode($result['body']);
-                return;
+               return $result;
             }
 
-            header('Content-Type: application/json');
-            http_response_code(400);
-            echo json_encode(["message" => "Challenge scaduta"]);
-            return;
+            return [
+                'statusCode' => 400,
+                'body' => [
+                    'message' => "Challenge scaduta"
+                ]
+            ];
         }
 
         if ($otp_challenge['used'] == "used") {
-            header('Content-Type: application/json');
-            http_response_code(400);
-            echo json_encode(["message" => "Challenge già utilizzata: Transazione già eseguita"]);
-            return;
+            return [
+                'statusCode' => 400,
+                'body' => [
+                    'message' => "Challenge già utilizzata: Transazione già eseguita"
+                ]
+            ];
         }
 
         if (!password_verify($request['otp_code'], $otp_challenge['codice'])) {
 
 
-            $result = $otp_gateway->update([
+            $result = $this->gateway->update([
                 'id' => $request['otp_challenge_id'],
                 'stato' => 2
             ]);
 
             if ($result['statusCode'] != 200) {
-                header('Content-Type: application/json');
-                http_response_code($result['statusCode']);
-                echo json_encode($result['body']);
-                return;
+                return $result;
             }
 
-            header('Content-Type: application/json');
-            http_response_code(403);
-            echo json_encode(["message" => "Codice OTP errato"]);
-            return;
+            return [
+                'statusCode' => 403,
+                'body' => [
+                    'message' => "Codice OTP Errato"
+                ]
+            ];
         } else {
-            $result = $otp_gateway->update([
+            $result = $this->gateway->update([
                 'id' => $request['otp_challenge_id'],
                 'stato' => 3
             ]);
 
             if ($result['statusCode'] != 200) {
-                header('Content-Type: application/json');
-                http_response_code($result['statusCode']);
-                echo json_encode($result['body']);
-                return;
+                return $result;
             }
 
-            header('Content-Type: application/json');
-            http_response_code(200);
-            echo json_encode(["message" => "Challenge risolta"]);
-            return;
+            return [
+                'statusCode' => 200,
+                'body' => [
+                    'message' => "Challenge risolta"
+                ]
+            ];
         }
 
-        header('Content-Type: application/json');
-        http_response_code(500);
-        echo json_encode(["message" => "Internal Server Error"]);
-        return;
+        return [
+            'statusCode' => 500,
+            'body' => [
+                'message' => "Internal Server Error"
+            ]
+        ];
+    }
+
+    function newTransaction($request, $auth_info)
+    {
+        $required_parameters = ["otp_challenge_id"];
+
+        $request_keys = array_keys($request);
+    
+        $missing_keys = array_diff($required_parameters, $request_keys);
+    
+        if (count($missing_keys) !== 0) {
+            return [
+                'statusCode' => 400,
+                'body' => [
+                    'message' => "Missing parameters: " . implode(",", $missing_keys)
+                ]
+            ];
+        }
+        
+        $auth_info = $auth_info['data'];
+
+        $otp_result = $this->gateway->find(["id" => $request['otp_challenge_id']]);
+
+        $otp_result = $otp_result['body']['content'];
+
+        if (empty($otp_result)) {
+            return [
+                'statusCode' => 404,
+                'body' => [
+                    'message' => "Challenge non trovata"
+                ]
+            ];
+        }
+
+        $otp_challenge = $otp_result[0];
+
+        if ($otp_challenge['stato'] == "void") {
+            return [
+                'statusCode' => 400,
+                'body' => [
+                    'message' => "Challenge invalida"
+                ]
+            ];
+        }
+
+        if ($otp_challenge['id_cliente'] != $auth_info['user_id']) {
+
+            $result = $this->gateway->update([
+                'id' => $request['otp_challenge_id'],
+                'stato' => 6
+            ]);
+
+            if ($result['statusCode'] != 200) {
+               return $result;
+            }
+
+            return [
+                'statusCode' => 403,
+                'body' => [
+                    'message' => "Non hai il permesso di risolvere questa challenge"
+                ]
+            ];
+        }
+
+        if (time() >= strtotime($otp_challenge['data_scadenza'])) {
+
+            $result = $this->gateway->update([
+                'id' => $request['otp_challenge_id'],
+                'stato' => 4
+            ]);
+
+            if ($result['statusCode'] != 200) {
+               return $result;
+            }
+
+            return [
+                'statusCode' => 400,
+                'body' => [
+                    'message' => "Challenge scaduta"
+                ]
+            ];
+        }
+
+        if ($otp_challenge['stato'] == "failed") {
+            return [
+                'statusCode' => 400,
+                'body' => [
+                    'message' => "Challenge già utilizzata: Esito negativo"
+                ]
+            ];
+        }
+
+        if ($otp_challenge['stato'] == "expired") {
+            return [
+                'statusCode' => 400,
+                'body' => [
+                    'message' => "Challenge scaduta"
+                ]
+            ];
+        }
+
+        if ($otp_challenge['stato'] == "used") {
+            return [
+                'statusCode' => 400,
+                'body' => [
+                    'message' => "Challenge già utilizzata: Transazione già eseguita"
+                ]
+            ];
+        }
+
+        if ($otp_challenge['stato'] == "successful") {
+            $result = $this->transactionGateway->insert($request);
+
+            if ($result['statusCode'] != 200) {
+               return $result;
+            }
+
+            $result = $this->gateway->update([
+                'id' => $request['otp_challenge_id'],
+                'stato' => 5
+            ]);
+
+            if ($result['statusCode'] != 200) {
+                return $result;
+             }
+
+            return [
+                'statusCode' => 200,
+                'body' => [
+                    'message' => "Transazione eseguita"
+                ]
+            ];
+
+        }
+
+        return [
+            'statusCode' => 500,
+            'body' => [
+                'message' => "Internal Server Error"
+            ]
+        ];
     }
 
     function generateOTP(string $secret_key, int $time_step = 60, int $length = 6): string
