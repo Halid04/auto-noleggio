@@ -344,10 +344,18 @@ class VehicleGateway extends BaseGateway {
             [
                 "name" => "prezzo",
                 "type" => "numeric",
+                "keys" => [
+                    "upperbound",
+                    "lowerbound"
+                ]
             ],
             [
                 "name" => "chilometraggio",
                 "type" => "numeric",
+                "keys" => [
+                    "upperbound",
+                    "lowerbound"
+                ]
             ],
             [
                 "name" => "anno_immatricolazione",

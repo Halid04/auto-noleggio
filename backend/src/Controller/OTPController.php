@@ -209,10 +209,6 @@ class OTPController extends BaseController {
                     'message' => "Challenge non trovata"
                 ]
             ];
-            header('Content-Type: application/json');
-            http_response_code(404);
-            echo json_encode(["message" => "Challenge non trovata"]);
-            return;
         }
 
         $otp_challenge = $result[0];
