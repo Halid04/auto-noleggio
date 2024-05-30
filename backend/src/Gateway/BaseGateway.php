@@ -37,6 +37,33 @@ class BaseGateway {
         }
     }
 
+    public function findLatest()
+    {
+        $statement = "
+            SELECT 
+                *
+            FROM " . $this->tableName .
+            " ORDER BY id_" . $this->tableName . " DESC LIMIT 1;";
+
+        try {
+            $statement = $this->conn->query($statement);
+
+            $response = $statement->fetchAll(\PDO::FETCH_ASSOC);
+
+            if (!$response) {
+                $response = [];
+            }
+
+            return $this->response(200, content: $response);
+
+            return $this->response(200, content: $statement->fetch(\PDO::FETCH_ASSOC));
+
+        } catch (\PDOException $e) {
+            error_log("Database error: " . $e->getMessage());
+            return $this->response(500, message: "Internal Server Error");
+        }    
+    }
+
     public function find($input)
     {
         $statement = "

@@ -141,6 +141,19 @@ class VehicleGateway extends BaseGateway {
                 }
             }
 
+            if ($filter['type'] == "numeric_list") {
+                $statement .= "AND (";
+                $counter = 0;
+                foreach ($filter['params'] as $pair) {
+                    if ($counter != 0) {
+                        $statement .= " OR ";
+                    }
+                    $counter++;
+                    $statement .= " (" . $filter['name'] . " >= " . $pair[0] . " AND " . $filter['name'] . " <= " . $pair[1] . ") ";
+                }
+                $statement .= ") ";
+            }
+            
             if ($filter['type'] == "list") {
                 $statement .= " AND " . $filter['name'] . ($filter['params']['exclude'] ? " NOT" : "") ." IN (" . str_repeat('?,', count($filter['params']['list']) - 1) . '?)';
                 $params = array_merge($params, $filter['params']['list']);
@@ -326,48 +339,33 @@ class VehicleGateway extends BaseGateway {
 
     private function validateFilterObject(array $input) 
     {
+        
         $filters = [
             [
                 "name" => "prezzo",
                 "type" => "numeric",
-                "keys" => [
-                    "lowerbound",
-                    "upperbound"
-                ]
             ],
             [
                 "name" => "chilometraggio",
                 "type" => "numeric",
-                "keys" => [
-                    "lowerbound",
-                    "upperbound"
-                ]
             ],
             [
-                "name" => "anno",
-                "type" => "numeric",
-                "keys" => [
-                    "lowerbound",
-                    "upperbound"
-                ]
+                "name" => "anno_immatricolazione",
+                "type" => "numeric_list",
             ],
             [
                 "name" => "marca",
                 "type" => "list",
-                "keys" => [
-                    "list",
-                    "exclude"
-                ]
             ],
             [
-                "name" => "tipocarburante",
+                "name" => "tipo_carburante",
                 "type" => "list",
-                "keys" => [
-                    "list",
-                    "exclude"
-                ]
+            ],
+            [
+                "name" => "tipo_veicolo",
+                "type" => "list",
             ]
-                ];
+        ];
 
         $input = $input['filters'];
 
@@ -382,8 +380,8 @@ class VehicleGateway extends BaseGateway {
                         foreach ($input[$filter['name']] as $key => $value){
                             if (!is_numeric($value)) {
                                 $response_obj['status'] = false;
-                                $response_obj['obj'] = $this->response(400, message: "Invalid request: The 'key' parameter must be numeric");
-                            return $response_obj;
+                                $response_obj['obj'] = $this->response(400, message: "Invalid request: The '$key' parameter must be numeric");
+                                return $response_obj;
                             }
                         }
                     } else {
@@ -396,20 +394,58 @@ class VehicleGateway extends BaseGateway {
                         "type" => $filter['type'],
                         "params" => $input[$filter['name']]
                     ];
-                } else {
+                } else if ($filter['type'] == "numeric_list") {
+                    $filter_pairs = [];
 
+                    if (!is_array($input[$filter['name']])) {
+                        $response_obj['status'] = false;
+                        $response_obj['obj'] = $this->response(400, message: "Invalid request: The '" . $filter['name'] . "' must be an array");
+                        return $response_obj;
+                    }
+
+                    foreach ($input[$filter['name']] as $pair) {
+                        if (!is_string($pair)) {
+                            $response_obj['status'] = false;
+                            $response_obj['obj'] = $this->response(400, message: "Invalid request: The '" . $filter['name'] . "' filter pairs must strings");
+                            return $response_obj;
+                        }
+
+                        if (!preg_match('/^\d+-\d+$/', $pair)) {
+                            $response_obj['status'] = false;
+                            $response_obj['obj'] = $this->response(400, message: "Invalid request: The '" . $filter['name'] . "' filter pairs must be in the format [d+]-[d+]");
+                            return $response_obj;
+                        }
+
+                        $pairs = explode("-", $pair);
+                        array_push($filter_pairs, $pairs);
+                    }
+
+                    $filter_obj[] = [
+                        "name" => $filter['name'],
+                        "type" => $filter['type'],
+                        "params" => $filter_pairs
+                    ];
+                }
+                else {
+                    /*
                     if (!isset($input[$filter['name']]["list"])) {
                         $response_obj['status'] = false;
                         $response_obj['obj'] = $this->response(400, message: "Invalid request: The 'list' parameter must be defined");
                         return $response_obj;
                     }
-
                     if (!is_array($input[$filter['name']]["list"])) {
                         $response_obj['status'] = false;
                         $response_obj['obj'] = $this->response(400, message: "Invalid request: The 'list' parameter must be an array");
                         return $response_obj;
                     }
-
+                    */
+                    if (!is_array($input[$filter['name']])) {
+                        $response_obj['status'] = false;
+                        $response_obj['obj'] = $this->response(400, message: "Invalid request: The 'list' parameter must be an array");
+                        return $response_obj;
+                    }
+                    
+                    /*
                     if (isset($input[$filter['name']]["exclude"])) {
                         if (!is_bool($input[$filter['name']]["exclude"])) {
                             $response_obj['status'] = false;
@@ -417,17 +453,17 @@ class VehicleGateway extends BaseGateway {
                             return $response_obj;
                         }
                     }
+                    */
 
                     $filter_obj[] = [
                         "name" => $filter['name'],
                         "type" => $filter['type'],
                         "params" => [
-                            "list" => $input[$filter['name']]['list'],
+                            "list" => $input[$filter['name']],
                             "exclude" => $input[$filter['name']]['exclude'] ?? false
                             ]
                     ];
                 }
-                
             }
         }
 
