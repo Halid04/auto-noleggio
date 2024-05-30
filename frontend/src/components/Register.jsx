@@ -87,6 +87,7 @@ function Register({ viewLogin, setVisible }) {
 
         setTimeout(() => {
           setVisible(false);
+          navigate("/auto");
           window.location.reload();
         }, 1000);
       })

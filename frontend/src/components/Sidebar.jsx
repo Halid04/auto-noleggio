@@ -28,6 +28,15 @@ function Sidebar() {
 
   const handleNavigation = (path) => {
     setActivePath(path);
+
+    if (path === "/preferiti" && !localStorage.getItem("userToken")) {
+      return navigate("/notLogged");
+    }
+
+    if (path === "/autoNoleggiate" && !localStorage.getItem("userToken")) {
+      return navigate("/notLogged");
+    }
+
     navigate(path);
   };
 
@@ -49,7 +58,7 @@ function Sidebar() {
               size={22}
               color={activePath === route.path ? "white" : "#192024"}
             />
-            <span>{route.name}</span>
+            <span className="hidden md:flex">{route.name}</span>
           </button>
         ))}
       </div>
@@ -63,8 +72,11 @@ function Sidebar() {
               : "bg-transparent text-[#192024]"
           } outline-none flex justify-start items-center gap-3 text-md px-4 py-1 rounded-lg`}
         >
-          <Heart color={activePath === routes[4].path ? "white" : "#192024"} />
-          <span>{routes[4].name}</span>
+          <Heart
+            size={22}
+            color={activePath === routes[4].path ? "white" : "#192024"}
+          />
+          <span className="hidden md:flex">{routes[4].name}</span>
         </button>
       </div>
     </div>

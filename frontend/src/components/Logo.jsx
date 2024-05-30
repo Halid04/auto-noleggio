@@ -11,7 +11,7 @@ function Logo() {
           alt="Logo grande"
         />
         <img
-          src="/src/assets/LogoPiccolo.png"
+          src="/src/assets/LogoPiccolo2.jpg"
           className="flex sm:hidden w-full h-full object-cover"
           alt="Logo piccolo"
         />

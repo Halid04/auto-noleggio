@@ -63,9 +63,9 @@ body {
   display: none;
 }
 
-.login-card {
+/* .login-card {
   backdrop-filter: brightness(60%);
-}
+} */
 
 .p-dialog-mask.p-dialog-center.p-component-overlay.p-component-overlay-enter.p-dialog-draggable.p-dialog-resizable {
   background-color: rgba(0, 0, 0, 0.47);
@@ -91,8 +91,8 @@ body {
 }
 
 .small-chart {
-  height:40vh; 
-  width:80vw;
+  height: 40vh;
+  width: 80vw;
   display: flex;
   margin-left: 13vw;
 }

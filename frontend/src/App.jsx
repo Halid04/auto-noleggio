@@ -10,6 +10,7 @@ import Transazione from "./pages/Transazione.jsx";
 import CarDetail from "./pages/CarDetail.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import ImpostazioniProfilo from "./pages/ImpostazioniProfilo.jsx";
+import NotLogged from "./pages/NotLogged.jsx";
 import Header from "./components/Header.jsx";
 import Sidebar from "./components/Sidebar.jsx";
 
@@ -108,6 +109,7 @@ function App() {
             />
             <Route path="/transazione/:idAuto" element={<Transazione />} />
             <Route path="/carDetail/:idAuto" element={<CarDetail />} />
+            <Route path="/notLogged" element={<NotLogged />} />
           </Routes>
         </div>
       </div>

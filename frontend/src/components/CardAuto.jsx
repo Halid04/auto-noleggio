@@ -37,34 +37,83 @@ function CardAuto({
     navigate(`/carDetail/${id}`);
   };
 
-  const addAutoToFavorite = async (idAuto) => {
+  const addAutoToFavorite = async (idAuto, e) => {
+    e.preventDefault();
     toast.success(`${marca} ${modello} aggiunto ai preferiti!`);
     setIsFavorite(!isFavorite);
+
+    // const url = "http://localhost/auto-noleggio/backend/public/preferiti";
+    // const headers = {
+    //   Accept: "application/json",
+    //   "Content-Type": "application/json",
+    // };
+
+    const requestBody = {
+      idUser: localStorage.getItem("userID"),
+      idAuto: idAuto,
+    };
+
+    console.log("Request body:", requestBody);
+
+    // fetch(url, {
+    //   method: "POST",
+    //   headers: headers,
+    //   body: JSON.stringify(requestBody),
+    // })
+    //   .then(async (response) => {
+    //     if (!response.ok) {
+    //       return response.text().then((text) => {
+    //         throw new Error(text);
+    //       });
+    //     } else {
+    //       setIsFavorite(!isFavorite);
+    //       toast.success(`${marca} ${modello} aggiunto ai preferiti!`, {
+    //         duration: 1500,
+    //       });
+
+    //       return response.json();
+    //     }
+    //   })
+    //   .then((data) => {
+    //     console.log(data);
+    //   })
+    //   .catch((error) => {
+    //     const errorString = error.message.replace("Error: ", "");
+    //     const errorObject = JSON.parse(errorString);
+    //     toast.error(errorObject.message, {
+    //       duration: 1500,
+    //     });
+    //   });
   };
 
   return (
     <div className=" w-64 cursor-pointer bg-white border border-gray-200 rounded-lg shadow hover:scale-[.98] transition-all duration-300 ease-in-out">
       {localStorage.getItem("userToken") && (
-        <div
-          onClick={() => addAutoToFavorite(idAuto)}
-          className="relative flex top-2 left-2 z-50"
+        <form
+          onSubmit={(e) => addAutoToFavorite(idAuto, e)}
+          className="relative flex top-2 left-2 "
         >
-          <Heart
-            size={25}
-            color="#192024"
-            className="transition-all duration-300 ease-in-out cursor-pointer hover:scale-110 active:scale-75"
-            style={{
-              fill: isFavorite ? "#FF690F" : "#1920241a",
-              stroke: isFavorite ? "#FF690F" : "#192024",
-            }}
-          />
-        </div>
+          <button
+            type="submit"
+            className="border-none outline-none bg-transparent"
+          >
+            <Heart
+              size={25}
+              color="#192024"
+              className="transition-all duration-300 ease-in-out cursor-pointer hover:scale-110 active:scale-75"
+              style={{
+                fill: isFavorite ? "#FF690F" : "#1920241a",
+                stroke: isFavorite ? "#FF690F" : "#192024",
+              }}
+            />
+          </button>
+        </form>
       )}
 
       <img
         onClick={() => handleNavigateToCarDetail(idAuto)}
         className="rounded-t-lg w-full h-[10rem] object-cover"
-        src={`/src/progettoGPOAutoImages${imgNewPath[0]}.png`}
+        src={`/src/progettoGPOAutoImages${imgNewPath[0]}.jpg`}
         alt={imgNewPath[0]}
         loading="lazy"
       />
