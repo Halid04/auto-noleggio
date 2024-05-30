@@ -60,14 +60,23 @@ function CardAuto({
           <span className="font-bold text-lg">{costo_giornaliero} €/G</span>
         </p>
         <div className="tags flex gap-1 mb-2">
-          <span className="whitespace-nowrap inline-flex items-center px-3 h-7 text-sm font-normal text-center text-white bg-[#FF690F] rounded-lg hover:bg-[#d55508] ">
-            {tipo_veicolo}
+          <span
+            title={tipo_veicolo}
+            className="whitespace-nowrap inline-flex items-center px-3 h-7 text-sm font-normal text-center text-white bg-[#FF690F] rounded-lg hover:bg-[#d55508] "
+          >
+            {tipo_veicolo.split(" ")[0]}
           </span>
-          <span className="whitespace-nowrap inline-flex items-center px-3 h-7 text-sm font-normal text-center text-white bg-[#FF690F] rounded-lg hover:bg-[#d55508] ">
-            {tipo_carburazione}
+          <span
+            title={tipo_carburazione}
+            className="whitespace-nowrap inline-flex items-center px-3 h-7 text-sm font-normal text-center text-white bg-[#FF690F] rounded-lg hover:bg-[#d55508] "
+          >
+            {tipo_carburazione.split(" ")[0]}
           </span>
-          <span className="whitespace-nowrap inline-flex items-center px-3 h-7 text-sm font-normal text-center text-white bg-[#FF690F] rounded-lg hover:bg-[#d55508] ">
-            {colore_veicolo}
+          <span
+            title={colore_veicolo}
+            className="whitespace-nowrap inline-flex items-center px-3 h-7 text-sm font-normal text-center text-white bg-[#FF690F] rounded-lg hover:bg-[#d55508] "
+          >
+            {colore_veicolo.split(" ")[0]}
           </span>
         </div>
         <div className="oneline">

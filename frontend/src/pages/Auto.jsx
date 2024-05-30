@@ -39,6 +39,8 @@ function Auto() {
   ] = useState(false);
   const [isDropdownVicinoATeFiltriOpen, setIsDropdownVicinoATeFiltriOpen] =
     useState(false);
+  // Aggiungi stato per tenere traccia del primo caricamento
+  const [isFirstLoad, setIsFirstLoad] = useState(true);
 
   // Salva lo stato dei filtri quando cambia
   useEffect(() => {
@@ -93,7 +95,10 @@ function Auto() {
   }, []);
 
   useEffect(() => {
-    getAllAuto();
+    if (isFirstLoad) {
+      getAllAuto();
+      setIsFirstLoad(false); // Imposta a false dopo il primo caricamento
+    }
     getFiltiMarca();
     getFiltiTipoMacchina();
     getFiltriTipoCarburante();
@@ -213,11 +218,59 @@ function Auto() {
         return response.json();
       })
       .then((data) => {
+        localStorage.removeItem("selezioniMarca");
+        localStorage.removeItem("selezioniTipoMacchina");
+        localStorage.removeItem("selezioniTipoCarburante");
+
         setAuto(data.content);
+
+        if (selezioniMarca && selezioniMarca.length > 0) {
+          const selezioniMarcaDefault = {};
+          data.content.forEach((marca) => {
+            selezioniMarcaDefault[marca.marca] = true;
+          });
+          setSelezioniMarca(selezioniMarcaDefault);
+        }
+
+        if (selezioniTipoMacchina && selezioniTipoMacchina.length > 0) {
+          const selezioniTipoDefault = {};
+          data.content.forEach((tipo) => {
+            selezioniTipoDefault[tipo.tipo_veicolo] = true;
+          });
+          setSelezioniTipoMacchina(selezioniTipoDefault);
+        }
+
+        if (selezioniTipoCarburante && selezioniTipoCarburante.length > 0) {
+          const selezioniTipoCarburanteDefault = {};
+          data.content.forEach((tipo) => {
+            selezioniTipoCarburanteDefault[tipo.tipo_carburazione] = true;
+          });
+          setSelezioniTipoCarburante(selezioniTipoCarburanteDefault);
+        }
+
+        if (selezioniAnno && selezioniAnno.length > 0) {
+          setSelezioniAnno([
+            { min: 2005, max: 2010 },
+            { min: 2010, max: 2015 },
+            { min: 2015, max: 2020 },
+            { min: 2020, max: new Date().getFullYear() },
+          ]);
+        }
+
+        setPrezzoMassimo(1000);
+        setChilometraggioMassimo(300000);
       })
       .catch((error) => {
         console.error("Errore durante il recupero delle auto:", error);
       });
+
+    setIsDropdownGeneralFiltriOpen(false);
+    setIsDropdownMarcaFiltriOpen(false);
+    setIsDropdownTipoMacchinaFiltriOpen(false);
+    setIsDropdownPrezzoFiltriOpen(false);
+    setIsDropdownAnnoFiltriOpen(false);
+    setIsDropdownTipoCarburanteFiltriOpen(false);
+    setIsDropdownVicinoATeFiltriOpen(false);
   };
 
   const getFiltiMarca = () => {
@@ -387,18 +440,22 @@ function Auto() {
     }
 
     const requestObj = {
-      marche: selezionateMarche,
-      tipiMacchina: selezionatiTipiMacchina,
-      prezzo: {
-        prezzoMassimo,
-        prezzoMinimo: 0,
+      filters: {
+        marca: selezionateMarche,
+        tipo_veicolo: selezionatiTipiMacchina,
+        costo_giornaliero: {
+          upperbound: prezzoMassimo,
+          lowerbound: 0,
+        },
+        anno_immatricolazione: selezioniAnno.map(
+          (range) => `${range.min}-${range.max}`
+        ),
+        chilometraggio: {
+          upperbound: chilometraggioMassimo,
+          lowerbound: 0,
+        },
+        tipo_carburazione: selezionatiTipiCarburante,
       },
-      anno: selezioniAnno.map((range) => `${range.min}-${range.max}`),
-      chilometraggio: {
-        chilometraggioMassimo,
-        chilometraggioMinimo: 0,
-      },
-      tipicarburante: selezionatiTipiCarburante,
     };
 
     const url = `http://localhost/auto-noleggio/backend/public/veicoli/filtra?json=${encodeURIComponent(
@@ -423,6 +480,7 @@ function Auto() {
       })
       .then((data) => {
         console.log("auto con filtri", data.content);
+        setAuto(data.content);
       })
       .catch((error) => {
         console.error("Errore durante il recupero delle auto filtrate:", error);
@@ -825,14 +883,14 @@ function Auto() {
               <div className="w-full h-[20%] flex justify-around items-center border-t-[1.5px] border-t-[#EEEEEE]">
                 <button
                   type="submit"
-                  className="bg-[#192024] border-[1.5px] outline-none hover:bg-[#0f1315] text-white font-bold py-1 px-4 sm:py-2 sm:px-7 rounded-lg"
+                  className="bg-[#192024] border-[1.5px] border-[#192024] outline-none hover:bg-[#0f1315] text-white font-bold py-1 px-4 sm:py-2 sm:px-7 rounded-lg"
                 >
                   Applica
                 </button>
                 <button
                   type="button"
                   className="bg-transparent border-[1.5px] border-[#192024] hover:bg-[#EEEEEE] text-[#192024] font-bold py-1 px-4 sm:py-2 sm:px-7 rounded-lg"
-                  // onClick={resetFilters}
+                  onClick={getAllAuto}
                 >
                   Reimposta
                 </button>
@@ -897,13 +955,14 @@ function Auto() {
               <div className="w-full h-[20%] flex justify-around items-center border-t-[1.5px] border-t-[#EEEEEE]">
                 <button
                   type="submit"
-                  className="bg-[#192024] border-[1.5px] outline-none hover:bg-[#0f1315] text-white font-bold py-2 px-7 rounded-lg"
+                  className="bg-[#192024] border-[1.5px] border-[#192024] outline-none hover:bg-[#0f1315] text-white font-bold py-2 px-7 rounded-lg"
                 >
                   Applica
                 </button>
                 <button
                   type="button"
                   className="bg-trasparent border-[1.5px] border-[#192024] hover:bg-[#EEEEEE] text-[#192024] font-bold py-2 px-5 rounded-lg"
+                  onClick={getAllAuto}
                 >
                   Reimposta
                 </button>
@@ -975,13 +1034,14 @@ function Auto() {
               <div className="w-full h-[20%] flex justify-around items-center border-t-[1.5px] border-t-[#EEEEEE]">
                 <button
                   type="submit"
-                  className="bg-[#192024] border-[1.5px] outline-none hover:bg-[#0f1315] text-white font-bold py-2 px-7 rounded-lg"
+                  className="bg-[#192024] border-[1.5px] border-[#192024] outline-none hover:bg-[#0f1315] text-white font-bold py-2 px-7 rounded-lg"
                 >
                   Applica
                 </button>
                 <button
                   type="button"
                   className="bg-trasparent border-[1.5px] border-[#192024] hover:bg-[#EEEEEE] text-[#192024] font-bold py-2 px-5 rounded-lg"
+                  onClick={getAllAuto}
                 >
                   Reimposta
                 </button>
@@ -1077,13 +1137,14 @@ function Auto() {
               <div className="w-full h-[30%] flex justify-around items-center border-t-[1.5px] border-t-[#EEEEEE]">
                 <button
                   type="submit"
-                  className="bg-[#192024] border-[1.5px] outline-none hover:bg-[#0f1315] text-white font-bold py-2 px-7 rounded-lg"
+                  className="bg-[#192024] border-[1.5px] border-[#192024] outline-none hover:bg-[#0f1315] text-white font-bold py-2 px-7 rounded-lg"
                 >
                   Applica
                 </button>
                 <button
                   type="button"
                   className="bg-trasparent border-[1.5px] border-[#192024] hover:bg-[#EEEEEE] text-[#192024] font-bold py-2 px-5 rounded-lg"
+                  onClick={getAllAuto}
                 >
                   Reimposta
                 </button>
@@ -1159,13 +1220,14 @@ function Auto() {
               <div className="w-full h-[20%] flex justify-around items-center border-t-[1.5px] border-t-[#EEEEEE]">
                 <button
                   type="submit"
-                  className="bg-[#192024] border-[1.5px] outline-none hover:bg-[#0f1315] text-white font-bold py-2 px-7 rounded-lg"
+                  className="bg-[#192024] border-[1.5px] border-[#192024] outline-none hover:bg-[#0f1315] text-white font-bold py-2 px-7 rounded-lg"
                 >
                   Applica
                 </button>
                 <button
                   type="button"
                   className="bg-trasparent border-[1.5px] border-[#192024] hover:bg-[#EEEEEE] text-[#192024] font-bold py-2 px-5 rounded-lg"
+                  onClick={getAllAuto}
                 >
                   Reimposta
                 </button>
@@ -1236,13 +1298,14 @@ function Auto() {
               <div className="w-full h-[20%] flex justify-around items-center border-t-[1.5px] border-t-[#EEEEEE]">
                 <button
                   type="submit"
-                  className="bg-[#192024] border-[1.5px] outline-none hover:bg-[#0f1315] text-white font-bold py-2 px-7 rounded-lg"
+                  className="bg-[#192024] border-[1.5px] border-[#192024] outline-none hover:bg-[#0f1315] text-white font-bold py-2 px-7 rounded-lg"
                 >
                   Applica
                 </button>
                 <button
                   type="button"
                   className="bg-trasparent border-[1.5px] border-[#192024] hover:bg-[#EEEEEE] text-[#192024] font-bold py-2 px-5 rounded-lg"
+                  onClick={getAllAuto}
                 >
                   Reimposta
                 </button>

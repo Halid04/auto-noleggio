@@ -342,7 +342,7 @@ class VehicleGateway extends BaseGateway {
         
         $filters = [
             [
-                "name" => "prezzo",
+                "name" => "costo_giornaliero",
                 "type" => "numeric",
                 "keys" => [
                     "upperbound",
@@ -366,7 +366,7 @@ class VehicleGateway extends BaseGateway {
                 "type" => "list",
             ],
             [
-                "name" => "tipo_carburante",
+                "name" => "tipo_carburazione",
                 "type" => "list",
             ],
             [
