@@ -162,11 +162,16 @@ class BaseController {
             $response_obj['status'] = true;
             $response_obj['obj'] = $auth_info;
         } else {
-            $auth_info = $this->authenticateToken($request);
 
-            if ($auth_info['status']) {
-               $user_id = $auth_info['obj']['data']['user_id'];
+            if ($this->data['auth']['jwt'] != "" ) {
+                $auth_info = $this->authenticateToken($request);
+
+                if ($auth_info['status']) {
+                $user_id = $auth_info['obj']['data']['user_id'];
+                }
             }
+
+            
         }
 
         if (isset($user_id)) {

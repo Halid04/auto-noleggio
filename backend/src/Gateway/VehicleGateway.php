@@ -124,8 +124,12 @@ class VehicleGateway extends BaseGateway {
 
         $statement = "
             SELECT 
-                veicolo.*, sede.*
-            FROM " . $this->tableName . " JOIN sede on veicolo.id_sede = sede.id_sede " .
+                veicolo.*, sede.*, 
+                CASE
+                WHEN preferire.id_cliente = " . ($request['user_id'] ?? -1) . " THEN true
+                    ELSE false
+                END as favorited 
+            FROM " . $this->tableName . " JOIN sede on veicolo.id_sede = sede.id_sede LEFT JOIN preferire ON veicolo.id_veicolo = preferire.id_veicolo" .
             " WHERE 1 
             ";
 
@@ -195,10 +199,11 @@ class VehicleGateway extends BaseGateway {
     {
         $statement = "
             SELECT 
-                veicolo.*, sede.*, CASE
+                veicolo.*, sede.*, 
+                CASE
                 WHEN preferire.id_cliente = " . ($request['user_id'] ?? -1) . " THEN true
-                ELSE false
-            END as favorited 
+                    ELSE false
+                END as favorited 
             FROM " . $this->tableName . " JOIN sede on veicolo.id_sede = sede.id_sede LEFT JOIN preferire ON veicolo.id_veicolo = preferire.id_veicolo";
 
         try {
@@ -235,9 +240,13 @@ class VehicleGateway extends BaseGateway {
     {
         $statement = "
             SELECT 
-                veicolo.*, sede.*
+                veicolo.*, sede.*, 
+                CASE
+                WHEN preferire.id_cliente = " . ($request['user_id'] ?? -1) . " THEN true
+                    ELSE false
+                END as favorited
             FROM " . $this->tableName .
-            " JOIN sede on veicolo.id_sede = sede.id_sede
+            " JOIN sede on veicolo.id_sede = sede.id_sede LEFT JOIN preferire ON veicolo.id_veicolo = preferire.id_veicolo
              WHERE id_". $this->tableName. " = :id;
             ";
 
