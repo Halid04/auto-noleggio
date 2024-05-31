@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, Moon, ChevronDown } from "lucide-react";
+import { Search, Moon, ChevronDown, Sun } from "lucide-react";
 import Logo from "./Logo";
 import UserState from "./AuthCard";
 
@@ -9,6 +9,9 @@ function Header() {
   const dropdownRef = useRef(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [userName, setUserName] = useState(localStorage.getItem("userName"));
+  const [darkMode, setDarkMode] = useState(
+    localStorage.getItem("darkMode") === "true" || false
+  );
   const [userSurname, setUserSurname] = useState(
     localStorage.getItem("userSurname")
   );
@@ -28,6 +31,14 @@ function Header() {
     };
   }, []);
 
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, [darkMode]);
+
   const handleMenuButtonClick = (event) => {
     event.stopPropagation();
     setIsDropdownOpen(!isDropdownOpen);
@@ -37,21 +48,40 @@ function Header() {
     setIsDropdownOpen(false);
   };
 
+  const handleSwitchTheme = () => {
+    setDarkMode((prevDarkMode) => {
+      const newDarkMode = !prevDarkMode;
+      localStorage.setItem("darkMode", newDarkMode.toString());
+      return newDarkMode;
+    });
+  };
+
   return (
-    <div className="bg-white text-black sticky shadow-md top-0 flex-wrap z-[100] mx-auto flex w-full items-center justify-between p-4">
+    <div
+      className={
+        "bg-white dark:bg-[#192024] text-black dark:text-white sticky shadow-md top-0 flex-wrap z-[100] mx-auto flex w-full items-center justify-between p-4"
+      }
+    >
       <Logo />
       <div className="w-[40%] h-[2.3rem] flex justify-between items-center px-3 rounded-lg border-[1.5px] border-[#808080rgb(128, 128, 128)]">
         <Search color="#FF690F" />
         <input
           type="text"
-          name=""
-          id=""
           placeholder="Cerca..."
           className="border-none outline-none w-[90%] h-full bg-transparent"
         />
       </div>
       <div className="flex justify-center items-center w-[20%] gap-5">
-        <Moon color="#192024" className="cursor-pointer" />
+        <button
+          onClick={handleSwitchTheme}
+          className="bg-transparent outline-none border-none"
+        >
+          {darkMode ? (
+            <Sun color="white" className="cursor-pointer" />
+          ) : (
+            <Moon color="#192024" className="cursor-pointer" />
+          )}
+        </button>
 
         <div className="flex justify-center items-baseline md:items-center md:gap-3">
           {!localStorage.getItem("userToken") && <UserState />}
@@ -72,33 +102,33 @@ function Header() {
               <div>
                 <button
                   type="button"
-                  className="inline-flex whitespace-nowrap w-full justify-center items-end outline-none bg-trasparent text-[#192024]"
+                  className="inline-flex whitespace-nowrap w-full justify-center items-end outline-none bg-transparent text-[#192024] dark:text-white"
                   id="menu-button"
                   aria-expanded={isDropdownOpen}
                   aria-haspopup="true"
                   onClick={handleMenuButtonClick}
                 >
-                  <span className="hidden md:flex">
+                  <span className="hidden md:flex text-[#192024] dark:text-white">
                     {localStorage.getItem("userName")}{" "}
                     {localStorage.getItem("userSurname")}
                   </span>
-                  <ChevronDown size={20} className="mr-1" color="#192024" />
+                  <ChevronDown size={20} className="mr-1" />
                 </button>
               </div>
 
               {isDropdownOpen && (
                 <div
                   ref={dropdownRef}
-                  className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+                  className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white dark:bg-[#192024] shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
                   role="menu"
                   aria-orientation="vertical"
                   aria-labelledby="menu-button"
                 >
                   <div className="py-1" role="none">
-                    {localStorage.getItem("isAdmin") == "1" ? (
+                    {localStorage.getItem("isAdmin") === "1" ? (
                       <button
                         type="button"
-                        className="text-gray-700 block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
+                        className="text-gray-700 dark:text-white block w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
                         role="menuitem"
                         tabIndex="-1"
                         onClick={() => navigate("/dashboard")}
@@ -108,7 +138,7 @@ function Header() {
                     ) : (
                       <button
                         type="button"
-                        className="text-gray-700 block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
+                        className="text-gray-700 dark:text-white block w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
                         role="menuitem"
                         tabIndex="-1"
                         onClick={() => navigate("/impostazioniProfilo")}
@@ -118,7 +148,7 @@ function Header() {
                     )}
                     <button
                       type="button"
-                      className="text-gray-700 block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
+                      className="text-gray-700 dark:text-white block w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
                       role="menuitem"
                       tabIndex="-1"
                       onClick={() => {

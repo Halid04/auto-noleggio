@@ -137,7 +137,7 @@ const CarDetail = () => {
               {carDetail[0].colore_veicolo}
             </span>
           </div>
-          <div className="flex items-center text-gray-700 dark:text-gray-400">
+          <div className="flex items-center text-gray-700 ">
             <MapPin className="mr-1" />
             <p>
               {carDetail[0].città}, {carDetail[0].indirizzo}

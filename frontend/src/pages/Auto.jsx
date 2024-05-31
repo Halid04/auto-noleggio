@@ -207,6 +207,11 @@ function Auto() {
       "Content-Type": "application/json",
     };
 
+    const token = localStorage.getItem("userToken");
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
+
     fetch(url, {
       method: "GET",
       headers: headers,
@@ -462,10 +467,16 @@ function Auto() {
     const url = `http://localhost/auto-noleggio/backend/public/veicoli/filtra?json=${encodeURIComponent(
       JSON.stringify(requestObj)
     )}`;
+
     const headers = {
       Accept: "application/json",
       "Content-Type": "application/json",
     };
+
+    const token = localStorage.getItem("userToken");
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
 
     // console.log(requestObj);
 

@@ -68,13 +68,13 @@ function Login({ viewRegister, setVisible }) {
         <X className="cursor-pointer" onClick={() => setVisible(false)} />
       </div>
       <form className="space-y-6 md:w-full" onSubmit={handleLoginSubmit}>
-        <h5 className="text-xl font-medium text-gray-900 dark:text-white">
+        <h5 className="text-xl font-medium text-gray-900 ">
           Accedi a Autonoleggio.itis
         </h5>
         <div>
           <label
             htmlFor="email"
-            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+            className="block mb-2 text-sm font-medium text-gray-900 "
           >
             Email
           </label>
@@ -93,7 +93,7 @@ function Login({ viewRegister, setVisible }) {
         <div>
           <label
             htmlFor="password"
-            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+            className="block mb-2 text-sm font-medium text-gray-900 "
           >
             Password
           </label>
@@ -119,7 +119,7 @@ function Login({ viewRegister, setVisible }) {
         >
           Accedi
         </button>
-        <div className="text-sm font-medium text-gray-500 dark:text-gray-300">
+        <div className="text-sm font-medium text-gray-500 ">
           Non sei registrato?{" "}
           <a
             href="#"

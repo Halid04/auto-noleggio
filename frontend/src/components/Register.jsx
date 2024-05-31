@@ -107,13 +107,13 @@ function Register({ viewLogin, setVisible }) {
         <X className="cursor-pointer" onClick={() => setVisible(false)} />
       </div>
       <form className="space-y-6 w-full" onSubmit={handleRegistrationSubmit}>
-        <h5 className="text-xl font-medium text-gray-900 dark:text-white">
+        <h5 className="text-xl font-medium text-gray-900 ">
           Registrati a Autonoleggio.itis
         </h5>
         <div>
           <label
             htmlFor="nome"
-            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+            className="block mb-2 text-sm font-medium text-gray-900 "
           >
             Nome
           </label>
@@ -131,7 +131,7 @@ function Register({ viewLogin, setVisible }) {
         <div>
           <label
             htmlFor="cognome"
-            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+            className="block mb-2 text-sm font-medium text-gray-900 "
           >
             Cognome
           </label>
@@ -149,7 +149,7 @@ function Register({ viewLogin, setVisible }) {
         <div>
           <label
             htmlFor="telefono"
-            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+            className="block mb-2 text-sm font-medium text-gray-900 "
           >
             Numero di telefono
           </label>
@@ -168,7 +168,7 @@ function Register({ viewLogin, setVisible }) {
         <div>
           <label
             htmlFor="email"
-            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+            className="block mb-2 text-sm font-medium text-gray-900 "
           >
             Email
           </label>
@@ -187,7 +187,7 @@ function Register({ viewLogin, setVisible }) {
         <div>
           <label
             htmlFor="password"
-            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+            className="block mb-2 text-sm font-medium text-gray-900 "
           >
             Password
           </label>
@@ -205,7 +205,7 @@ function Register({ viewLogin, setVisible }) {
         <div>
           <label
             htmlFor="dataDiNascita"
-            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+            className="block mb-2 text-sm font-medium text-gray-900 "
           >
             Data di nascita
           </label>
@@ -225,7 +225,7 @@ function Register({ viewLogin, setVisible }) {
         >
           Registrati
         </button>
-        <div className="text-sm font-medium text-gray-500 dark:text-gray-300">
+        <div className="text-sm font-medium text-gray-500 ">
           sei già registrato?{" "}
           <a
             href="#"

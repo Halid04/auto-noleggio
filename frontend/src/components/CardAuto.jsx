@@ -39,51 +39,53 @@ function CardAuto({
 
   const addAutoToFavorite = async (idAuto, e) => {
     e.preventDefault();
-    toast.success(`${marca} ${modello} aggiunto ai preferiti!`);
-    setIsFavorite(!isFavorite);
+    // toast.success(`${marca} ${modello} aggiunto ai preferiti!`);
+    // setIsFavorite(!isFavorite);
 
-    // const url = "http://localhost/auto-noleggio/backend/public/preferiti";
-    // const headers = {
-    //   Accept: "application/json",
-    //   "Content-Type": "application/json",
-    // };
+    const token = localStorage.getItem("userToken");
+
+    const url = "http://localhost/auto-noleggio/backend/public/preferiti";
+    const headers = {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    };
 
     const requestBody = {
-      idUser: localStorage.getItem("userID"),
-      idAuto: idAuto,
+      id: idAuto,
     };
 
     console.log("Request body:", requestBody);
 
-    // fetch(url, {
-    //   method: "POST",
-    //   headers: headers,
-    //   body: JSON.stringify(requestBody),
-    // })
-    //   .then(async (response) => {
-    //     if (!response.ok) {
-    //       return response.text().then((text) => {
-    //         throw new Error(text);
-    //       });
-    //     } else {
-    //       setIsFavorite(!isFavorite);
-    //       toast.success(`${marca} ${modello} aggiunto ai preferiti!`, {
-    //         duration: 1500,
-    //       });
+    fetch(url, {
+      method: "POST",
+      headers: headers,
+      body: JSON.stringify(requestBody),
+    })
+      .then(async (response) => {
+        if (!response.ok) {
+          return response.text().then((text) => {
+            throw new Error(text);
+          });
+        } else {
+          setIsFavorite(!isFavorite);
+          toast.success(`${marca} ${modello} aggiunto ai preferiti!`, {
+            duration: 1500,
+          });
 
-    //       return response.json();
-    //     }
-    //   })
-    //   .then((data) => {
-    //     console.log(data);
-    //   })
-    //   .catch((error) => {
-    //     const errorString = error.message.replace("Error: ", "");
-    //     const errorObject = JSON.parse(errorString);
-    //     toast.error(errorObject.message, {
-    //       duration: 1500,
-    //     });
-    //   });
+          return response.json();
+        }
+      })
+      .then((data) => {
+        console.log(data);
+      })
+      .catch((error) => {
+        const errorString = error.message.replace("Error: ", "");
+        const errorObject = JSON.parse(errorString);
+        toast.error(errorObject.message, {
+          duration: 1500,
+        });
+      });
   };
 
   return (
@@ -120,14 +122,14 @@ function CardAuto({
 
       <div className="px-2 py-5 flex flex-col justify-start items-start gap-2">
         <a href="#" className="infoCar flex items-baseline gap-1">
-          <h5 className="whitespace-nowrap text-xl font-bold tracking-tight text-gray-900 dark:text-white">
+          <h5 className="whitespace-nowrap text-xl font-bold tracking-tight text-gray-900">
             {marca}
           </h5>
-          <p className="whitespace-nowrap text-sm font-normal text-[#192024] dark:text-gray-400">
+          <p className="whitespace-nowrap text-sm font-normal text-[#192024] ">
             - {modello}
           </p>
         </a>
-        <p className="text-sm font-normal text-[#192024] dark:text-gray-400">
+        <p className="text-sm font-normal text-[#192024] ">
           {anno_immatricolazione} | {chilometraggio} km |{" "}
           <span className="font-bold text-lg">{costo_giornaliero} €/G</span>
         </p>
@@ -153,7 +155,7 @@ function CardAuto({
         </div>
         <div className="oneline">
           <MapPin />{" "}
-          <p className="whitespace-nowrap font-normal text-[#192024] dark:text-gray-400">
+          <p className="whitespace-nowrap font-normal text-[#192024] ">
             {" "}
             {citta}, {indirizzo}
           </p>
