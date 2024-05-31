@@ -51,12 +51,17 @@ function Sidebar() {
             className={`transition-all w-[90%] ${
               activePath === route.path
                 ? "bg-[#FF690F] text-white"
-                : "bg-transparent text-[#192024]"
+                : "bg-transparent text-[#192024] dark:text-white"
             } outline-none whitespace-nowrap flex justify-start items-center gap-3 text-md px-4 py-1 rounded-lg`}
           >
             <route.icon
               size={22}
-              color={activePath === route.path ? "white" : "#192024"}
+              className={`${
+                activePath === route.path
+                  ? "stroke-white"
+                  : "stroke-[#192024] dark:stroke-white"
+              }`}
+              // color={activePath === route.path ? "white" : "#192024"}
             />
             <span className="hidden md:flex">{route.name}</span>
           </button>

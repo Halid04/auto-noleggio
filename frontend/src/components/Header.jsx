@@ -63,7 +63,7 @@ function Header() {
       }
     >
       <Logo />
-      <div className="w-[40%] h-[2.3rem] flex justify-between items-center px-3 rounded-lg border-[1.5px] border-[#808080rgb(128, 128, 128)]">
+      <div className="w-[40%] h-[2.3rem] flex justify-between items-center px-3 rounded-lg border-[1.5px] border-[#808080rgb(128, 128, 128)] dark:border-[#2E3438]">
         <Search color="#FF690F" />
         <input
           type="text"
@@ -87,7 +87,7 @@ function Header() {
           {!localStorage.getItem("userToken") && <UserState />}
 
           {localStorage.getItem("userToken") && (
-            <div className="flex items-center justify-center w-6 h-6 md:w-8 md:h-8 text-base md:text-lg text-white bg-[#FF690F] rounded-full">
+            <div className="flex items-center justify-center w-6 h-6 md:w-8 md:h-8 text-base md:text-lg text-white dark:text-[#192024] bg-[#FF690F] rounded-full">
               {localStorage.getItem("userName") &&
                 localStorage.getItem("userName").charAt(0).toUpperCase()}{" "}
               <span className="hidden md:flex">
