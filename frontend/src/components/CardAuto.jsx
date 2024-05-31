@@ -39,11 +39,8 @@ function CardAuto({
 
   const addAutoToFavorite = async (idAuto, e) => {
     e.preventDefault();
-    // toast.success(`${marca} ${modello} aggiunto ai preferiti!`);
-    // setIsFavorite(!isFavorite);
 
     const token = localStorage.getItem("userToken");
-
     const url = "http://localhost/auto-noleggio/backend/public/preferiti";
     const headers = {
       Accept: "application/json",
@@ -57,8 +54,11 @@ function CardAuto({
 
     console.log("Request body:", requestBody);
 
+    const method = isFavorite ? "DELETE" : "POST";
+    console.log("Method:", method);
+
     fetch(url, {
-      method: "POST",
+      method: method,
       headers: headers,
       body: JSON.stringify(requestBody),
     })
@@ -69,10 +69,12 @@ function CardAuto({
           });
         } else {
           setIsFavorite(!isFavorite);
-          toast.success(`${marca} ${modello} aggiunto ai preferiti!`, {
+          const successMessage = isFavorite
+            ? `${marca} ${modello} rimosso dai preferiti!`
+            : `${marca} ${modello} aggiunto ai preferiti!`;
+          toast.success(successMessage, {
             duration: 1500,
           });
-
           return response.json();
         }
       })
@@ -89,11 +91,11 @@ function CardAuto({
   };
 
   return (
-    <div className=" w-64 cursor-pointer bg-white border border-gray-200 rounded-lg shadow hover:scale-[.98] transition-all duration-300 ease-in-out">
+    <div className="w-64 cursor-pointer bg-white border border-gray-200 rounded-lg shadow hover:scale-[.98] transition-all duration-300 ease-in-out">
       {localStorage.getItem("userToken") && (
         <form
           onSubmit={(e) => addAutoToFavorite(idAuto, e)}
-          className="relative flex top-2 left-2 "
+          className="relative flex top-2 left-2"
         >
           <button
             type="submit"
@@ -156,7 +158,6 @@ function CardAuto({
         <div className="oneline">
           <MapPin />{" "}
           <p className="whitespace-nowrap font-normal text-[#192024] ">
-            {" "}
             {citta}, {indirizzo}
           </p>
         </div>

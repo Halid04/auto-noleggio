@@ -478,8 +478,6 @@ function Auto() {
       headers.Authorization = `Bearer ${token}`;
     }
 
-    // console.log(requestObj);
-
     fetch(url, {
       method: "GET",
       headers: headers,
