@@ -125,7 +125,7 @@ class BaseGateway {
     {
         $missing_keys = $this->validateRequiredParameters($input, $fields);
         if (!empty($missing_keys)) {
-            return $this->response(400, "Missing parameters: " . implode(", ", $missing_keys));
+            return $this->response(400, "Parametri mancanti: " . implode(", ", $missing_keys));
         }
 
         $validationErrors = $this->validateInput($input);
@@ -164,7 +164,7 @@ class BaseGateway {
     public function updateM(array $input, $fields)
     {
         if (!isset($input["id"])) {
-            return $this->response(400, "Missing parameter: id");
+            return $this->response(400, "Parametro mancante: id");
         }
 
         $id = (int) $input["id"];
@@ -180,7 +180,7 @@ class BaseGateway {
         }
 
         if (empty($setClause)) {
-            return $this->response(400, "No fields to update");
+            return $this->response(400, "Nessun campo da aggiornare");
         }
 
         $setClauseStr = implode(", ", $setClause);
@@ -194,7 +194,7 @@ class BaseGateway {
             $statement = $this->conn->prepare($statementStr);
             $statement->execute($params);
 
-            return $this->response(200, "Information successfully updated");
+            return $this->response(200, "Informazioni aggiornate");
         } catch (\PDOException $e) {
             error_log("Database error: " . $e->getMessage());
             return $this->response(500, "Internal Server Error");

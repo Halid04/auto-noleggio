@@ -135,15 +135,25 @@ class BaseController {
         $user_id;
 
         if ($this->requestMethod != "GET") {
-            $auth_info = $this->authenticateToken($request);
-            
-            if (!$auth_info['status']) {
-                $response_obj['obj'] = $auth_info['obj'];
+
+            if ($this->data['auth']['jwt'] != "" ) {
+                $auth_info = $this->authenticateToken($request);
+    
+                if (!$auth_info['status']) {
+                    $response_obj['obj'] = $auth_info['obj'];
+                    return $response_obj;
+                }
+            } else {
+                $response_obj['obj'] =  array (
+                    'statusCode' => 401,
+                    'body' => array (
+                        'message' => "Unauthorized: Missing JWT token"
+                    )
+                );
+    
                 return $response_obj;
             }
-
-
-
+            
             $auth_info = $auth_info['obj'];
 
             $user_id = $auth_info['data']['user_id'];
@@ -161,17 +171,6 @@ class BaseController {
 
             $response_obj['status'] = true;
             $response_obj['obj'] = $auth_info;
-        } else {
-
-            if ($this->data['auth']['jwt'] != "" ) {
-                $auth_info = $this->authenticateToken($request);
-
-                if ($auth_info['status']) {
-                $user_id = $auth_info['obj']['data']['user_id'];
-                }
-            }
-
-            
         }
 
         if (isset($user_id)) {
