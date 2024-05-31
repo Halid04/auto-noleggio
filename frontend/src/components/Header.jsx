@@ -59,7 +59,7 @@ function Header() {
   return (
     <div
       className={
-        "bg-white dark:bg-[#192024] text-black dark:text-white sticky shadow-md top-0 flex-wrap z-[100] mx-auto flex w-full items-center justify-between p-4"
+        "bg-white dark:bg-[#192024] transition-all duration-300 ease-in-out text-black dark:text-white sticky shadow-md top-0 flex-wrap z-[100] mx-auto flex w-full items-center justify-between p-4"
       }
     >
       <Logo />

@@ -91,7 +91,7 @@ function CardAuto({
   };
 
   return (
-    <div className="w-64 cursor-pointer bg-white border border-gray-200 rounded-lg shadow hover:scale-[.98] transition-all duration-300 ease-in-out">
+    <div className="w-64 2xl:w-80 cursor-pointer bg-white border border-gray-200 rounded-lg shadow hover:scale-[.98] transition-all duration-300 ease-in-out">
       {localStorage.getItem("userToken") && (
         <form
           onSubmit={(e) => addAutoToFavorite(idAuto, e)}
