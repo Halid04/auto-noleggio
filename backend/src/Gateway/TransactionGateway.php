@@ -11,7 +11,7 @@ class TransactionGateway extends BaseGateway
         parent::__construct($db);
     }
 
-    public function findAll()
+    public function findAll($request)
     {
         $statement = "
             SELECT 
@@ -105,7 +105,37 @@ class TransactionGateway extends BaseGateway
 
     public function insert(array $input)
     {
-        $fields = ["id_cartadicredito", "importo", "stato", "data_transazione", "telefono", "id_cliente"];
+        $fields = ["id_cartadicredito", "importo", "stato", "data_transazione", "telefono", "id_cliente", "id_veicolo", "data_inizio", "data_fine"];
+
+        $missing_keys = $this->validateRequiredParameters($input, $fields);
+        
+        if (!empty($missing_keys)) {
+            return $this->response(400, "Missing parameters: " . implode(", ", $missing_keys));
+        }
+        
+        $result = $this->conn->prepare("SELECT * FROM transazionefinanziaria
+        WHERE
+            id_veicolo = :id_veicolo AND
+            ((:data_inizio >= check_in AND :data_inizio <= data_fine)
+            OR (:data_fine < data_fine AND :data_fine > data_inizio))
+        ");
+
+        $result->execute([
+            'id_veicolo' => $input['id_veicolo'],
+            'data_inizio' => $input['data_inizio'],
+            'data_fine' => $input['data_fine']
+        ]);
+
+        if ($result['statusCode'] != 200) {
+            return $this->response(
+                $insert_response["statusCode"],
+                message: $insert_response["body"]["message"]
+            );
+        }
+
+        if ($result->rowCount > 0) {
+            return $this->response(400, message: "Impossibile effettuare la prenotazione. Date già prenotate");
+        }
 
         $insert_response = $this->insertM($input, $fields);
 

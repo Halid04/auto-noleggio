@@ -85,4 +85,59 @@ class VehicleController extends BaseController {
 
     }
 
+    public function authenticateRequest (&$request)
+    {
+        $response_obj = [];
+        $response_obj['status'] = false;
+
+        $auth_info;
+        $user_id;
+
+        if ($this->requestMethod == "GET") {
+
+            if ($this->data['auth']['jwt'] != "" ) {
+                $auth_info = $this->authenticateToken($request);
+    
+                if ($auth_info['status']) {
+                    $user_id = $auth_info['obj']['data']['user_id'];
+                }
+            }
+
+        } else {
+            $auth_info = $this->authenticateToken($request);
+
+            if (!$auth_info['status']) {
+                $response_obj['obj'] = $auth_info['obj'];
+                return $response_obj;
+            }
+
+            $auth_info = $auth_info['obj'];
+
+            $user_id = $auth_info['data']['user_id'];
+
+            if ((int) $auth_info['data']['admin'] != 1 && $this->requestMethod != "GET") {
+                $response_obj['obj'] =  array (
+                    'statusCode' => 403,
+                    'body' => array (
+                        'message' => "Access forbidden: You do not have permission to edit this resource"
+                    )
+                );
+
+                return $response_obj;
+            }
+
+            $response_obj['status'] = true;
+            $response_obj['obj'] = $auth_info;
+
+        }
+
+        if (isset($user_id)) {
+            $request['user_id'] = $user_id;
+         }
+
+        $response_obj['status'] = true;
+        
+        return $response_obj;
+    }
+
 }

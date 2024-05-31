@@ -2,18 +2,31 @@
 namespace Src\Controller;
 
 use \Src\Gateway\OTPGateway;
+use \Src\Gateway\ClientGateway;
 use \Src\Gateway\TransactionGateway;
 use \Src\Controller\BaseController;
+use \Src\Mail;
 
 class OTPController extends BaseController {
 
     private $uri;
     private $transactionGateway;
+    private $clientGateway;
+    private $mail;
 
     public function __construct($requestMethod, $uri, $data, $db)
     {
         $this->uri = $uri;
+
         $this->transactionGateway = new TransactionGateway($db);
+        $this->clientGateway = new ClientGateway($db);
+        
+        $this->mail = new Mail (
+            $_ENV['SMTP_HOST'],
+            $_ENV['SMTP_USERNAME'],
+            $_ENV['SMTP_PASSWORD'],
+        ); 
+        
         parent::__construct($requestMethod, $data, new OTPGateway($db));
     }
 
@@ -121,9 +134,42 @@ class OTPController extends BaseController {
     {
         $auth_info = $auth_info['data'];
 
-        $otp_code = $this->generateOTP($_ENV['SECRET_KEY']);
+        $otp_code = $this->generateOTP($_ENV["SECRET_KEY"]);
 
-        echo $otp_code;
+        $user = $this->clientGateway->find(["id" => $auth_info["user_id"]]);
+
+        if (!$user['statusCode'] = 200) {
+            return $user;
+        }
+
+        $user = $user['body']['content'];
+
+        if (empty($user)) {
+            return array (
+                'statusCode' => 404,
+                'body' => array (
+                    'message' => "Utente non trovato"
+                )
+            );
+        }
+
+        $user = $user[0];
+
+        try {
+            
+            $this->mail->sendMail(
+            [
+                "address" => $user['email'],
+                "name" => $user['nome'] . " " . $user['cognome']
+            ],
+            [
+                "subject" => "Ecco il tuo codice OTP",
+                "body" => str_replace("650050", $otp_code, file_get_contents(dirname(__DIR__)  . '/otpTemplate.html')),
+                "altBody" => "Ecco il codice OTP per verificare la tua identità: {$otp_code}"
+            ]);
+        } catch (Exception $e) {
+            echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+        }
 
         $date = date('Y-m-d H:i:s', time());
 
@@ -279,7 +325,7 @@ class OTPController extends BaseController {
             ];
         }
 
-        if ($otp_challenge['used'] == "used") {
+        if ($otp_challenge['stato'] == "used") {
             return [
                 'statusCode' => 400,
                 'body' => [
