@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import toast, { Toaster } from "react-hot-toast";
 import { MapPin } from "lucide-react";
 
 const CarDetail = () => {
@@ -69,8 +70,8 @@ const CarDetail = () => {
     if (token) {
       navigate(`/transazione/${id}`);
     } else {
-      alert(
-        "Devi effettuare il login per procedere con al noleggio dell'auto."
+      toast.error(
+        "Devi effettuare l'accesso per procedere con il noleggio dell'auto."
       );
     }
   };
@@ -103,27 +104,27 @@ const CarDetail = () => {
 
       <div className="flex flex-col w-full md:w-1/2 md:ml-6 mt-6 md:mt-0">
         <div className="space-y-4">
-          <h1 className="text-3xl font-bold">
+          <h1 className="text-3xl text-[#192024] dark:text-white font-bold">
             {carDetail[0].marca} {carDetail[0].modello}
           </h1>
-          <p className="text-[#192024] text-base">
+          <p className="text-[#192024] dark:text-white text-base">
             <strong>Data di acquisto:</strong>{" "}
             {carDetail[0].anno_immatricolazione}
           </p>
-          <p className="text-[#192024] text-base">
+          <p className="text-[#192024] dark:text-white text-base">
             <strong>Tipo di carburante:</strong>{" "}
             {carDetail[0].tipo_carburazione}
           </p>
-          <p className="text-[#192024] text-base">
+          <p className="text-[#192024] dark:text-white text-base">
             <strong>Chilometri:</strong> {carDetail[0].chilometraggio} km
           </p>
-          <p className="text-[#192024] text-base">
+          <p className="text-[#192024] dark:text-white text-base">
             <strong>Prezzo:</strong> {carDetail[0].costo_giornaliero} €/G
           </p>
-          <p className="text-[#192024] text-base">
+          <p className="text-[#192024] dark:text-white text-base">
             <strong>Targa:</strong> {carDetail[0].targa}
           </p>
-          <p className="text-[#192024] text-base">
+          <p className="text-[#192024] dark:text-white text-base">
             <strong>Numero posti:</strong> {carDetail[0].numero_posti}
           </p>
           <div className="space-x-2">
@@ -137,8 +138,8 @@ const CarDetail = () => {
               {carDetail[0].colore_veicolo}
             </span>
           </div>
-          <div className="flex items-center text-gray-700 ">
-            <MapPin className="mr-1" />
+          <div className="flex items-center text-[#192024] dark:text-white ">
+            <MapPin className="mr-1 stroke-[#192024] dark:stroke-white" />
             <p>
               {carDetail[0].città}, {carDetail[0].indirizzo}
             </p>
@@ -153,7 +154,7 @@ const CarDetail = () => {
           </button>
           <button
             onClick={() => navigate("/auto")}
-            className="w-1/2 whitespace-nowrap text-[#FF690F] border-[1.5px] border-[#FF690F] outline-none bg-transparent hover:bg-[#EEEEEE] focus:ring-4 focus:outline-none focus:ring-orange-300 font-medium rounded-lg  px-5 py-2 text-center"
+            className="w-1/2 whitespace-nowrap text-[#FF690F] border-[1.5px] border-[#FF690F] outline-none bg-transparent hover:bg-[#EEEEEE] hover:dark:bg-[#2E3438] focus:ring-4 focus:outline-none focus:ring-orange-300 font-medium rounded-lg  px-5 py-2 text-center"
           >
             Torna indietro
           </button>

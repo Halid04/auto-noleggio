@@ -74,9 +74,7 @@ function App() {
 
   return (
     <div
-      className={`${
-        localStorage.getItem("darkMode") === "true" ? "dark" : ""
-      } h-[100vh] w-full bg-white dark:bg-[#192024] flex flex-col justify-between items-center transition-all duration-300 ease-in-out`}
+      className={`h-[100vh] w-full bg-white dark:bg-[#192024] flex flex-col justify-between items-center transition-all duration-300 ease-in-out`}
     >
       {!isTransactionPage && !isAdminDashboard && !impostazioniProfilo && (
         <Header />

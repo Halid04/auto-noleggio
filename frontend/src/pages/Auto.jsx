@@ -63,15 +63,15 @@ function Auto() {
     }
   }, [selezioniMarca, selezioniTipoMacchina, selezioniTipoCarburante]);
 
-  useEffect(() => {
-    // Imposta tutti gli anni come selezionati di default
-    setSelezioniAnno([
-      { min: 2005, max: 2010 },
-      { min: 2010, max: 2015 },
-      { min: 2015, max: 2020 },
-      { min: 2020, max: new Date().getFullYear() },
-    ]);
-  }, []);
+  // useEffect(() => {
+  //   // Imposta tutti gli anni come selezionati di default
+  //   setSelezioniAnno([
+  //     { min: 2005, max: 2010 },
+  //     { min: 2010, max: 2015 },
+  //     { min: 2015, max: 2020 },
+  //     { min: 2020, max: new Date().getFullYear() },
+  //   ]);
+  // }, []);
 
   useEffect(() => {
     const savedState = localStorage.getItem("selezioniMarca");
@@ -229,42 +229,6 @@ function Auto() {
         localStorage.removeItem("selezioniTipoCarburante");
 
         setAuto(data.content);
-
-        if (selezioniMarca && selezioniMarca.length > 0) {
-          const selezioniMarcaDefault = {};
-          data.content.forEach((marca) => {
-            selezioniMarcaDefault[marca.marca] = true;
-          });
-          setSelezioniMarca(selezioniMarcaDefault);
-        }
-
-        if (selezioniTipoMacchina && selezioniTipoMacchina.length > 0) {
-          const selezioniTipoDefault = {};
-          data.content.forEach((tipo) => {
-            selezioniTipoDefault[tipo.tipo_veicolo] = true;
-          });
-          setSelezioniTipoMacchina(selezioniTipoDefault);
-        }
-
-        if (selezioniTipoCarburante && selezioniTipoCarburante.length > 0) {
-          const selezioniTipoCarburanteDefault = {};
-          data.content.forEach((tipo) => {
-            selezioniTipoCarburanteDefault[tipo.tipo_carburazione] = true;
-          });
-          setSelezioniTipoCarburante(selezioniTipoCarburanteDefault);
-        }
-
-        if (selezioniAnno && selezioniAnno.length > 0) {
-          setSelezioniAnno([
-            { min: 2005, max: 2010 },
-            { min: 2010, max: 2015 },
-            { min: 2015, max: 2020 },
-            { min: 2020, max: new Date().getFullYear() },
-          ]);
-        }
-
-        setPrezzoMassimo(1000);
-        setChilometraggioMassimo(300000);
       })
       .catch((error) => {
         console.error("Errore durante il recupero delle auto:", error);
@@ -304,7 +268,7 @@ function Auto() {
         if (!savedState) {
           const selezioniMarcaDefault = {};
           data.content.forEach((marca) => {
-            selezioniMarcaDefault[marca.marca] = true;
+            selezioniMarcaDefault[marca.marca] = false;
           });
           setSelezioniMarca(selezioniMarcaDefault);
         }
@@ -339,7 +303,7 @@ function Auto() {
         if (!savedState) {
           const selezioniTipoDefault = {};
           data.content.forEach((tipo) => {
-            selezioniTipoDefault[tipo.tipo_veicolo] = true;
+            selezioniTipoDefault[tipo.tipo_veicolo] = false;
           });
           setSelezioniTipoMacchina(selezioniTipoDefault);
         }
@@ -378,7 +342,7 @@ function Auto() {
         if (!savedState) {
           const selezioniTipoCarburanteDefault = {};
           data.content.forEach((tipo) => {
-            selezioniTipoCarburanteDefault[tipo.tipo_carburazione] = true;
+            selezioniTipoCarburanteDefault[tipo.tipo_carburazione] = false;
           });
           setSelezioniTipoCarburante(selezioniTipoCarburanteDefault);
         }
@@ -623,8 +587,24 @@ function Auto() {
     }
   };
 
+  const resetFiltri = () => {
+    getAllAuto();
+
+    setSelezioniMarca({});
+    setSelezioniTipoMacchina({});
+    setSelezioniTipoCarburante({});
+    setSelezioniAnno([]);
+
+    getFiltiMarca();
+    getFiltiTipoMacchina();
+    getFiltriTipoCarburante();
+
+    setPrezzoMassimo(1000);
+    setChilometraggioMassimo(300000);
+  };
+
   return (
-    <div className=" h-full w-full shrink-0 bg-[#F0F3F5] overflow-x-hidden overflow-y-auto flex flex-col py-5 justify-between items-start ">
+    <div className=" h-full w-full shrink-0 bg-[#F0F3F5] dark:bg-[#444C50] overflow-x-hidden overflow-y-auto flex flex-col py-5 justify-between items-start transition-all duration-300 ease-in-out">
       {/* <Toaster /> */}
       <form
         onSubmit={handleApplyFilter}
@@ -635,20 +615,24 @@ function Auto() {
           <div>
             <button
               type="button"
-              className="hover:bg-[#EEEEEE] transition-all inline-flex w-full justify-center items-center outline-none border-[1.5px] border-[#EEEEEE] rounded-lg bg-white px-2 py-1 text-[#192024]"
+              className="hover:bg-[#EEEEEE] dark:hover:bg-[#2E3438] transition-all inline-flex w-full justify-center items-center outline-none border-[1.5px] border-[#EEEEEE] dark:border-[#2E3438] rounded-lg bg-white dark:bg-[#192024] px-2 py-2 text-[#192024] dark:text-white"
               id="menu-button"
               aria-expanded={isDropdownGeneralFiltriOpen}
               aria-haspopup="true"
               onClick={handleMenuButtonClickGeneralFiltri}
             >
-              <SlidersHorizontal size={17} strokeWidth={3} color="#192024" />
+              <SlidersHorizontal
+                size={17}
+                strokeWidth={3}
+                className="stroke-[#192024] dark:stroke-white"
+              />
             </button>
           </div>
 
           {isDropdownGeneralFiltriOpen && (
             <div
               ref={dropdownGeneralFiltriRef}
-              className="flex flex-col shrink-0 text-[#192024] justify-start items-start absolute left-0 z-10 mt-2 w-60 sm:w-72 h-96 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+              className="flex flex-col shrink-0 text-[#192024] dark:text-white justify-start items-start absolute left-0 z-10 mt-2 w-60 sm:w-72 h-96 origin-top-right rounded-md bg-white dark:bg-[#192024] shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
               role="menu"
               aria-orientation="vertical"
               aria-labelledby="menu-button"
@@ -662,11 +646,11 @@ function Auto() {
                   {filtriMarca.map((marca, index) => (
                     <div
                       key={index}
-                      className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]"
+                      className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE] dark:hover:bg-[#2E3438]"
                     >
                       <p className="w-[80%]">{marca.marca}</p>
                       <input
-                        className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
+                        className="w-[20%] accent-[#192024] dark:accent-white h-4 rounded-lg cursor-pointer"
                         type="checkbox"
                         checked={selezioniMarca[marca.marca]}
                         onChange={(e) =>
@@ -698,11 +682,12 @@ function Auto() {
   [&::-webkit-slider-thumb]:appearance-none
   [&::-webkit-slider-thumb]:bg-white
   [&::-webkit-slider-thumb]:shadow-[0_0_0_4px_#192024]
+  [&::-webkit-slider-thumb]:dark:shadow-[0_0_0_4px_#ffffff]
   [&::-webkit-slider-thumb]:rounded-full
   [&::-webkit-slider-thumb]:transition-all
   [&::-webkit-slider-thumb]:duration-150
   [&::-webkit-slider-thumb]:ease-in-out
-  [&::-webkit-slider-thumb]:dark:bg-neutral-700
+  [&::-webkit-slider-thumb]:dark:bg-[#192024]
 
   [&::-moz-range-thumb]:w-2.5
   [&::-moz-range-thumb]:h-2.5
@@ -710,6 +695,7 @@ function Auto() {
   [&::-moz-range-thumb]:bg-white
   [&::-moz-range-thumb]:border-4
   [&::-moz-range-thumb]:border-[#192024]
+  [&::-moz-range-thumb]:dark:border-white
   [&::-moz-range-thumb]:rounded-full
   [&::-moz-range-thumb]:transition-all
   [&::-moz-range-thumb]:duration-150
@@ -743,11 +729,11 @@ function Auto() {
                   {filtriTipoMacchina.map((tipo_veicolo, index) => (
                     <div
                       key={index}
-                      className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]"
+                      className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE] dark:hover:bg-[#2E3438]"
                     >
                       <p className="w-[80%]">{tipo_veicolo.tipo_veicolo}</p>
                       <input
-                        className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
+                        className="w-[20%] accent-[#192024] dark:accent-white h-4 rounded-lg cursor-pointer"
                         type="checkbox"
                         checked={
                           selezioniTipoMacchina[tipo_veicolo.tipo_veicolo] ||
@@ -780,11 +766,11 @@ function Auto() {
                   ].map((range, index) => (
                     <div
                       key={index}
-                      className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]"
+                      className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE] dark:hover:bg-[#2E3438]"
                     >
                       <p className="w-[80%]">{range.label}</p>
                       <input
-                        className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
+                        className="w-[20%] accent-[#192024] dark:accent-white h-4 rounded-lg cursor-pointer"
                         type="checkbox"
                         checked={selezioniAnno.some(
                           (r) => r.min === range.min && r.max === range.max
@@ -820,6 +806,7 @@ function Auto() {
   [&::-webkit-slider-thumb]:appearance-none
   [&::-webkit-slider-thumb]:bg-white
   [&::-webkit-slider-thumb]:shadow-[0_0_0_4px_#192024]
+  [&::-webkit-slider-thumb]:dark:shadow-[0_0_0_4px_#ffffff]
   [&::-webkit-slider-thumb]:rounded-full
   [&::-webkit-slider-thumb]:transition-all
   [&::-webkit-slider-thumb]:duration-150
@@ -832,6 +819,7 @@ function Auto() {
   [&::-moz-range-thumb]:bg-white
   [&::-moz-range-thumb]:border-4
   [&::-moz-range-thumb]:border-[#192024]
+  [&::-moz-range-thumb]:dark:border-white
   [&::-moz-range-thumb]:rounded-full
   [&::-moz-range-thumb]:transition-all
   [&::-moz-range-thumb]:duration-150
@@ -865,13 +853,13 @@ function Auto() {
                   {filtriTipoCarburante.map((tipo_carburazione, index) => (
                     <div
                       key={index}
-                      className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]"
+                      className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE] dark:hover:bg-[#2E3438]"
                     >
                       <p className="w-[80%]">
                         {tipo_carburazione.tipo_carburazione}
                       </p>
                       <input
-                        className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
+                        className="w-[20%] accent-[#192024] dark:accent-white h-4 rounded-lg cursor-pointer"
                         type="checkbox"
                         checked={
                           selezioniTipoCarburante[
@@ -890,17 +878,17 @@ function Auto() {
                   ))}
                 </div>
               </div>
-              <div className="w-full h-[20%] flex justify-around items-center border-t-[1.5px] border-t-[#EEEEEE]">
+              <div className="w-full h-[20%] flex justify-around items-center border-t-[1.5px] border-t-[#EEEEEE] dark:border-t-[#2E3438]">
                 <button
                   type="submit"
-                  className="bg-[#192024] border-[1.5px] border-[#192024] outline-none hover:bg-[#0f1315] text-white font-bold py-1 px-4 sm:py-2 sm:px-7 rounded-lg"
+                  className="bg-[#192024] dark:bg-white border-[1.5px] border-[#192024] dark:border-white outline-none hover:bg-[#0f1315] hover:dark:bg-[#e3e3e3] text-white dark:text-[#192024] font-bold py-1 px-4 sm:py-2 sm:px-7 rounded-lg"
                 >
                   Applica
                 </button>
                 <button
                   type="button"
-                  className="bg-transparent border-[1.5px] border-[#192024] hover:bg-[#EEEEEE] text-[#192024] font-bold py-1 px-4 sm:py-2 sm:px-7 rounded-lg"
-                  onClick={getAllAuto}
+                  className="bg-transparent border-[1.5px] border-[#192024] dark:border-white hover:bg-[#EEEEEE] hover:dark:bg-[#2E3438] text-[#192024] dark:text-white font-bold py-1 px-4 sm:py-2 sm:px-7 rounded-lg"
+                  onClick={resetFiltri}
                 >
                   Reimposta
                 </button>
@@ -914,18 +902,19 @@ function Auto() {
           <div>
             <button
               type="button"
-              className="hover:bg-[#EEEEEE] transition-all inline-flex w-full justify-center items-center outline-none border-[1.5px] border-[#EEEEEE] rounded-lg bg-white px-3 py-1 text-[#192024]"
+              className="hover:bg-[#EEEEEE] dark:hover:bg-[#2E3438] transition-all inline-flex w-full justify-center items-center outline-none border-[1.5px] border-[#EEEEEE] dark:border-[#2E3438] rounded-lg bg-white dark:bg-[#192024] px-2 py-1 text-[#192024] dark:text-white"
               id="menu-button"
               aria-expanded={isDropdownMarcaFiltriOpen}
               aria-haspopup="true"
               onClick={handleMenuButtonClickMarcaFiltri}
             >
-              <span className=" font-bold text-[#192024]">Marca</span>
+              <span className=" font-bold text-[#192024] dark:text-white">
+                Marca
+              </span>
               <ChevronDown
-                className={`mr-1 h-5 w-5 transition-transdiv duration-300 ${
+                className={`mr-1 h-5 w-5 stroke-[#192024] dark:stroke-white transition-transdiv duration-300 ${
                   isDropdownMarcaFiltriOpen ? "rotate-180" : "rotate-0"
                 }`}
-                color="#192024"
               />
             </button>
           </div>
@@ -934,7 +923,7 @@ function Auto() {
           {isDropdownMarcaFiltriOpen && (
             <div
               ref={dropdownMarcaFiltriRef}
-              className="flex flex-col shrink-0 text-[#192024] justify-start items-start absolute left-0 z-10 mt-2 w-72 h-80 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+              className="flex flex-col shrink-0 text-[#192024] dark:text-white justify-start items-start absolute left-0 z-10 mt-2 w-60 sm:w-72 h-96 origin-top-right rounded-md bg-white dark:bg-[#192024] shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
               role="menu"
               aria-orientation="vertical"
               aria-labelledby="menu-button"
@@ -944,11 +933,11 @@ function Auto() {
                 {filtriMarca.map((marca, index) => (
                   <div
                     key={index}
-                    className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]"
+                    className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE] dark:hover:bg-[#2E3438]"
                   >
                     <p className="w-[80%]">{marca.marca}</p>
                     <input
-                      className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
+                      className="w-[20%] accent-[#192024] dark:accent-white h-4 rounded-lg cursor-pointer"
                       type="checkbox"
                       checked={selezioniMarca[marca.marca]}
                       onChange={(e) =>
@@ -962,17 +951,17 @@ function Auto() {
                   </div>
                 ))}
               </div>
-              <div className="w-full h-[20%] flex justify-around items-center border-t-[1.5px] border-t-[#EEEEEE]">
+              <div className="w-full h-[20%] flex justify-around items-center border-t-[1.5px] border-t-[#EEEEEE] dark:border-t-[#2E3438]">
                 <button
                   type="submit"
-                  className="bg-[#192024] border-[1.5px] border-[#192024] outline-none hover:bg-[#0f1315] text-white font-bold py-2 px-7 rounded-lg"
+                  className="bg-[#192024] dark:bg-white border-[1.5px] border-[#192024] dark:border-white outline-none hover:bg-[#0f1315] hover:dark:bg-[#e3e3e3] text-white dark:text-[#192024] font-bold py-1 px-4 sm:py-2 sm:px-7 rounded-lg"
                 >
                   Applica
                 </button>
                 <button
                   type="button"
-                  className="bg-trasparent border-[1.5px] border-[#192024] hover:bg-[#EEEEEE] text-[#192024] font-bold py-2 px-5 rounded-lg"
-                  onClick={getAllAuto}
+                  className="bg-transparent border-[1.5px] border-[#192024] dark:border-white hover:bg-[#EEEEEE] hover:dark:bg-[#2E3438] text-[#192024] dark:text-white font-bold py-1 px-4 sm:py-2 sm:px-7 rounded-lg"
+                  onClick={resetFiltri}
                 >
                   Reimposta
                 </button>
@@ -986,20 +975,19 @@ function Auto() {
           <div>
             <button
               type="button"
-              className="hover:bg-[#EEEEEE] transition-all inline-flex whitespace-nowrap w-full justify-center items-center outline-none border-[1.5px] border-[#EEEEEE] rounded-lg bg-white px-3 py-1 text-[#192024]"
+              className="hover:bg-[#EEEEEE] dark:hover:bg-[#2E3438] transition-all inline-flex w-full justify-center items-center outline-none border-[1.5px] border-[#EEEEEE] dark:border-[#2E3438] rounded-lg bg-white dark:bg-[#192024] px-2 py-1 text-[#192024] dark:text-white"
               id="menu-button"
               aria-expanded={isDropdownTipoMacchinaFiltriOpen}
               aria-haspopup="true"
               onClick={handleMenuButtonClickTipoMacchinaFiltri}
             >
-              <span className=" font-bold text-[#192024]">
+              <span className=" font-bold text-[#192024] dark:text-white">
                 Tipo di macchina
               </span>
               <ChevronDown
-                className={`mr-1 h-5 w-5 transition-transdiv duration-300 ${
+                className={`mr-1 h-5 w-5 stroke-[#192024] dark:stroke-white transition-transdiv duration-300 ${
                   isDropdownTipoMacchinaFiltriOpen ? "rotate-180" : "rotate-0"
                 }`}
-                color="#192024"
               />
             </button>
           </div>
@@ -1008,7 +996,7 @@ function Auto() {
           {isDropdownTipoMacchinaFiltriOpen && (
             <div
               ref={dropdownTipoMacchinaFiltriRef}
-              className="flex flex-col shrink-0 text-[#192024] justify-start items-start absolute left-0 z-10 mt-2 w-72 h-80 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+              className="flex flex-col shrink-0 text-[#192024] dark:text-white justify-start items-start absolute left-0 z-10 mt-2 w-60 sm:w-72 h-96 origin-top-right rounded-md bg-white dark:bg-[#192024] shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
               role="menu"
               aria-orientation="vertical"
               aria-labelledby="menu-button"
@@ -1020,11 +1008,11 @@ function Auto() {
                 {filtriTipoMacchina.map((tipo_veicolo, index) => (
                   <div
                     key={index}
-                    className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]"
+                    className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE] dark:hover:bg-[#2E3438]"
                   >
                     <p className="w-[80%]">{tipo_veicolo.tipo_veicolo}</p>
                     <input
-                      className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
+                      className="w-[20%] accent-[#192024] dark:accent-white h-4 rounded-lg cursor-pointer"
                       type="checkbox"
                       checked={
                         selezioniTipoMacchina[tipo_veicolo.tipo_veicolo] ||
@@ -1041,17 +1029,17 @@ function Auto() {
                   </div>
                 ))}
               </div>
-              <div className="w-full h-[20%] flex justify-around items-center border-t-[1.5px] border-t-[#EEEEEE]">
+              <div className="w-full h-[20%] flex justify-around items-center border-t-[1.5px] border-t-[#EEEEEE] dark:border-t-[#2E3438]">
                 <button
                   type="submit"
-                  className="bg-[#192024] border-[1.5px] border-[#192024] outline-none hover:bg-[#0f1315] text-white font-bold py-2 px-7 rounded-lg"
+                  className="bg-[#192024] dark:bg-white border-[1.5px] border-[#192024] dark:border-white outline-none hover:bg-[#0f1315] hover:dark:bg-[#e3e3e3] text-white dark:text-[#192024] font-bold py-1 px-4 sm:py-2 sm:px-7 rounded-lg"
                 >
                   Applica
                 </button>
                 <button
                   type="button"
-                  className="bg-trasparent border-[1.5px] border-[#192024] hover:bg-[#EEEEEE] text-[#192024] font-bold py-2 px-5 rounded-lg"
-                  onClick={getAllAuto}
+                  className="bg-transparent border-[1.5px] border-[#192024] dark:border-white hover:bg-[#EEEEEE] hover:dark:bg-[#2E3438] text-[#192024] dark:text-white font-bold py-1 px-4 sm:py-2 sm:px-7 rounded-lg"
+                  onClick={resetFiltri}
                 >
                   Reimposta
                 </button>
@@ -1065,15 +1053,17 @@ function Auto() {
           <div>
             <button
               type="button"
-              className="hover:bg-[#EEEEEE] transition-all inline-flex whitespace-nowrap w-full justify-center items-center outline-none border-[1.5px] border-[#EEEEEE] rounded-lg bg-white px-3 py-1 text-[#192024]"
+              className="hover:bg-[#EEEEEE] dark:hover:bg-[#2E3438] transition-all inline-flex w-full justify-center items-center outline-none border-[1.5px] border-[#EEEEEE] dark:border-[#2E3438] rounded-lg bg-white dark:bg-[#192024] px-2 py-1 text-[#192024] dark:text-white"
               id="menu-button"
               aria-expanded={isDropdownPrezzoFiltriOpen}
               aria-haspopup="true"
               onClick={handleMenuButtonClickPrezzoFiltri}
             >
-              <span className=" font-bold text-[#192024]">Prezzo</span>
+              <span className=" font-bold text-[#192024] dark:text-white">
+                Prezzo
+              </span>
               <ChevronDown
-                className={`mr-1 h-5 w-5 transition-transdiv duration-300 ${
+                className={`mr-1 h-5 w-5 stroke-[#192024] dark:stroke-white transition-transdiv duration-300 ${
                   isDropdownPrezzoFiltriOpen ? "rotate-180" : "rotate-0"
                 }`}
                 color="#192024"
@@ -1085,7 +1075,7 @@ function Auto() {
           {isDropdownPrezzoFiltriOpen && (
             <div
               ref={dropdownPrezzoFiltriRef}
-              className="flex flex-col shrink-0 text-[#192024] justify-start items-start absolute right-0 lg:left-0 z-10 mt-2 w-72 h-52 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+              className="flex flex-col shrink-0 text-[#192024] dark:text-white justify-start items-start absolute left-0 z-10 mt-2 w-60 sm:w-72 h-52 origin-top-right rounded-md bg-white dark:bg-[#192024] shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
               role="menu"
               aria-orientation="vertical"
               aria-labelledby="menu-button"
@@ -1108,6 +1098,7 @@ function Auto() {
   [&::-webkit-slider-thumb]:appearance-none
   [&::-webkit-slider-thumb]:bg-white
   [&::-webkit-slider-thumb]:shadow-[0_0_0_4px_#192024]
+  [&::-webkit-slider-thumb]:dark:shadow-[0_0_0_4px_#ffffff]
   [&::-webkit-slider-thumb]:rounded-full
   [&::-webkit-slider-thumb]:transition-all
   [&::-webkit-slider-thumb]:duration-150
@@ -1120,6 +1111,7 @@ function Auto() {
   [&::-moz-range-thumb]:bg-white
   [&::-moz-range-thumb]:border-4
   [&::-moz-range-thumb]:border-[#192024]
+  [&::-moz-range-thumb]:dark:border-white
   [&::-moz-range-thumb]:rounded-full
   [&::-moz-range-thumb]:transition-all
   [&::-moz-range-thumb]:duration-150
@@ -1144,17 +1136,17 @@ function Auto() {
                   />
                 </div>
               </div>
-              <div className="w-full h-[30%] flex justify-around items-center border-t-[1.5px] border-t-[#EEEEEE]">
+              <div className="w-full h-[20%] flex justify-around items-center border-t-[1.5px] border-t-[#EEEEEE] dark:border-t-[#2E3438]">
                 <button
                   type="submit"
-                  className="bg-[#192024] border-[1.5px] border-[#192024] outline-none hover:bg-[#0f1315] text-white font-bold py-2 px-7 rounded-lg"
+                  className="bg-[#192024] dark:bg-white border-[1.5px] border-[#192024] dark:border-white outline-none hover:bg-[#0f1315] hover:dark:bg-[#e3e3e3] text-white dark:text-[#192024] font-bold py-1 px-4 sm:py-2 sm:px-7 rounded-lg"
                 >
                   Applica
                 </button>
                 <button
                   type="button"
-                  className="bg-trasparent border-[1.5px] border-[#192024] hover:bg-[#EEEEEE] text-[#192024] font-bold py-2 px-5 rounded-lg"
-                  onClick={getAllAuto}
+                  className="bg-transparent border-[1.5px] border-[#192024] dark:border-white hover:bg-[#EEEEEE] hover:dark:bg-[#2E3438] text-[#192024] dark:text-white font-bold py-1 px-4 sm:py-2 sm:px-7 rounded-lg"
+                  onClick={resetFiltri}
                 >
                   Reimposta
                 </button>
@@ -1168,15 +1160,17 @@ function Auto() {
           <div>
             <button
               type="button"
-              className="hover:bg-[#EEEEEE] transition-all inline-flex whitespace-nowrap w-full justify-center items-center outline-none border-[1.5px] border-[#EEEEEE] rounded-lg bg-white px-3 py-1 text-[#192024]"
+              className="hover:bg-[#EEEEEE] dark:hover:bg-[#2E3438] transition-all inline-flex w-full justify-center items-center outline-none border-[1.5px] border-[#EEEEEE] dark:border-[#2E3438] rounded-lg bg-white dark:bg-[#192024] px-2 py-1 text-[#192024] dark:text-white"
               id="menu-button"
               aria-expanded={isDropdownAnnoFiltriOpen}
               aria-haspopup="true"
               onClick={handleMenuButtonClickAnnoFiltri}
             >
-              <span className=" font-bold text-[#192024]">Anno</span>
+              <span className=" font-bold text-[#192024] dark:text-white">
+                Anno
+              </span>
               <ChevronDown
-                className={`mr-1 h-5 w-5 transition-transdiv duration-300 ${
+                className={`mr-1 h-5 w-5 stroke-[#192024] dark:stroke-white transition-transdiv duration-300 ${
                   isDropdownAnnoFiltriOpen ? "rotate-180" : "rotate-0"
                 }`}
                 color="#192024"
@@ -1188,7 +1182,7 @@ function Auto() {
           {isDropdownAnnoFiltriOpen && (
             <div
               ref={dropdownAnnoFiltriRef}
-              className="flex flex-col shrink-0 text-[#192024] justify-start items-start absolute right-0 xl:left-0 z-10 mt-2 w-72 h-80 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+              className="flex flex-col shrink-0 text-[#192024] dark:text-white justify-start items-start absolute left-0 z-10 mt-2 w-60 sm:w-72 h-72 origin-top-right rounded-md bg-white dark:bg-[#192024] shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
               role="menu"
               aria-orientation="vertical"
               aria-labelledby="menu-button"
@@ -1207,11 +1201,11 @@ function Auto() {
                 ].map((range, index) => (
                   <div
                     key={index}
-                    className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]"
+                    className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE] dark:hover:bg-[#2E3438]"
                   >
                     <p className="w-[80%]">{range.label}</p>
                     <input
-                      className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
+                      className="w-[20%] accent-[#192024] dark:accent-white h-4 rounded-lg cursor-pointer"
                       type="checkbox"
                       checked={selezioniAnno.some(
                         (r) => r.min === range.min && r.max === range.max
@@ -1227,17 +1221,17 @@ function Auto() {
                   </div>
                 ))}
               </div>
-              <div className="w-full h-[20%] flex justify-around items-center border-t-[1.5px] border-t-[#EEEEEE]">
+              <div className="w-full h-[20%] flex justify-around items-center border-t-[1.5px] border-t-[#EEEEEE] dark:border-t-[#2E3438]">
                 <button
                   type="submit"
-                  className="bg-[#192024] border-[1.5px] border-[#192024] outline-none hover:bg-[#0f1315] text-white font-bold py-2 px-7 rounded-lg"
+                  className="bg-[#192024] dark:bg-white border-[1.5px] border-[#192024] dark:border-white outline-none hover:bg-[#0f1315] hover:dark:bg-[#e3e3e3] text-white dark:text-[#192024] font-bold py-1 px-4 sm:py-2 sm:px-7 rounded-lg"
                 >
                   Applica
                 </button>
                 <button
                   type="button"
-                  className="bg-trasparent border-[1.5px] border-[#192024] hover:bg-[#EEEEEE] text-[#192024] font-bold py-2 px-5 rounded-lg"
-                  onClick={getAllAuto}
+                  className="bg-transparent border-[1.5px] border-[#192024] dark:border-white hover:bg-[#EEEEEE] hover:dark:bg-[#2E3438] text-[#192024] dark:text-white font-bold py-1 px-4 sm:py-2 sm:px-7 rounded-lg"
+                  onClick={resetFiltri}
                 >
                   Reimposta
                 </button>
@@ -1251,15 +1245,17 @@ function Auto() {
           <div>
             <button
               type="button"
-              className="hover:bg-[#EEEEEE] transition-all inline-flex whitespace-nowrap w-full justify-center items-center outline-none border-[1.5px] border-[#EEEEEE] rounded-lg bg-white px-3 py-1 text-[#192024]"
+              className="hover:bg-[#EEEEEE] dark:hover:bg-[#2E3438] transition-all inline-flex w-full justify-center items-center outline-none border-[1.5px] border-[#EEEEEE] dark:border-[#2E3438] rounded-lg bg-white dark:bg-[#192024] px-2 py-1 text-[#192024] dark:text-white"
               id="menu-button"
               aria-expanded={isDropdownTipoCarburanteFiltriOpen}
               aria-haspopup="true"
               onClick={handleMenuButtonClickTipoCarburanteFiltri}
             >
-              <span className=" font-bold text-[#192024]">Tipo carburante</span>
+              <span className=" font-bold text-[#192024] dark:text-white">
+                Tipo carburante
+              </span>
               <ChevronDown
-                className={`mr-1 h-5 w-5 transition-transdiv duration-300 ${
+                className={`mr-1 h-5 w-5 stroke-[#192024] dark:stroke-white transition-transdiv duration-300 ${
                   isDropdownTipoCarburanteFiltriOpen ? "rotate-180" : "rotate-0"
                 }`}
                 color="#192024"
@@ -1271,7 +1267,7 @@ function Auto() {
           {isDropdownTipoCarburanteFiltriOpen && (
             <div
               ref={dropdownTipoCarburanteFiltriRef}
-              className="flex flex-col shrink-0 text-[#192024] justify-start items-start absolute right-0 xl:left-0 z-10 mt-2 w-72 h-80 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+              className="flex flex-col shrink-0 text-[#192024] dark:text-white justify-start items-start absolute left-0 z-10 mt-2 w-60 sm:w-72 h-72 origin-top-right rounded-md bg-white dark:bg-[#192024] shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
               role="menu"
               aria-orientation="vertical"
               aria-labelledby="menu-button"
@@ -1281,13 +1277,13 @@ function Auto() {
                 {filtriTipoCarburante.map((tipo_carburazione, index) => (
                   <div
                     key={index}
-                    className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE]"
+                    className="shrink-0 w-full h-[2.5rem] px-2 rounded-lg flex justify-start items-center hover:bg-[#EEEEEE] dark:hover:bg-[#2E3438]"
                   >
                     <p className="w-[80%]">
                       {tipo_carburazione.tipo_carburazione}
                     </p>
                     <input
-                      className="w-[20%] accent-[#192024] h-4 rounded-lg cursor-pointer"
+                      className="w-[20%] accent-[#192024] dark:accent-white h-4 rounded-lg cursor-pointer"
                       type="checkbox"
                       checked={
                         selezioniTipoCarburante[
@@ -1305,17 +1301,17 @@ function Auto() {
                   </div>
                 ))}
               </div>
-              <div className="w-full h-[20%] flex justify-around items-center border-t-[1.5px] border-t-[#EEEEEE]">
+              <div className="w-full h-[20%] flex justify-around items-center border-t-[1.5px] border-t-[#EEEEEE] dark:border-t-[#2E3438]">
                 <button
                   type="submit"
-                  className="bg-[#192024] border-[1.5px] border-[#192024] outline-none hover:bg-[#0f1315] text-white font-bold py-2 px-7 rounded-lg"
+                  className="bg-[#192024] dark:bg-white border-[1.5px] border-[#192024] dark:border-white outline-none hover:bg-[#0f1315] hover:dark:bg-[#e3e3e3] text-white dark:text-[#192024] font-bold py-1 px-4 sm:py-2 sm:px-7 rounded-lg"
                 >
                   Applica
                 </button>
                 <button
                   type="button"
-                  className="bg-trasparent border-[1.5px] border-[#192024] hover:bg-[#EEEEEE] text-[#192024] font-bold py-2 px-5 rounded-lg"
-                  onClick={getAllAuto}
+                  className="bg-transparent border-[1.5px] border-[#192024] dark:border-white hover:bg-[#EEEEEE] hover:dark:bg-[#2E3438] text-[#192024] dark:text-white font-bold py-1 px-4 sm:py-2 sm:px-7 rounded-lg"
+                  onClick={resetFiltri}
                 >
                   Reimposta
                 </button>
@@ -1329,15 +1325,17 @@ function Auto() {
           <div>
             <button
               type="button"
-              className="hover:bg-[#EEEEEE] transition-all inline-flex whitespace-nowrap w-full justify-center items-center outline-none border-[1.5px] border-[#EEEEEE] rounded-lg bg-white px-3 py-1 text-[#192024]"
+              className="hover:bg-[#EEEEEE] dark:hover:bg-[#2E3438] transition-all inline-flex w-full justify-center items-center outline-none border-[1.5px] border-[#EEEEEE] dark:border-[#2E3438] rounded-lg bg-white dark:bg-[#192024] px-2 py-1 text-[#192024] dark:text-white"
               id="menu-button"
               aria-expanded={isDropdownVicinoATeFiltriOpen}
               aria-haspopup="true"
               onClick={handleMenuButtonClickVicinoATeFiltri}
             >
-              <span className=" font-bold text-[#192024]">Vicino a te</span>
+              <span className=" font-bold text-[#192024] dark:text-white">
+                Vicino a te
+              </span>
               <ChevronDown
-                className={`mr-1 h-5 w-5 transition-transdiv duration-300 ${
+                className={`mr-1 h-5 w-5 stroke-[#192024] dark:stroke-white transition-transdiv duration-300 ${
                   isDropdownVicinoATeFiltriOpen ? "rotate-180" : "rotate-0"
                 }`}
                 color="#192024"
@@ -1349,7 +1347,7 @@ function Auto() {
           {isDropdownVicinoATeFiltriOpen && (
             <div
               ref={dropdownVicinoATeFiltriRef}
-              className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+              className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white dark:bg-[#192024] shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
               role="menu"
               aria-orientation="vertical"
               aria-labelledby="menu-button"
@@ -1357,7 +1355,7 @@ function Auto() {
               <div className="py-1" role="none">
                 <button
                   type="button"
-                  className="text-gray-700 block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
+                  className="text-[#192024] dark:text-white block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
                   role="menuitem"
                   tabIndex="-1"
                   // onClick={handleNavigateToAccount}

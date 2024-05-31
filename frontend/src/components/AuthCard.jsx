@@ -23,11 +23,14 @@ function AuthCard() {
   return (
     <div className="h-full w-full">
       <Button
-        className="hover:bg-[#EEEEEE] py-1 px-2 rounded-lg inline-flex whitespace-nowrap w-full justify-center items-center outline-none bg-trasparent  text-[#192024]"
+        className="hover:bg-[#EEEEEE] hover:dark:bg-[#2E3438] py-1 px-2 rounded-lg inline-flex whitespace-nowrap w-full justify-center items-center outline-none bg-trasparent  text-[#192024] dark:text-white"
         // label="Accedi"
         onClick={() => setVisible(true)}
       >
-        <CircleUserRound className="mr-1 " size={24} color="#192024" />
+        <CircleUserRound
+          className="mr-1 stroke-[#192024] dark:stroke-white"
+          size={24}
+        />
         <span className="hidden md:flex text-lg">Accedi</span>
       </Button>
       <Dialog

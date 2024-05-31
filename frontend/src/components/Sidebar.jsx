@@ -74,12 +74,17 @@ function Sidebar() {
           className={`transition-all w-[70%] ${
             activePath === routes[4].path
               ? "bg-[#FF690F] text-white"
-              : "bg-transparent text-[#192024]"
+              : "bg-transparent text-[#192024] dark:text-white"
           } outline-none flex justify-start items-center gap-3 text-md px-4 py-1 rounded-lg`}
         >
           <Heart
             size={22}
-            color={activePath === routes[4].path ? "white" : "#192024"}
+            className={`${
+              activePath === routes[4].path
+                ? "stroke-white"
+                : "stroke-[#192024] dark:stroke-white"
+            }`}
+            // color={activePath === routes[4].path ? "white" : "#192024"}
           />
           <span className="hidden md:flex">{routes[4].name}</span>
         </button>

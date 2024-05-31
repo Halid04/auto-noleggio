@@ -91,11 +91,11 @@ function CardAuto({
   };
 
   return (
-    <div className="w-64 2xl:w-80 cursor-pointer bg-white border border-gray-200 rounded-lg shadow hover:scale-[.98] transition-all duration-300 ease-in-out">
+    <div className="w-64 2xl:w-80 cursor-pointer bg-white rounded-lg shadow hover:scale-[.98] transition-all duration-300 ease-in-out">
       {localStorage.getItem("userToken") && (
         <form
           onSubmit={(e) => addAutoToFavorite(idAuto, e)}
-          className="relative flex top-2 left-2"
+          className="relative flex top-2 px-2 bg-white"
         >
           <button
             type="submit"
@@ -122,16 +122,16 @@ function CardAuto({
         loading="lazy"
       />
 
-      <div className="px-2 py-5 flex flex-col justify-start items-start gap-2">
+      <div className="px-2 py-5 bg-white dark:bg-[#192024] flex flex-col justify-start items-start gap-2 transition-all duration-300 ease-in-out">
         <a href="#" className="infoCar flex items-baseline gap-1">
-          <h5 className="whitespace-nowrap text-xl font-bold tracking-tight text-gray-900">
+          <h5 className="whitespace-nowrap text-xl font-bold tracking-tight text-[#192024] dark:text-white">
             {marca}
           </h5>
-          <p className="whitespace-nowrap text-sm font-normal text-[#192024] ">
+          <p className="whitespace-nowrap text-sm font-normal text-[#192024] dark:text-white">
             - {modello}
           </p>
         </a>
-        <p className="text-sm font-normal text-[#192024] ">
+        <p className="text-sm font-normal text-[#192024] dark:text-white">
           {anno_immatricolazione} | {chilometraggio} km |{" "}
           <span className="font-bold text-lg">{costo_giornaliero} €/G</span>
         </p>
@@ -156,8 +156,8 @@ function CardAuto({
           </span>
         </div>
         <div className="oneline">
-          <MapPin />{" "}
-          <p className="whitespace-nowrap font-normal text-[#192024] ">
+          <MapPin className="stroke-[#192024] dark:stroke-white" />{" "}
+          <p className="whitespace-nowrap font-normal text-[#192024] dark:text-white">
             {citta}, {indirizzo}
           </p>
         </div>
