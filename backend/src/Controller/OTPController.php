@@ -168,7 +168,13 @@ class OTPController extends BaseController {
                 "altBody" => "Ecco il codice OTP per verificare la tua identità: {$otp_code}"
             ]);
         } catch (Exception $e) {
-            echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+
+            return array (
+                'statusCode' => 500,
+                'body' => array (
+                    'message' => "Impossibile inviare l'email: {$this->mail->ErrorInfo}"
+                )
+            );
         }
 
         $date = date('Y-m-d H:i:s', time());
@@ -368,147 +374,6 @@ class OTPController extends BaseController {
                     'message' => "Challenge risolta"
                 ]
             ];
-        }
-
-        return [
-            'statusCode' => 500,
-            'body' => [
-                'message' => "Internal Server Error"
-            ]
-        ];
-    }
-
-    function newTransaction($request, $auth_info)
-    {
-        $required_parameters = ["otp_challenge_id"];
-
-        $request_keys = array_keys($request);
-    
-        $missing_keys = array_diff($required_parameters, $request_keys);
-    
-        if (count($missing_keys) !== 0) {
-            return [
-                'statusCode' => 400,
-                'body' => [
-                    'message' => "Missing parameters: " . implode(",", $missing_keys)
-                ]
-            ];
-        }
-        
-        $auth_info = $auth_info['data'];
-
-        $otp_result = $this->gateway->find(["id" => $request['otp_challenge_id']]);
-
-        $otp_result = $otp_result['body']['content'];
-
-        if (empty($otp_result)) {
-            return [
-                'statusCode' => 404,
-                'body' => [
-                    'message' => "Challenge non trovata"
-                ]
-            ];
-        }
-
-        $otp_challenge = $otp_result[0];
-
-        if ($otp_challenge['stato'] == "void") {
-            return [
-                'statusCode' => 400,
-                'body' => [
-                    'message' => "Challenge invalida"
-                ]
-            ];
-        }
-
-        if ($otp_challenge['id_cliente'] != $auth_info['user_id']) {
-
-            $result = $this->gateway->update([
-                'id' => $request['otp_challenge_id'],
-                'stato' => 6
-            ]);
-
-            if ($result['statusCode'] != 200) {
-               return $result;
-            }
-
-            return [
-                'statusCode' => 403,
-                'body' => [
-                    'message' => "Non hai il permesso di risolvere questa challenge"
-                ]
-            ];
-        }
-
-        if (time() >= strtotime($otp_challenge['data_scadenza'])) {
-
-            $result = $this->gateway->update([
-                'id' => $request['otp_challenge_id'],
-                'stato' => 4
-            ]);
-
-            if ($result['statusCode'] != 200) {
-               return $result;
-            }
-
-            return [
-                'statusCode' => 400,
-                'body' => [
-                    'message' => "Challenge scaduta"
-                ]
-            ];
-        }
-
-        if ($otp_challenge['stato'] == "failed") {
-            return [
-                'statusCode' => 400,
-                'body' => [
-                    'message' => "Challenge già utilizzata: Esito negativo"
-                ]
-            ];
-        }
-
-        if ($otp_challenge['stato'] == "expired") {
-            return [
-                'statusCode' => 400,
-                'body' => [
-                    'message' => "Challenge scaduta"
-                ]
-            ];
-        }
-
-        if ($otp_challenge['stato'] == "used") {
-            return [
-                'statusCode' => 400,
-                'body' => [
-                    'message' => "Challenge già utilizzata: Transazione già eseguita"
-                ]
-            ];
-        }
-
-        if ($otp_challenge['stato'] == "successful") {
-            $result = $this->transactionGateway->insert($request);
-
-            if ($result['statusCode'] != 200) {
-               return $result;
-            }
-
-            $result = $this->gateway->update([
-                'id' => $request['otp_challenge_id'],
-                'stato' => 5
-            ]);
-
-            if ($result['statusCode'] != 200) {
-                return $result;
-             }
-
-            return [
-                'statusCode' => 200,
-                'body' => [
-                    'message' => "Transazione eseguita"
-                ]
-            ];
-
         }
 
         return [
