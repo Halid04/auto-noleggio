@@ -96,3 +96,10 @@ body {
   display: flex;
   margin-left: 13vw;
 }
+
+.select-month,
+.select-year {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}

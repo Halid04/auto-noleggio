@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { CreditCard } from "lucide-react";
 
 function Transazione() {
   const { idAuto } = useParams();
@@ -44,7 +45,113 @@ function Transazione() {
   };
   return (
     <div className="h-full w-full bg-white flex flex-col sm:flex-row justify-between items-center">
-      <div className="h-[65vh] sm:h-full w-full sm:w-[75vw] bg-red-500">1</div>
+      <div className="h-[65vh] sm:h-full w-full sm:w-[75vw] sm:gap-2 py-2 sm:py-5 px-2 sm:px-5 font-bold flex flex-wrap sm:flex-col text-[#192024]">
+        <h1 className="text-2xl ">Dettagli transazione</h1>
+        <div className="w-full flex justify-between items-center">
+          <button className="w-[49%] sm:h-8 sm:py-2 flex gap-4 justify-center items-center rounded-lg border-[1.5px] border-[#808080rgb(128, 128, 128)] focus:border-[#FF690F]">
+            <img
+              src="/src/assets/visaLogo.png"
+              className=" w-8 aspect-square object-contain"
+              alt="visaLogo"
+            />
+            <img
+              src="/src/assets/masterCardLogo.png"
+              className=" w-8 aspect-square object-contain"
+              alt="visaLogo"
+            />
+            <img
+              src="/src/assets/maestroCardLogo.png"
+              className=" w-8 aspect-square object-contain"
+              alt="visaLogo"
+            />
+          </button>
+          <button className="w-[49%] sm:h-8 sm:py-2 flex gap-4 justify-center items-center rounded-lg border-[1.5px] border-[#808080rgb(128, 128, 128)] focus:border-[#FF690F]">
+            <img
+              src="/src/assets/payPalLogo.png"
+              className=" w-16 aspect-square object-contain"
+              alt="visaLogo"
+            />
+          </button>
+        </div>
+        <h2 className="text-xl sm:mt-5">Dati carta di credito</h2>
+        <div className="w-full flex justify-between items-center">
+          <div className="w-[49%] gap-2 flex flex-col justify-start items-start">
+            <label htmlFor="numeroCarta" className="text-[#808080] text-sm ">
+              Numero carta
+            </label>
+            <div className="w-full flex justify-between items-center px-3 py-1 rounded-lg border-[1.5px] border-[#808080rgb(128, 128, 128)]">
+              <input
+                type="text"
+                name=""
+                id=""
+                placeholder="Numero carta"
+                className="w-[70%] text-sm border-none outline-none font-bold "
+              />
+              <CreditCard size={20} className="stroke-[#192024]" />
+            </div>
+          </div>
+          <div className="w-[49%] gap-2 flex justify-between items-start">
+            <div className="w-[45%] flex flex-col justify-start items-start gap-2">
+              <label htmlFor="numeroCarta" className="text-[#808080] text-sm ">
+                Scadenza
+              </label>
+              <div className="w-full flex justify-between items-center px-3 rounded-lg border-[1.5px] border-[#808080rgb(128, 128, 128)]">
+                <select
+                  className="select-month outline-none w-1/2 h-full border-r-[2px] border-[#808080rgb(128, 128, 128)]"
+                  name=""
+                  id=""
+                >
+                  <option value="">01</option>
+                  <option value="">02</option>
+                  <option value="">03</option>
+                  <option value="">04</option>
+                  <option value="">05</option>
+                  <option value="">06</option>
+                  <option value="">07</option>
+                  <option value="">08</option>
+                  <option value="">09</option>
+                  <option value="">10</option>
+                  <option value="">11</option>
+                  <option value="">12</option>
+                </select>
+                <select
+                  className="select-year outline-none w-1/2 h-full px-2"
+                  name=""
+                  id=""
+                >
+                  <option value="">24</option>
+                  <option value="">25</option>
+                  <option value="">26</option>
+                  <option value="">27</option>
+                  <option value="">28</option>
+                  <option value="">29</option>
+                  <option value="">30</option>
+                  <option value="">31</option>
+                  <option value="">32</option>
+                  <option value="">33</option>
+                  <option value="">34</option>
+                  <option value="">35</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="w-[45%] gap-2 flex flex-col justify-start items-start">
+              <label htmlFor="numeroCarta" className="text-[#808080] text-sm ">
+                CVV
+              </label>
+              <div className="w-full flex justify-between items-center px-3 py-1 rounded-lg border-[1.5px] border-[#808080rgb(128, 128, 128)]">
+                <input
+                  type="text"
+                  name=""
+                  id=""
+                  placeholder="Numero carta"
+                  className="w-[70%] text-sm border-none outline-none font-bold "
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       <div className="h-[35vh] sm:h-full w-full sm:w-[25vw] flex flex-col justify-between items-center">
         <div className="w-full h-[60vh] py-2 sm:py-5 px-2 sm:px-5 sm:h-[70vh] font-bold flex flex-wrap sm:flex-col text-[#192024]">
           <h1 className="text-2xl ">Riepilogo transazione</h1>
