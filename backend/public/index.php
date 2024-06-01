@@ -279,7 +279,7 @@
 
         $users = $response['body']['content'];
 
-        $admin_result['numero_utenti_nol'] = $users[0];
+        $admin_result['numero_utenti_nol'] = $users[0]['count'];
 
         // Incassi totali
 
@@ -325,7 +325,7 @@
 
         $admin_result['num_macchine_disp'] = $available_vehicles;
 
-        $admin_result['num_macchine_nol'] = $occupied_vehicles;
+        $admin_result['num_macchine_nol'] = $occupied_vehicles['occupied_vehicles'];
 
         // Incassi raggruppati per mese
 

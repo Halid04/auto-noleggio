@@ -113,12 +113,12 @@ class VehicleGateway extends BaseGateway {
     public function getOccupiedSlots($request)
     {
         if (!isset($request['id'])) {
-            $this->response(400, message: "Parametro mancante: id");
+            return $this->response(400, message: "Parametro mancante: id");
         }
         
         $statement = "
             SELECT 
-                veicolo.*, transazionefinanziaria.data_inizio, transazionefinanziaria.data_fine 
+                transazionefinanziaria.data_inizio, transazionefinanziaria.data_fine 
             FROM " . $this->tableName . "
             JOIN transazionefinanziaria ON transazionefinanziaria.id_veicolo = veicolo.id_veicolo
             WHERE veicolo.id_veicolo = :id_veicolo
