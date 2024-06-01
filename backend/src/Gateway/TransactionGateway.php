@@ -11,6 +11,142 @@ class TransactionGateway extends BaseGateway
         parent::__construct($db);
     }
 
+    public function findOccupiedVehicles($request)
+    {
+        $statement = "
+            SELECT 
+                COUNT(*) as occupied_vehicles
+            FROM " . $this->tableName . "
+            WHERE CURRENT_TIMESTAMP BETWEEN data_inizio AND data_fine;";
+        
+        try {
+            $statement = $this->conn->prepare($statement);
+
+            $statement->execute();
+
+            $response = $statement->fetchAll(\PDO::FETCH_ASSOC);
+
+            if (!$response) {
+                $response = [];
+            }
+
+            return $this->response(200, content: $response);
+
+        } catch (\PDOException $e) {
+            error_log("Database error: " . $e->getMessage());
+            return $this->response(500, message: "Internal Server Error");
+        }
+    }
+
+    public function findTotalProceeds($request)
+    {
+        $statement = "
+            SELECT 
+                SUM(importo) as proceeds
+            FROM " . $this->tableName . ";";
+        
+        try {
+            $statement = $this->conn->prepare($statement);
+
+            $statement->execute();
+
+            $response = $statement->fetchAll(\PDO::FETCH_ASSOC);
+
+            if (!$response) {
+                $response = [];
+            }
+
+            return $this->response(200, content: $response);
+
+        } catch (\PDOException $e) {
+            error_log("Database error: " . $e->getMessage());
+            return $this->response(500, message: "Internal Server Error");
+        }
+    }
+
+    public function findProceedsGroupedByMonth($request)
+    {
+        $statement = "
+            SELECT 
+                MONTHNAME(data_transazione) as mese, SUM(importo) as incassi
+            FROM " . $this->tableName . "
+            GROUP BY (MONTH(data_transazione));";
+        
+        try {
+            $statement = $this->conn->query($statement);
+
+            $statement->execute();
+
+            $response = $statement->fetchAll(\PDO::FETCH_ASSOC);
+
+            if (!$response) {
+                $response = [];
+            }
+
+            return $this->response(200, content: $response);
+
+        } catch (\PDOException $e) {
+            error_log("Database error: " . $e->getMessage());
+            return $this->response(500, message: "Internal Server Error");
+        }
+    }
+
+    public function findProceedsGroupedByHeadQuarter($request)
+    {
+        $statement = "
+            SELECT 
+                sede.nome, sede.id_sede, SUM(importo) as proceeds
+            FROM " . $this->tableName . "
+            JOIN veicolo ON transazionefinanziaria.id_veicolo = veicolo.id_veicolo
+            JOIN sede ON veicolo.id_sede = sede.id_sede
+            GROUP BY (sede.id_sede);";
+        
+        try {
+            $statement = $this->conn->prepare($statement);
+
+            $statement->execute();
+
+            $response = $statement->fetchAll(\PDO::FETCH_ASSOC);
+
+            if (!$response) {
+                $response = [];
+            }
+
+            return $this->response(200, content: $response);
+
+        } catch (\PDOException $e) {
+            error_log("Database error: " . $e->getMessage());
+            return $this->response(500, message: "Internal Server Error");
+        }
+    }
+
+    public function findTransactionUsers($request)
+    {
+        $statement = "
+            SELECT 
+                COUNT(*) as count
+            FROM " . $this->tableName . "
+            GROUP BY (id_cliente);";
+        
+        try {
+            $statement = $this->conn->prepare($statement);
+
+            $statement->execute();
+
+            $response = $statement->fetchAll(\PDO::FETCH_ASSOC);
+
+            if (!$response) {
+                $response = [];
+            }
+
+            return $this->response(200, content: $response);
+
+        } catch (\PDOException $e) {
+            error_log("Database error: " . $e->getMessage());
+            return $this->response(500, message: "Internal Server Error");
+        }
+    }
+
     public function findAll($request)
     {
         $statement = "
