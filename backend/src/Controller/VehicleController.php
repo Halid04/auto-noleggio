@@ -38,7 +38,9 @@ class VehicleController extends BaseController {
                                 case "anni":
                                     $response = $this->gateway->getYears($this->data);
                                     break;
-
+                                case "date":
+                                    $response = $this->gateway->getOccupiedSlots($this->data);
+                                    break;
                                 case "tipi":
                                     $response = $this->gateway->getTypes($this->data);
                                     break;

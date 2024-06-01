@@ -110,6 +110,42 @@ class VehicleGateway extends BaseGateway {
         }
     }
 
+    public function getOccupiedSlots($request)
+    {
+        if (!isset($request['id'])) {
+            $this->response(400, message: "Parametro mancante: id");
+        }
+        
+        $statement = "
+            SELECT 
+                veicolo.*, transazionefinanziaria.data_inizio, transazionefinanziaria.data_fine 
+            FROM " . $this->tableName . "
+            JOIN transazionefinanziaria ON transazionefinanziaria.id_veicolo = veicolo.id_veicolo
+            WHERE veicolo.id_veicolo = :id_veicolo
+            ";
+        
+        try {
+            $statement = $this->conn->prepare($statement);
+
+            $statement->execute([
+                "id_veicolo" => $request['id']
+            ]
+            );
+
+            $response = $statement->fetchAll(\PDO::FETCH_ASSOC);
+
+            if (!$response) {
+                $response = [];
+            }
+
+            return $this->response(200, content: $response);
+
+        } catch (\PDOException $e) {
+            error_log("Database error: " . $e->getMessage());
+            return $this->response(500, message: "Internal Server Error");
+        }
+    }
+    
     public function filter($input)
     {
         if (!isset($input["filters"])) {
