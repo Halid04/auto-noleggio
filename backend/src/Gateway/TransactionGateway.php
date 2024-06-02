@@ -308,6 +308,8 @@ class TransactionGateway extends BaseGateway
     {
         $fields = ["numero_carta", "ccv", "scadenza", "importo", "data_transazione", "id_cliente", "id_veicolo", "data_inizio", "data_fine"];
 
+
+        $input['data_transazione'] = date('Y-m-d H:i:s', time());
         $missing_keys = $this->validateRequiredParameters($input, $fields);
         
         if (!empty($missing_keys)) {
