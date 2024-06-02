@@ -347,7 +347,7 @@ class TransactionGateway extends BaseGateway
 
         return $this->response(
             201,
-            message: "Transaction inserted successfully"
+            message: "Transazione effettuata"
         );
     }
 

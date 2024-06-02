@@ -33,7 +33,7 @@ class GPSController extends BaseController {
                         $response = $this->gateway->insert($this->data);
                         break;
                     default:
-                        $this->sendOutput(array('Content-Type: application/json'), statusCode: 404, data: ["message" => "Resource not found"]);
+                        $this->sendOutput(array('Content-Type: application/json'), statusCode: 404, data: ["message" => "Risorsa non trovata"]);
                         return;
                 }
             }
@@ -60,7 +60,7 @@ class GPSController extends BaseController {
             $response_obj['obj'] =  array (
                 'statusCode' => 403,
                 'body' => array (
-                    'message' => "Access forbidden: You do not have permission to edit this resource"
+                    'message' => "Accesso negato: Non hai i permessi per accedere a questa risorsa"
                 )
             );
 

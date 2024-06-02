@@ -68,7 +68,7 @@ function App() {
 
   const isTransactionPage = location.pathname.startsWith("/transazione");
   const isAdminDashboard = location.pathname.startsWith("/dashboard");
-  const impostazioniProfilo = location.pathname.startsWith("/userdashboard");
+  const impostazioniProfilo = location.pathname.startsWith("/userDashboard");
 
   return (
     <div
@@ -103,7 +103,7 @@ function App() {
             <Route path="/sedi" element={<Sedi />} />
             <Route path="/preferiti" element={<Preferiti />} />
             <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/userdashboard" element={<UserDashboard />} />
+            <Route path="/userDashboard" element={<UserDashboard />} />
             <Route path="/transazione/:idAuto" element={<Transazione />} />
             <Route path="/carDetail/:idAuto" element={<CarDetail />} />
             <Route path="/notLogged" element={<NotLogged />} />

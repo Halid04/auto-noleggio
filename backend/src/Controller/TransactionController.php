@@ -32,7 +32,6 @@ class TransactionController extends BaseController {
                 
                 switch ($this->requestMethod) {
                     case 'GET':
-                        echo var_dump($this->requestMethod);
                         if (isset($this->uri[1])) {
                             switch ($this->uri[1]){
                                 case "noleggiPassati":

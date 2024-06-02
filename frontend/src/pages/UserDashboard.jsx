@@ -1,9 +1,48 @@
 // UserDashboard.js
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import EditUserModal from "../components/EditUserModal";
 
 const UserDashboard = () => {
   const [isModalVisible, setModalVisible] = useState(false);
+
+  const [pastRentals, setPastRentals] = useState([]);
+
+  useEffect(() => {
+    getPastRentals();
+  }, []);
+
+  const getPastRentals = () => {
+    const url = `http://localhost/auto-noleggio/backend/public/transazioni/noleggiPassati`;
+
+    const token = localStorage.getItem("userToken");
+
+    const headers = {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`,
+    };
+
+    fetch(url, {
+      method: "GET",
+      headers: headers,
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log("pastRentals", data.content);
+        setPastRentals(data.content);
+      })
+      .catch((error) => {
+        console.error(
+          "Errore durante il recupero dei noleggi",
+          error
+        );
+      });
+  };
 
   const user = {
     name: "John Doe",
@@ -64,6 +103,7 @@ const UserDashboard = () => {
                     <td className="px-4 py-2">{rental.car}</td>
                     <td className="px-4 py-2">{rental.duration}</td>
                     <td className="px-4 py-2">{rental.total}</td>
+                    
                   </tr>
                 ))}
               </tbody>
@@ -81,6 +121,7 @@ const UserDashboard = () => {
                   <th className="px-4 py-2 text-left">Car</th>
                   <th className="px-4 py-2 text-left">Duration</th>
                   <th className="px-4 py-2 text-left">Total</th>
+                  <th className="px-4 py-2 text-left"></th>
                 </tr>
               </thead>
               <tbody>
@@ -90,6 +131,11 @@ const UserDashboard = () => {
                     <td className="px-4 py-2">{rental.car}</td>
                     <td className="px-4 py-2">{rental.duration}</td>
                     <td className="px-4 py-2">{rental.total}</td>
+                    <td className="px-4 py-2">
+                      <button className="bg-red-500 text-white py-1 px-3 rounded-lg" onClick={() => handleCancel(index)}>
+                        Cancel
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
