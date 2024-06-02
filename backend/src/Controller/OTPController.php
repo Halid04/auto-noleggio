@@ -176,7 +176,7 @@ class OTPController extends BaseController {
 
         $date = date('Y-m-d H:i:s', time());
 
-        $expiry_date = date('Y-m-d H:i:s', time() + 2 * 60 * 60);
+        $expiry_date = date('Y-m-d H:i:s', time() + 2 * 60);
         
         $status = 1;
 
