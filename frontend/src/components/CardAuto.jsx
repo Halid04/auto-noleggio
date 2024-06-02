@@ -122,20 +122,20 @@ function CardAuto({
         loading="lazy"
       />
 
-      <div className="px-2 py-5 bg-white dark:bg-[#192024] flex flex-col justify-start items-start gap-2 2xl:gap-5 transition-all duration-300 ease-in-out">
+      <div className="px-2 py-5 bg-white dark:bg-[#192024] flex flex-col justify-start items-start gap-2 2xl:gap-6 transition-all duration-300 ease-in-out">
         <a href="#" className="infoCar flex items-baseline gap-1">
           <h5 className="whitespace-nowrap text-xl 2xl:text-2xl font-bold tracking-tight text-[#192024] dark:text-white">
             {marca}
           </h5>
-          <p className="whitespace-nowrap text-sm 2xl:text-base font-normal text-[#192024] dark:text-white">
+          <p className="whitespace-nowrap text-sm 2xl:text-lg font-normal text-[#192024] dark:text-white">
             - {modello}
           </p>
         </a>
-        <p className="text-sm 2xl:text-base font-normal text-[#192024] dark:text-white">
+        <p className="text-sm 2xl:text-lg font-normal text-[#192024] dark:text-white">
           {anno_immatricolazione} | {chilometraggio} km |{" "}
           <span className="font-bold text-lg">{costo_giornaliero} €/G</span>
         </p>
-        <div className="tags flex gap-1 mb-2">
+        <div className="tags flex gap-1 2xl:gap-3 mb-2">
           <span
             title={tipo_veicolo}
             className="whitespace-nowrap inline-flex items-center px-3 2xl:px-4 2xl:py-3 h-7 2xl:h-8 text-sm 2xl:text-base font-normal text-center text-white bg-[#FF690F] rounded-lg hover:bg-[#d55508] "
