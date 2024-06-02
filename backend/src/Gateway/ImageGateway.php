@@ -108,16 +108,16 @@ class ImageGateway extends BaseGateway {
                 $this->conn->query($image_statement);
             } catch (\PDOException $e) {
                 if ($e->getCode() == "23000") {
-                    return $this->response(400, "Invalid request: Vehicle ID is not valid");
+                    return $this->response(400, "Richiesta non valida: ID veicolo non valido");
                 }
                 error_log("Database error: " . $e->getMessage());
                 return $this->response(500, "Internal Server Error");
             }
 
-            return $this->response(201, "Images added successfully");
+            return $this->response(201, "Immagini aggiunte");
         }
 
-        return $this->response(400, "Invalid request: Empty image array");
+        return $this->response(400, "Richiesta non valida: Array immagini vuoto");
     }
 
     public function validateInput(array $input)
@@ -125,11 +125,11 @@ class ImageGateway extends BaseGateway {
         $errors = [];
 
         if (isset($input['targa']) && !preg_match('/^[A-Z]{2}[0-9]{3}[A-Z]{2}$/', $input['targa'])) {
-            $errors[] = "The number plate provided is in an invalid format";
+            $errors[] = "Richiesta non valida: Targa non valida";
         }
 
         if (isset($input['numero_posti']) && !is_numeric($input['numero_posti'])) {
-            $errors[] = "The number of seats must be numeric";
+            $errors[] = "Richiesta non valida: Numero posti non valido";
         }
 
         return $errors;

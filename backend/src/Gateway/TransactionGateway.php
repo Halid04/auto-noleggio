@@ -239,19 +239,21 @@ class TransactionGateway extends BaseGateway
         }
     }
 
-    public function findLatest()
+    public function findLatest($request)
     {
         $statement = "
             SELECT 
                 *
-            FROM " . $this->tableName .
-            "WHERE id_cliente = :user_id ORDER BY id_" . $this->tableName . " DESC LIMIT 1;";
+            FROM $this->tableName 
+            JOIN veicolo ON $this->tableName.id_veicolo = veicolo.id_veicolo
+            JOIN sede on veicolo.id_sede = sede.id_sede
+            WHERE id_cliente = :user_id ORDER BY id_" . $this->tableName . " DESC LIMIT 1;";
 
         try {
             $statement = $this->conn->prepare($statement);
 
-            $statement = $this->conn->execute([
-                'user_id' => (int) $input['user_id']
+            $statement->execute([
+                'user_id' => (int) $request['user_id']
             ]);
 
             $response = $statement->fetchAll(\PDO::FETCH_ASSOC);
@@ -304,7 +306,7 @@ class TransactionGateway extends BaseGateway
 
     public function insert(array $input)
     {
-        $fields = ["id_cartadicredito", "importo", "stato", "data_transazione", "telefono", "id_cliente", "id_veicolo", "data_inizio", "data_fine"];
+        $fields = ["numero_carta", "ccv", "scadenza", "importo", "data_transazione", "id_cliente", "id_veicolo", "data_inizio", "data_fine"];
 
         $missing_keys = $this->validateRequiredParameters($input, $fields);
         
@@ -315,8 +317,7 @@ class TransactionGateway extends BaseGateway
         $result = $this->conn->prepare("SELECT * FROM transazionefinanziaria
         WHERE
             id_veicolo = :id_veicolo AND
-            ((:data_inizio >= check_in AND :data_inizio <= data_fine)
-            OR (:data_fine < data_fine AND :data_fine > data_inizio))
+            (data_inizio <= :data_fine AND data_fine >= :data_inizio) 
         ");
 
         $result->execute([
@@ -325,14 +326,7 @@ class TransactionGateway extends BaseGateway
             'data_fine' => $input['data_fine']
         ]);
 
-        if ($result['statusCode'] != 200) {
-            return $this->response(
-                $insert_response["statusCode"],
-                message: $insert_response["body"]["message"]
-            );
-        }
-
-        if ($result->rowCount > 0) {
+        if ($result->fetchColumn() > 0) {
             return $this->response(400, message: "Impossibile effettuare la prenotazione. Date già prenotate");
         }
 
