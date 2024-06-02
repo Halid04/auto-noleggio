@@ -103,3 +103,8 @@ body {
   -webkit-appearance: none;
   -moz-appearance: none;
 }
+
+#dataRitiro::-webkit-calendar-picker-indicator,
+#dataConsegna::-webkit-calendar-picker-indicator {
+  display: none;
+}
