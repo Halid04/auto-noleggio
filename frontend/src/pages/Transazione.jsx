@@ -309,8 +309,31 @@ function Transazione() {
             continua
           </button>
         </div>
-        <div className="w-full h-full shrink-0 grow-0 bg-black text-black">
-          mamma
+        <div className="w-full h-full flex justify-center items-center shrink-0 grow-0 text-[#192024]">
+          <div className="codice-otp-card px-4 py-2 w-[45%] h-[40%] bg-[#F0F3F5] rounded-md flex flex-col justify-center gap-3 items-center">
+            <h1 className="text-center text-3xl font-bold">
+              Autonoleggio.itis{" "}
+            </h1>
+            <p className="text-center text-sm ">
+              Inserisci il codice OTP inviato alla mail h********@gmail.com
+            </p>
+            <input
+              className="w-full h-11 text-xl text-center bg-[#D9D9D9] outline-none border-none"
+              type="text"
+              placeholder="000000"
+              name=""
+              id=""
+            />
+            <p>Scadenza codice OTP 01:45</p>
+            <div className="w-full flex justify-between items-center">
+              <button className="w-[45%] flex justify-center items-center cursor-pointer whitespace-nowrap outline-none text-white border-[1.5px] border-transparent bg-[#192024] hover:bg-[#212a2f] focus:ring-2 focus:outline-none focus:ring-[#2E3438] font-medium rounded-md px-5 py-2 text-center">
+                Conferma
+              </button>
+              <button className="w-[45%] flex justify-center items-center cursor-pointer whitespace-nowrap outline-none text-[#192024] border-[1.5px] border-[#192024] bg-trasparent hover:bg-[#EEEEEE] focus:ring-2 focus:outline-none focus:ring-[#2E3438] font-medium rounded-md px-5 py-2 text-center">
+                Rinvio Codice OTP
+              </button>
+            </div>
+          </div>
         </div>
       </div>
       <div className="h-[35vh] sm:h-full w-full sm:w-[25vw] flex flex-col justify-between items-center z-50 border-t-[1.5px] sm:border-l-[1.5px] border-[#808080rgb(128, 128, 128)]">

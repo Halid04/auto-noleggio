@@ -68,7 +68,7 @@ const Dashboard = () => {
   const map = useRef(null);
   const milan = { lng: 9.18854, lat: 45.464664 };
   const [zoom] = useState(14);
-  maptilersdk.config.apiKey = "";
+  maptilersdk.config.apiKey = "zKTSY8Huqpuc98tNjLwq";
 
   useEffect(() => {
     if (map.current) return; // stops map from intializing more than once
@@ -211,7 +211,9 @@ const Dashboard = () => {
               <tr>
                 <td className="px-6 py-4 whitespace-nowrap">1</td>
                 <td className="px-6 py-4 whitespace-nowrap">John Doe</td>
-                <td className="px-6 py-4 whitespace-nowrap">john@example.com</td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  john@example.com
+                </td>
               </tr>
             </tbody>
           </table>
