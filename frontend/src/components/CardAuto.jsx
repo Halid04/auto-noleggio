@@ -91,7 +91,7 @@ function CardAuto({
   };
 
   return (
-    <div className="w-64 2xl:w-80 cursor-pointer bg-white rounded-lg shadow hover:scale-[.98] transition-all duration-300 ease-in-out">
+    <div className="w-64 2xl:w-[22rem] cursor-pointer bg-white rounded-lg shadow hover:scale-[.98] transition-all duration-300 ease-in-out">
       {localStorage.getItem("userToken") && (
         <form
           onSubmit={(e) => addAutoToFavorite(idAuto, e)}
@@ -122,12 +122,12 @@ function CardAuto({
         loading="lazy"
       />
 
-      <div className="px-2 py-5 bg-white dark:bg-[#192024] flex flex-col justify-start items-start gap-2 transition-all duration-300 ease-in-out">
+      <div className="px-2 py-5 bg-white dark:bg-[#192024] flex flex-col justify-start items-start gap-2 2xl:gap-5 transition-all duration-300 ease-in-out">
         <a href="#" className="infoCar flex items-baseline gap-1">
-          <h5 className="whitespace-nowrap text-xl font-bold tracking-tight text-[#192024] dark:text-white">
+          <h5 className="whitespace-nowrap text-xl 2xl:text-2xl font-bold tracking-tight text-[#192024] dark:text-white">
             {marca}
           </h5>
-          <p className="whitespace-nowrap text-sm font-normal text-[#192024] dark:text-white">
+          <p className="whitespace-nowrap text-sm 2xl:text-base font-normal text-[#192024] dark:text-white">
             - {modello}
           </p>
         </a>
