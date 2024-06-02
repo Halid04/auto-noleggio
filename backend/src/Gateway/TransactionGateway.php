@@ -11,6 +11,67 @@ class TransactionGateway extends BaseGateway
         parent::__construct($db);
     }
 
+    public function findPastRentals($request)
+    {
+        $statement = "
+            SELECT 
+                $this->tableName.*, veicolo.*
+            FROM " . $this->tableName . "
+            JOIN veicolo ON $this->tableName.id_veicolo = veicolo.id_veicolo
+            WHERE data_fine < CURRENT_TIMESTAMP AND id_cliente = :user_id;";
+        
+        try {
+            $statement = $this->conn->prepare($statement);
+
+            $statement->execute([
+                "user_id" => $request['user_id']
+            ]);
+
+            $response = $statement->fetchAll(\PDO::FETCH_ASSOC);
+
+            if (!$response) {
+                $response = [];
+            }
+
+            return $this->response(200, content: $response);
+
+        } catch (\PDOException $e) {
+            error_log("Database error: " . $e->getMessage());
+            return $this->response(500, message: "Internal Server Error");
+        }
+    }
+
+    public function findUpcomingRentals($request)
+    {
+        $statement = "
+            SELECT 
+                $this->tableName.*, veicolo.*
+            FROM " . $this->tableName . "
+            JOIN veicolo ON $this->tableName.id_veicolo = veicolo.id_veicolo
+            WHERE data_inizio > CURRENT_TIMESTAMP AND id_cliente = :user_id;";
+        
+        try {
+            $statement = $this->conn->prepare($statement);
+
+            $statement->execute([
+                "user_id" => $request['user_id']
+            ]
+            );
+
+            $response = $statement->fetchAll(\PDO::FETCH_ASSOC);
+
+            if (!$response) {
+                $response = [];
+            }
+
+            return $this->response(200, content: $response);
+
+        } catch (\PDOException $e) {
+            error_log("Database error: " . $e->getMessage());
+            return $this->response(500, message: "Internal Server Error");
+        }
+    }
+
     public function findOccupiedVehicles($request)
     {
         $statement = "
@@ -63,6 +124,8 @@ class TransactionGateway extends BaseGateway
             return $this->response(500, message: "Internal Server Error");
         }
     }
+
+    
 
     public function findProceedsGroupedByMonth($request)
     {

@@ -66,7 +66,7 @@ class BaseController {
                         $response = $this->gateway->delete($this->data);
                         break;
                     default:
-                        $this->sendOutput(array('Content-Type: application/json'), statusCode: 404, data: ["message" => "Resource not found"]);
+                        $this->sendOutput(array('Content-Type: application/json'), statusCode: 404, data: ["message" => "Risorsa non trovata."]);
                         return;
                 }
             }
@@ -75,7 +75,7 @@ class BaseController {
             $response = array (
                 'statusCode' => 403,
                 'body' => array (
-                    'message' => "Access forbidden: " . $e->getMessage()
+                    'message' => "Non hai i permessi per accedere a questa risorsa: " . $e->getMessage()
                 )
             );
         }
@@ -110,7 +110,7 @@ class BaseController {
             $response_obj['obj'] = array (
                 'statusCode' => 401,
                 'body' => array (
-                    'message' => "Unauthenticated: Missing JWT."
+                    'message' => "Non autenticato: Token JWT mancante."
                 )
             );
 
@@ -147,7 +147,7 @@ class BaseController {
                 $response_obj['obj'] =  array (
                     'statusCode' => 401,
                     'body' => array (
-                        'message' => "Unauthorized: Missing JWT token"
+                        'message' => "Non autenticato: Token JWT mancante."
                     )
                 );
     
@@ -162,7 +162,7 @@ class BaseController {
                 $response_obj['obj'] =  array (
                     'statusCode' => 403,
                     'body' => array (
-                        'message' => "Access forbidden: You do not have permission to edit this resource"
+                        'message' => "Non hai i permessi per accedere a questa risorsa."
                     )
                 );
 

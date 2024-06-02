@@ -56,7 +56,7 @@
                 $controller->processRequest();
                 break;
             case "transazioni":
-                $controller = new TransactionController($requestMethod, $data, $database);
+                $controller = new TransactionController($requestMethod, array_slice($uri, 0), $data, $database);
                 $controller->processRequest();
                 break;
             case "preferiti":
