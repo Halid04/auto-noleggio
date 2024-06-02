@@ -138,7 +138,7 @@ function CardAuto({
         <div className="tags flex gap-1 mb-2">
           <span
             title={tipo_veicolo}
-            className="whitespace-nowrap inline-flex items-center px-3 h-7 text-sm 2xl:text-base font-normal text-center text-white bg-[#FF690F] rounded-lg hover:bg-[#d55508] "
+            className="whitespace-nowrap inline-flex items-center px-3 2xl:px-4 2xl:py-3 h-7 text-sm 2xl:text-base font-normal text-center text-white bg-[#FF690F] rounded-lg hover:bg-[#d55508] "
           >
             {tipo_veicolo.split(" ")[0]}
           </span>
