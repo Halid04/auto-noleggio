@@ -1,21 +1,41 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
-const CountdownTimer = ({ id }) => {
+const CountdownTimer = ({ timerId, onTimerEnd }) => {
   const [timeLeft, setTimeLeft] = useState(120); // 120 secondi = 2 minuti
+  const timerRef = useRef(null);
+  const timerIdRef = useRef(timerId);
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeLeft((prevTime) => {
-        if (prevTime <= 1) {
-          clearInterval(timer);
-          return 0;
-        }
-        return prevTime - 1;
-      });
-    }, 1000);
+    // Funzione per avviare il timer
+    const startTimer = () => {
+      setTimeLeft(120);
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+      timerRef.current = setInterval(() => {
+        setTimeLeft((prevTime) => {
+          if (prevTime <= 1) {
+            clearInterval(timerRef.current);
+            onTimerEnd(); // Chiama la funzione quando il timer scade
+            return 0;
+          }
+          return prevTime - 1;
+        });
+      }, 1000);
+    };
 
-    return () => clearInterval(timer);
-  }, [id]); // Rimuovi il vecchio timer e avvia uno nuovo quando cambia l'id
+    // Avvia il timer solo se timerId è diverso dal precedente
+    if (timerId !== timerIdRef.current) {
+      timerIdRef.current = timerId;
+      startTimer();
+    }
+
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    };
+  }, [timerId, onTimerEnd]);
 
   const formatTime = (time) => {
     const minutes = Math.floor(time / 60);
