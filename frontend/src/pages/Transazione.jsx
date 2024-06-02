@@ -107,11 +107,7 @@ function Transazione() {
   const handleGoToCodiceOTPSection = () => {
     const section = document.getElementById("container");
     if (section) {
-      if (IDChallengeRecived) {
-        section.classList.add("translate-x-[-100vw]", "sm:translate-x-[-75vw]");
-      } else {
-        console.error("ID Challenge not recived yet.");
-      }
+      section.classList.add("translate-x-[-100vw]", "sm:translate-x-[-75vw]");
     } else {
       console.error("Element with id 'container' not found.");
     }
