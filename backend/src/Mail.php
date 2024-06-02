@@ -33,7 +33,7 @@ class Mail
     public function sendMail ($user, $mail) 
     {
         $this->mail->setFrom($this->mail->Username, 'Autonoleggio.ITIS');
-        $this->mail->addAddress($this->mail->Username/*$user['address']*/, $user['name']);
+        $this->mail->addAddress($user['address'], $user['name']);
         
         $this->mail->isHTML(true);                                  //Set email format to HTML
         $this->mail->Subject = $mail['subject'];

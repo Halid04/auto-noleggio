@@ -31,7 +31,7 @@ class FavoriteController extends BaseController {
                         $response = $this->gateway->delete($this->data);
                         break;
                     default:
-                        $this->sendOutput(array('Content-Type: application/json'), statusCode: 404, data: ["message" => "Resource not found"]);
+                        $this->sendOutput(array('Content-Type: application/json'), statusCode: 404, data: ["message" => "Risorsa non trovata"]);
                         return;
                 }
             }
@@ -40,7 +40,7 @@ class FavoriteController extends BaseController {
             $response = array (
                 'statusCode' => 403,
                 'body' => array (
-                    'message' => "Access forbidden: " . $e->getMessage()
+                    'message' => "Permesso negato: " . $e->getMessage()
                 )
             );
         }
@@ -72,7 +72,7 @@ class FavoriteController extends BaseController {
             $response_obj['obj'] =  array (
                 'statusCode' => 403,
                 'body' => array (
-                    'message' => "Access forbidden: You do not have permission to edit this resource"
+                    'message' => "Accesso negato: Non hai permesssi necessari per modificare questa risorsa"
                 )
             );
 

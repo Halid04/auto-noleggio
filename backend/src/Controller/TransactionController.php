@@ -8,33 +8,52 @@ use \Src\Controller\BaseController;
 class TransactionController extends BaseController {
 
     private $otpGateway;
+    private $uri;
 
-    public function __construct($requestMethod, $data, $db)
+    public function __construct($requestMethod, $uri, $data, $db)
     {
         $this->otpGateway = new OTPGateway ($db);
+        $this->uri = $uri;
         parent::__construct($requestMethod, $data, new TransactionGateway($db));
     }
 
     public function processRequest()
     {
-
+        
         try {
 
             $auth = $this->authenticateRequest($this->data);
-
+            
             if (!$auth['status']) {
                 $response = $auth['obj'];
             } else {
 
                 $this->data['user_id'] = $auth['obj']['data']['user_id'];
-
+                
                 switch ($this->requestMethod) {
                     case 'GET':
-                        if ($this->data['all'] ?? false || (!isset($this->data['id']))) {
-                            $response = $this->gateway->findAll($this->data);
+                        echo var_dump($this->requestMethod);
+                        if (isset($this->uri[1])) {
+                            switch ($this->uri[1]){
+                                case "noleggiPassati":
+                                    $response = $this->gateway->findPastRentals($this->data);
+                                    break;
+                                case "noleggiFuturi":
+                                    $response = $this->gateway->findUpcomingRentals($this->data);
+                                    break;
+                                default:
+                                    $this->sendOutput(array('Content-Type: application/json'), statusCode: 404, data: ["message" => "Resource not found"]);
+                                    break;
+                                    return;
+                            }
                         } else {
-                            $response = $this->gateway->find($this->data);
-                        };    
+                            
+                            if ($this->data['all'] ?? false || (!isset($this->data['id']))) {
+                                $response = $this->gateway->findAll($this->data);
+                            } else {
+                                $response = $this->gateway->find($this->data);
+                            };
+                        }
                         break;
                     case 'POST':
                         $response = $this->insert($this->data, $auth['obj']);
@@ -219,42 +238,41 @@ class TransactionController extends BaseController {
 
         $auth_info = $auth_info['obj'];
 
-        if (!isset($request['id'])) {
-            $request['id'] = $auth_info['data']['user_id'];
-        } else {
-            $transaction = $this->gateway->find($request);
+        /*
 
-            if ($transaction['statusCode'] != 200) {
-                $response_obj['obj'] = $transaction;
+        $transaction = $this->gateway->find($request);
 
-                return $response_obj;
-            }
+        if ($transaction['statusCode'] != 200) {
+            $response_obj['obj'] = $transaction;
 
-            $transaction = $transaction['body']['content'];
+            return $response_obj;
+        }
 
-            if (empty($transaction)) {
-                $response_obj['obj'] = [
-                    'statusCode' => 404,
-                    'body' => [
-                        'message' => "Transazione non trovata"
-                    ]
-                ];
-                return $response_obj;
-            }
+        $transaction = $transaction['body']['content'];
 
-            $transaction = $transaction[0];
+        if (empty($transaction)) {
+            $response_obj['obj'] = [
+                'statusCode' => 404,
+                'body' => [
+                    'message' => "Transazione non trovata"
+                ]
+            ];
+            return $response_obj;
+        }
 
-            if ($transaction['id_cliente'] != $auth_inf['data']['user_id'] && $auth_info['data']['admin'] == 0) {
-                $response_obj['obj'] =  array (
-                    'statusCode' => 403,
-                    'body' => array (
-                        'message' => "Accesso negato: Non hai i permessi per accedere a questa risorsa"
-                    )
-                );
-    
-                return $response_obj;
-            }
+        */
 
+        $transaction = $transaction[0];
+
+        if ($transaction['id_cliente'] != $auth_inf['data']['user_id'] && $auth_info['data']['admin'] == 0) {
+            $response_obj['obj'] =  array (
+                'statusCode' => 403,
+                'body' => array (
+                    'message' => "Accesso negato: Non hai i permessi per accedere a questa risorsa"
+                )
+            );
+
+            return $response_obj;
         }
 
         $response_obj['status'] = true;
