@@ -94,7 +94,7 @@ body {
   height: 40vh;
   width: 80vw;
   display: flex;
-  margin-left: 13vw;
+  /* margin-left: 13vw; */
 }
 
 .select-month,

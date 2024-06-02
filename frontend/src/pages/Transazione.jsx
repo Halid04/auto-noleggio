@@ -5,7 +5,59 @@ import { CreditCard, Calendar } from "lucide-react";
 function Transazione() {
   const { idAuto } = useParams();
   const navigate = useNavigate();
+  const [sediAutoNoleggio, setSediAutoNoleggio] = useState([]);
   const [carDetail, setCarDetail] = useState([]);
+  const [dataRitiro, setDataRitiro] = useState(getTodayDate);
+  const [dataConsegna, setDataConsegna] = useState(getTodayDate);
+  const [totale, setTotale] = useState(0);
+  const [sconto, setSconto] = useState(false);
+  const [IDChallengeRecived, setIDChallengeRecived] = useState(false);
+
+  const calculateTotal = () => {
+    const dateRitiro = new Date(dataRitiro);
+    const dateConsegna = new Date(dataConsegna);
+
+    const totalDays = Math.ceil(
+      (dateConsegna - dateRitiro) / (1000 * 60 * 60 * 24)
+    );
+    let totalCalc = 0;
+
+    if (totalDays > 0) {
+      if (sconto) {
+        // anticipo 10%
+        totalCalc = Math.floor(
+          (totalDays * carDetail[0].costo_giornaliero * 10) / 100
+        );
+      } else {
+        totalCalc = totalDays * carDetail[0].costo_giornaliero;
+      }
+    }
+
+    setTotale(totalCalc);
+  };
+
+  useEffect(() => {
+    calculateTotal();
+  }, [dataRitiro, dataConsegna, sconto]);
+
+  function getTodayDate() {
+    const today = new Date();
+    return today.toISOString().split("T")[0];
+  }
+
+  const handleDataRitiroChange = (event) => {
+    const selectedDate = event.target.value;
+    setDataRitiro(selectedDate);
+
+    const nextDayDate = new Date(selectedDate);
+    nextDayDate.setDate(nextDayDate.getDate() + 1);
+    setDataConsegna(nextDayDate.toISOString().split("T")[0]);
+  };
+
+  const handleDataConsegnaChange = (event) => {
+    const selectedDate = event.target.value;
+    setDataConsegna(selectedDate);
+  };
 
   useEffect(() => {
     getCarDetail();
@@ -61,6 +113,96 @@ function Transazione() {
     }
   };
 
+  useEffect(() => {
+    getSedi();
+  }, []);
+
+  const getSedi = () => {
+    const url = "http://localhost/auto-noleggio/backend/public/sedi";
+
+    const headers = {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    };
+
+    fetch(url, {
+      method: "GET",
+      headers: headers,
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log(data);
+        const sediMap = data.content.map((sede) => ({
+          nome: sede.nome,
+          citta: sede.città,
+          indirizzo: sede.indirizzo,
+        }));
+        setSediAutoNoleggio(sediMap);
+      })
+      .catch((error) => {
+        console.error("Errore durante il recupero delle sedi:", error);
+      });
+  };
+
+  const handleCreditCardTypeOneSelection = () => {
+    const creditCardSectionOne = document.querySelector(
+      ".credit-card-section-one"
+    );
+    const creditCardSectionTwo = document.querySelector(
+      ".credit-card-section-two"
+    );
+
+    creditCardSectionOne.classList.add("border-[#FF690F]");
+    creditCardSectionTwo.classList.remove("border-[#FF690F]");
+  };
+
+  const handleCreditCardTypeTwoSelection = () => {
+    const creditCardSectionOne = document.querySelector(
+      ".credit-card-section-one"
+    );
+    const creditCardSectionTwo = document.querySelector(
+      ".credit-card-section-two"
+    );
+
+    creditCardSectionTwo.classList.add("border-[#FF690F]");
+    creditCardSectionOne.classList.remove("border-[#FF690F]");
+  };
+
+  const getIDChallenge = () => {
+    const url =
+      "http://localhost/auto-noleggio/backend/public/otp/getChallenge";
+
+    const headers = {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    };
+
+    const token = localStorage.getItem("token");
+
+    fetch(url, {
+      method: "GET",
+      headers: headers,
+      Authorization: `Bearer ${token}`,
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log(data);
+      })
+      .catch((error) => {
+        console.error("Errore durante il recupero dell'ID Challenge:", error);
+      });
+  };
+
   return (
     <div className="h-full w-full overflow-hidden bg-white flex flex-col sm:flex-row justify-between items-center">
       <div
@@ -70,7 +212,10 @@ function Transazione() {
         <div className="w-full h-full overflow-y-auto overflow-x-hidden shrink-0 grow-0 gap-2 sm:gap-1 py-2 sm:py-5 px-2 sm:px-5 font-bold flex flex-col text-[#192024]">
           <h1 className="text-2xl ">Dettagli transazione</h1>
           <div className="w-full flex flex-col sm:flex-row gap-3 sm:gap-0 justify-between items-center">
-            <button className="w-full sm:w-[49%] h-8 sm:py-2 flex gap-4 justify-center items-center rounded-lg border-[1.5px] border-[#808080rgb(128, 128, 128)] focus:border-[#FF690F]">
+            <button
+              onClick={handleCreditCardTypeOneSelection}
+              className="credit-card-section-one w-full sm:w-[49%] h-8 sm:py-2 flex gap-4 justify-center items-center rounded-lg border-[1.5px] border-[#808080rgb(128, 128, 128)]"
+            >
               <img
                 src="/src/assets/visaLogo.png"
                 className=" w-8 aspect-square object-contain"
@@ -87,7 +232,10 @@ function Transazione() {
                 alt="visaLogo"
               />
             </button>
-            <button className="w-full sm:w-[49%] h-8 sm:py-2 flex gap-4 justify-center items-center rounded-lg border-[1.5px] border-[#808080rgb(128, 128, 128)] focus:border-[#FF690F]">
+            <button
+              onClick={handleCreditCardTypeTwoSelection}
+              className="credit-card-section-two w-full sm:w-[49%] h-8 sm:py-2 flex gap-4 justify-center items-center rounded-lg border-[1.5px] border-[#808080rgb(128, 128, 128)]"
+            >
               <img
                 src="/src/assets/payPalLogo.png"
                 className=" w-16 aspect-square object-contain"
@@ -194,6 +342,8 @@ function Transazione() {
                   name=""
                   id=""
                   placeholder="Nome"
+                  value={localStorage.getItem("userName") || ""}
+                  readOnly
                   className="w-full text-sm border-none outline-none font-bold "
                 />
               </div>
@@ -208,6 +358,8 @@ function Transazione() {
                   name=""
                   id=""
                   placeholder="Cognome"
+                  value={localStorage.getItem("userSurname") || ""}
+                  readOnly
                   className="w-full text-sm border-none outline-none font-bold "
                 />
               </div>
@@ -222,6 +374,8 @@ function Transazione() {
                   name=""
                   id=""
                   placeholder="Email"
+                  value={localStorage.getItem("userEmail") || ""}
+                  readOnly
                   className="w-full text-sm border-none outline-none font-bold "
                 />
               </div>
@@ -236,6 +390,8 @@ function Transazione() {
                   name=""
                   id=""
                   placeholder="Telefono"
+                  value={localStorage.getItem("userPhone") || ""}
+                  readOnly
                   className="w-full text-sm border-none outline-none font-bold "
                 />
               </div>
@@ -255,6 +411,9 @@ function Transazione() {
                     name=""
                     id="dataRitiro"
                     className="w-full text-sm border-none outline-none font-bold "
+                    value={dataRitiro}
+                    min={getTodayDate()}
+                    onChange={handleDataRitiroChange}
                   />
                   <Calendar
                     onClick={handleDataRitiroDateInput}
@@ -276,6 +435,9 @@ function Transazione() {
                     name=""
                     id="dataConsegna"
                     className="w-full text-sm border-none outline-none font-bold "
+                    value={dataConsegna}
+                    min={getTodayDate()}
+                    onChange={handleDataConsegnaChange}
                   />
                   <Calendar
                     onClick={handleDataConsegnaDateInput}
@@ -295,8 +457,15 @@ function Transazione() {
                   className="w-full outline-none border-none"
                   id=""
                 >
-                  <option value="">1</option>
-                  <option value="">2</option>
+                  {sediAutoNoleggio &&
+                    sediAutoNoleggio.length > 0 &&
+                    sediAutoNoleggio.map((sede, index) => {
+                      return (
+                        <option key={index} value={sede.nome}>
+                          {sede.nome} - {sede.citta}, {sede.indirizzo}
+                        </option>
+                      );
+                    })}
                 </select>
               </div>
             </div>
@@ -353,13 +522,13 @@ function Transazione() {
             {/* sezione data ritiro */}
             <div className="w-1/2 sm:w-full flex flex-col sm:mt-2 order-4 sm:order-2">
               <h2 className="text-[#808080] text-sm">Data ritiro</h2>
-              <p>25/05/2024</p>
+              <p>{dataRitiro}</p>
             </div>
 
             {/* sezione data consegna */}
             <div className="w-1/2 sm:w-full flex flex-col sm:mt-2 order-3">
               <h2 className="text-[#808080] text-sm">Data consegna</h2>
-              <p>28/05/2024</p>
+              <p>{dataConsegna}</p>
             </div>
 
             {/* sezione metodo di pagamento */}
@@ -372,6 +541,8 @@ function Transazione() {
                   id="pagaSubito"
                   name="metodoPagamento"
                   value="pagaSubito"
+                  defaultChecked
+                  onClick={() => setSconto(false)}
                 />
               </div>
               <div className="w-full flex justify-between">
@@ -383,6 +554,7 @@ function Transazione() {
                   id="pagaRitiro"
                   name="metodoPagamento"
                   value="pagaRitiro"
+                  onClick={() => setSconto(true)}
                 />
               </div>
             </div>
@@ -391,7 +563,7 @@ function Transazione() {
         <div className="w-full h-[40vh] sm:h-[30vh] bg-[#F0F3F5] flex flex-col gap-2 sm:gap-3 py-2 sm:py-5 px-2 sm:px-5">
           <div className="w-full font-bold text-lg flex justify-between items-center">
             <h2>Totale:</h2>
-            <p>1,345.00€</p>
+            <p>{totale}€</p>
           </div>
           <button
             className="w-full -opacity-50 sm:mt-3 whitespace-nowrap outline-none text-white border-[1.5px] border-transparent bg-[#FF690F] hover:bg-[#d55508] focus:ring-4 focus:outline-none focus:ring-orange-300 font-medium rounded-lg px-5 py-1 text-center"
