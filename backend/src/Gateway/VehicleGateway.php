@@ -503,6 +503,10 @@ class VehicleGateway extends BaseGateway {
             [
                 "name" => "tipo_veicolo",
                 "type" => "list",
+            ],
+            [
+                "name" => "id_sede",
+                "type" => "list",
             ]
         ];
 
