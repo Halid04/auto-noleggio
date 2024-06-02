@@ -279,6 +279,8 @@ class TransactionController extends BaseController {
 
                 $differenza_in_giorni = $differenza_in_secondi / 86400; 
 
+                $differenza_in_giorni = bcdiv($differenza_in_giorni, 1, 2);
+
                 $replace = [
                     $transaction['id_transazionefinanziaria'],
                     date('d F Y', time()),
