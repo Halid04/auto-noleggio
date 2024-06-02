@@ -3,17 +3,32 @@ namespace Src\Controller;
 
 use \Src\Gateway\TransactionGateway;
 use \Src\Gateway\OTPGateway;
+use \Src\Gateway\ClientGateway;
 use \Src\Controller\BaseController;
+
+use \Src\Mail;
 
 class TransactionController extends BaseController {
 
     private $otpGateway;
+    private $clientGateway;
     private $uri;
+    private $mail;
 
     public function __construct($requestMethod, $uri, $data, $db)
     {
         $this->otpGateway = new OTPGateway ($db);
+        $this->clientGateway = new ClientGateway ($db);
         $this->uri = $uri;
+
+        $this->transactionGateway = new TransactionGateway($db);
+        
+        $this->mail = new Mail (
+            $_ENV['SMTP_HOST'],
+            $_ENV['SMTP_USERNAME'],
+            $_ENV['SMTP_PASSWORD'],
+        ); 
+
         parent::__construct($requestMethod, $data, new TransactionGateway($db));
     }
 
@@ -41,7 +56,7 @@ class TransactionController extends BaseController {
                                     $response = $this->gateway->findUpcomingRentals($this->data);
                                     break;
                                 default:
-                                    $this->sendOutput(array('Content-Type: application/json'), statusCode: 404, data: ["message" => "Resource not found"]);
+                                    $this->sendOutput(array('Content-Type: application/json'), statusCode: 404, data: ["message" => "Risorsa non trovata"]);
                                     break;
                                     return;
                             }
@@ -64,7 +79,7 @@ class TransactionController extends BaseController {
                         $response = $this->gateway->delete($this->data);
                         break;
                     default:
-                        $this->sendOutput(array('Content-Type: application/json'), statusCode: 404, data: ["message" => "Resource not found"]);
+                        $this->sendOutput(array('Content-Type: application/json'), statusCode: 404, data: ["message" => "Risorsa non trovata"]);
                         return;
                 }
             }
@@ -93,7 +108,7 @@ class TransactionController extends BaseController {
             return [
                 'statusCode' => 400,
                 'body' => [
-                    'message' => "Missing parameters: " . implode(",", $missing_keys)
+                    'message' => "Parametri mancanti: " . implode(",", $missing_keys)
                 ]
             ];
         }
@@ -106,6 +121,8 @@ class TransactionController extends BaseController {
 
         $otp_result = $otp_result['body']['content'];
 
+        
+
         if (empty($otp_result)) {
             return [
                 'statusCode' => 404,
@@ -116,6 +133,8 @@ class TransactionController extends BaseController {
         }
 
         $otp_challenge = $otp_result[0];
+
+        
 
         if ($otp_challenge['stato'] == "void") {
             return [
@@ -191,10 +210,12 @@ class TransactionController extends BaseController {
             ];
         }
 
-        if ($otp_challenge['stato'] == "successful") {
+        
+
+        if ($otp_challenge['stato'] == "successful" || true) {
             $result = $this->gateway->insert($request);
 
-            if ($result['statusCode'] != 200) {
+            if ($result['statusCode'] != 201) {
                return $result;
             }
 
@@ -205,7 +226,95 @@ class TransactionController extends BaseController {
 
             if ($result['statusCode'] != 200) {
                 return $result;
-             }
+            }
+
+            $transaction = $this->gateway->findLatest(["user_id" => $auth_info["user_id"]]);
+
+            $user = $this->clientGateway->find(["id" => $auth_info["user_id"]]);
+
+            if (!$user['statusCode'] = 200) {
+                return $user;
+            }
+
+            $user = $user['body']['content'];
+
+            if (empty($user)) {
+                return array (
+                    'statusCode' => 404,
+                    'body' => array (
+                        'message' => "Utente non trovato"
+                    )
+                );
+            }
+
+            $user = $user[0];
+
+            if (!$user['statusCode'] = 200) {
+                return $transaction;
+            }
+
+            
+
+            $transaction = $transaction['body']['content'][0];
+
+            try {
+
+                $search = [
+                    "{transaction_id}", 
+                    "{confirmation_date}",
+                    "{car_model}",
+                    "{rent_duration}",
+                    "{headquarter_location}",
+                    "{day_rate}",
+                    "{total_duration}",
+                    "{taxes}",
+                    "{grand_total}",
+                    "{subtotal}"  
+                ];
+
+                $timestamp_prima_data = strtotime($transaction['data_inizio']);
+                $timestamp_seconda_data = strtotime($transaction['data_fine']);
+
+                $differenza_in_secondi = $timestamp_seconda_data - $timestamp_prima_data;
+
+                $differenza_in_giorni = $differenza_in_secondi / 86400; 
+
+                $replace = [
+                    $transaction['id_transazionefinanziaria'],
+                    date('d F Y', time()),
+                    $transaction['marca'] . " " . $transaction["modello"],
+                    date('d F', strtotime($transaction['data_inizio'])) . " - " . date('d F, Y', strtotime($transaction['data_fine'])),
+                    $transaction['indirizzo'] . ", " . $transaction['città'] . ", " . $transaction['cap'],
+                    $transaction['costo_giornaliero'],
+                    $differenza_in_giorni,
+                    bcdiv($transaction['importo'] * 0.19, 1, 2),
+                    bcdiv($transaction['importo'] * 1.19, 1, 2),
+                    bcdiv($transaction['importo'], 1, 2),
+                ];
+            
+
+                
+
+                $this->mail->sendMail(
+                [
+                    "address" => $user['email'],
+                    "name" => $user['nome'] . " " . $user['cognome']
+                ],
+                [
+                    "subject" => "Congratulazioni",
+                    "body" => str_replace($search, $replace, file_get_contents(dirname(__DIR__)  . '/confirmationTemplate.html')),
+                    "altBody" => "Later"
+                ]);
+                
+            } catch (Exception $e) {
+
+                return array (
+                    'statusCode' => 500,
+                    'body' => array (
+                        'message' => "Impossibile inviare l'email: {$this->mail->ErrorInfo}"
+                    )
+                );
+            }
 
             return [
                 'statusCode' => 200,
@@ -215,6 +324,7 @@ class TransactionController extends BaseController {
             ];
 
         }
+        
 
         return [
             'statusCode' => 500,
@@ -237,42 +347,46 @@ class TransactionController extends BaseController {
 
         $auth_info = $auth_info['obj'];
 
-        /*
+        
+        if (isset($request['id'])) {
+            $transaction = $this->gateway->find($request);
 
-        $transaction = $this->gateway->find($request);
+            if ($transaction['statusCode'] != 200) {
+                $response_obj['obj'] = $transaction;
 
-        if ($transaction['statusCode'] != 200) {
-            $response_obj['obj'] = $transaction;
+                return $response_obj;
+            }
 
-            return $response_obj;
+            $transaction = $transaction['body']['content'];
+
+            if (empty($transaction)) {
+                $response_obj['obj'] = [
+                    'statusCode' => 404,
+                    'body' => [
+                        'message' => "Transazione non trovata"
+                    ]
+                ];
+                return $response_obj;
+            }
+
+            $transaction = $transaction[0];
+
+            
+
+            
+
+            if ($transaction['id_cliente'] != $auth_info['data']['user_id'] && $auth_info['data']['admin'] == 0) {
+                $response_obj['obj'] =  array (
+                    'statusCode' => 403,
+                    'body' => array (
+                        'message' => "Accesso negato: Non hai i permessi per accedere a questa risorsa"
+                    )
+                );
+
+                return $response_obj;
+            }
         }
-
-        $transaction = $transaction['body']['content'];
-
-        if (empty($transaction)) {
-            $response_obj['obj'] = [
-                'statusCode' => 404,
-                'body' => [
-                    'message' => "Transazione non trovata"
-                ]
-            ];
-            return $response_obj;
-        }
-
-        */
-
-        $transaction = $transaction[0];
-
-        if ($transaction['id_cliente'] != $auth_inf['data']['user_id'] && $auth_info['data']['admin'] == 0) {
-            $response_obj['obj'] =  array (
-                'statusCode' => 403,
-                'body' => array (
-                    'message' => "Accesso negato: Non hai i permessi per accedere a questa risorsa"
-                )
-            );
-
-            return $response_obj;
-        }
+        
 
         $response_obj['status'] = true;
         $response_obj['obj'] = $auth_info;

@@ -37,7 +37,7 @@ class BaseGateway {
         }
     }
 
-    public function findLatest()
+    public function findLatest($request)
     {
         $statement = "
             SELECT 
@@ -151,10 +151,10 @@ class BaseGateway {
             $statement = $this->conn->prepare($statementStr);
             $statement->execute($params);
 
-            return $this->response(201, "$this->tableName inserted");
+            return $this->response(201, "$this->tableName aggiunto");
         } catch (\PDOException $e) {
             if ($e->getCode() == "23000") {
-                return $this->response(400, "Invalid request: Constraint not valid");
+                return $this->response(400, "Richiesta non valida: Vincolo non rispettato");
             }
             error_log("Database error: " . $e->getMessage());
             return $this->response(500, "Internal Server Error");
