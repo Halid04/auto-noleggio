@@ -110,6 +110,42 @@ class VehicleGateway extends BaseGateway {
         }
     }
 
+    public function getOccupiedSlots($request)
+    {
+        if (!isset($request['id'])) {
+            return $this->response(400, message: "Parametro mancante: id");
+        }
+        
+        $statement = "
+            SELECT 
+                transazionefinanziaria.data_inizio, transazionefinanziaria.data_fine 
+            FROM " . $this->tableName . "
+            JOIN transazionefinanziaria ON transazionefinanziaria.id_veicolo = veicolo.id_veicolo
+            WHERE veicolo.id_veicolo = :id_veicolo
+            ";
+        
+        try {
+            $statement = $this->conn->prepare($statement);
+
+            $statement->execute([
+                "id_veicolo" => $request['id']
+            ]
+            );
+
+            $response = $statement->fetchAll(\PDO::FETCH_ASSOC);
+
+            if (!$response) {
+                $response = [];
+            }
+
+            return $this->response(200, content: $response);
+
+        } catch (\PDOException $e) {
+            error_log("Database error: " . $e->getMessage());
+            return $this->response(500, message: "Internal Server Error");
+        }
+    }
+    
     public function filter($input)
     {
         if (!isset($input["filters"])) {
@@ -195,6 +231,48 @@ class VehicleGateway extends BaseGateway {
         }    
     }
 
+    public function findRented($request)
+    {
+        $statement = "
+            SELECT 
+                veicolo.*, transazionefinanziaria.data_inizio, transazionefinanziaria.data_fine
+            FROM " . $this->tableName . " 
+            JOIN transazionefinanziaria on veicolo.id_veicolo = transazionefinanziaria.id_veicolo
+            WHERE transazionefinanziaria.id_cliente = :user_id";
+
+        try {
+            $statement = $this->conn->prepare($statement);
+            $statement->execute([
+                "user_id" => $request['user_id']
+            ]
+            );
+
+            $response = $statement->fetchAll(\PDO::FETCH_ASSOC);
+
+            if (!$response) {
+                $response = [];
+            } else {
+
+                foreach($response as &$vehicle) {
+                    $image_response = $this->imageGateway->findVehicleImages(['id' => $vehicle['id_veicolo']]);
+
+                    if ($image_response['statusCode'] != 200) {
+                        return $this->response($image_response['statusCode'], message: $image_response['body']['message']);
+                    }
+
+                    $vehicle['images'] = $image_response['body']['content'];
+                }
+     
+            }
+            
+            return $this->response(200, content: $response);
+
+        } catch (\PDOException $e) {
+            error_log("Database error: " . $e->getMessage());
+            return $this->response(500, message: "Internal Server Error");
+        }    
+    }
+
     public function findAll($request)
     {
         $statement = "
@@ -205,6 +283,47 @@ class VehicleGateway extends BaseGateway {
                     ELSE false
                 END as favorited 
             FROM " . $this->tableName . " JOIN sede on veicolo.id_sede = sede.id_sede LEFT JOIN preferire ON veicolo.id_veicolo = preferire.id_veicolo";
+
+        try {
+            $statement = $this->conn->prepare($statement);
+            $statement->execute();
+
+            $response = $statement->fetchAll(\PDO::FETCH_ASSOC);
+
+            if (!$response) {
+                $response = [];
+            } else {
+
+                foreach($response as &$vehicle) {
+                    $image_response = $this->imageGateway->findVehicleImages(['id' => $vehicle['id_veicolo']]);
+
+                    if ($image_response['statusCode'] != 200) {
+                        return $this->response($image_response['statusCode'], message: $image_response['body']['message']);
+                    }
+
+                    $vehicle['images'] = $image_response['body']['content'];
+                }
+     
+            }
+            
+            return $this->response(200, content: $response);
+
+        } catch (\PDOException $e) {
+            error_log("Database error: " . $e->getMessage());
+            return $this->response(500, message: "Internal Server Error");
+        }    
+    }
+
+    public function findAllAdmin($request)
+    {
+        $statement = "
+            SELECT 
+                veicolo.*, sede.*, 
+                CASE
+                WHEN CURRENT_TIMESTAMP BETWEEN transazionefinanziaria.data_inizio AND transazionefinanziaria.data_fine THEN 'noleggiato'
+                    ELSE 'disponibile'
+                END as stato 
+            FROM " . $this->tableName . " JOIN sede on veicolo.id_sede = sede.id_sede LEFT JOIN transazionefinanziaria ON veicolo.id_veicolo = transazionefinanziaria.id_veicolo";
 
         try {
             $statement = $this->conn->prepare($statement);

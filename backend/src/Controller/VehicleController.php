@@ -38,12 +38,17 @@ class VehicleController extends BaseController {
                                 case "anni":
                                     $response = $this->gateway->getYears($this->data);
                                     break;
-
+                                case "date":
+                                    $response = $this->gateway->getOccupiedSlots($this->data);
+                                    break;
                                 case "tipi":
                                     $response = $this->gateway->getTypes($this->data);
                                     break;
                                 case "carburazioni":
                                     $response = $this->gateway->getFuelTypes($this->data);
+                                    break;
+                                case "noleggiati":
+                                    $response = $this->gateway->findRented($this->data);
                                     break;
                                 default:
                                     $this->sendOutput(array('Content-Type: application/json'), statusCode: 404, data: ["message" => "Resource not found"]);
@@ -94,12 +99,17 @@ class VehicleController extends BaseController {
         $user_id;
 
         if ($this->requestMethod == "GET") {
-
+            
             if ($this->data['auth']['jwt'] != "" ) {
                 $auth_info = $this->authenticateToken($request);
     
                 if ($auth_info['status']) {
                     $user_id = $auth_info['obj']['data']['user_id'];
+                } else {
+                    if ($this->uri[1] = "noleggiati") {
+                        $response_obj['obj'] = $auth_info['obj'];
+                        return $response_obj;
+                    }
                 }
             }
 
@@ -139,5 +149,7 @@ class VehicleController extends BaseController {
         
         return $response_obj;
     }
+
+
 
 }
