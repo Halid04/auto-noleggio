@@ -129,7 +129,7 @@ class VehicleController extends BaseController {
                 $response_obj['obj'] =  array (
                     'statusCode' => 403,
                     'body' => array (
-                        'message' => "Access forbidden: You do not have permission to edit this resource"
+                        'message' => "Accesso negato: Non hai i permessi per modificare questa risorsa"
                     )
                 );
 

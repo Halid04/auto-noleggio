@@ -15,7 +15,7 @@ class ClientGateway extends BaseGateway {
     public function findByEmail($input)
     {
         if (!isset($input["email"])) {
-            return $this->response(400, message: "Missing parameters: email");
+            return $this->response(400, message: "Parametro mancante: email");
         }
         
         $statement = "
@@ -59,7 +59,7 @@ class ClientGateway extends BaseGateway {
         $missing_keys = $this->validateRequiredParameters($input, $required_parameters);
 
         if (!empty($missing_keys)) {
-            return $this->response(400, "Missing parameters: " . implode(", ", $missing_keys));
+            return $this->response(400, "Parametro mancante: " . implode(", ", $missing_keys));
         }
 
         $statement = "
@@ -87,11 +87,11 @@ class ClientGateway extends BaseGateway {
                 'admin' => $input['admin'],
             ));
 
-            return $this->response(201, "Clienti added successfully");
+            return $this->response(201, "Cliente aggiunto");
 
         } catch (\PDOException $e) {
             if ($e->getCode() == "23000") {
-                return $this->response(400, "Invalid request: User has already registered");
+                return $this->response(400, "Richiesta invalida: è stato gia registrato un utente con questo indirizzo email");
             }
             error_log("Database error: " . $e->getMessage());
             return $this->response(500, "Internal Server Error");
@@ -101,7 +101,7 @@ class ClientGateway extends BaseGateway {
     public function update(array $input) {
 
         if (!isset($input["id"])) {
-            return $this->response(400, "Missing parameter: id");
+            return $this->response(400, "Parametro mancante: id");
         }
 
         $fields = [
@@ -136,7 +136,7 @@ class ClientGateway extends BaseGateway {
         if (isset($input["new_password"])) {
 
             if (!isset($input['password'])) {
-                return $this->response(400, "Invalid request: Enter current password");
+                return $this->response(400, "Richiesta non valida: Inserire la password corrente");
             }
 
             try {
@@ -157,7 +157,7 @@ class ClientGateway extends BaseGateway {
                     ));
 
                 } else {
-                    return $this->response(400, "Invalid request: Current password does not match");
+                    return $this->response(400, "Richiesta non valida: La password inserita non è corretta");
                 }
 
             } catch (\PDOException $e) {
@@ -166,6 +166,6 @@ class ClientGateway extends BaseGateway {
             }    
         }
 
-        return $this->response(200, "Information updated successfully");
+        return $this->response(200, "Informazioni aggiornate");
     }
 }

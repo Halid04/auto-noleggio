@@ -26,7 +26,7 @@ class HeadQuarterGateway extends BaseGateway
 
         return $this->response(
             201,
-            message: "Headquarter inserted successfully"
+            message: "Sede aggiunta"
         );
     }
 
