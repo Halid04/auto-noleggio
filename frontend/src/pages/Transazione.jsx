@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import CountdownTimer from "../components/CountdownTimer";
 import { useParams, useNavigate } from "react-router-dom";
 import { CreditCard, Calendar } from "lucide-react";
 
@@ -12,6 +13,8 @@ function Transazione() {
   const [totale, setTotale] = useState(0);
   const [sconto, setSconto] = useState(false);
   const [IDChallengeRecived, setIDChallengeRecived] = useState(false);
+  const [newEmail, setNewEmail] = useState("");
+  const [timers, setTimers] = useState([]);
 
   const calculateTotal = () => {
     const dateRitiro = new Date(dataRitiro);
@@ -34,6 +37,21 @@ function Transazione() {
     }
 
     setTotale(totalCalc);
+  };
+
+  const obfuscateEmail = (email) => {
+    const [localPart, domain] = email.split("@");
+    const localPartLength = localPart.length;
+
+    if (localPartLength <= 2) {
+      return email; // Non offuscare se il nome locale è troppo corto
+    }
+
+    const firstChar = localPart[0];
+    const lastChar = localPart[localPartLength - 1];
+    const obfuscatedPart = "*".repeat(localPartLength - 2);
+
+    return `${firstChar}${obfuscatedPart}${lastChar}@${domain}`;
   };
 
   useEffect(() => {
@@ -200,7 +218,10 @@ function Transazione() {
       .then((data) => {
         console.log(data);
         setIDChallengeRecived(true);
+        setNewEmail(obfuscateEmail(localStorage.getItem("userEmail")));
         handleGoToCodiceOTPSection();
+        // Aggiungi un nuovo timer all'array
+        setTimers((prevTimers) => [...prevTimers, { id: prevTimers.length }]);
       })
       .catch((error) => {
         console.error("Errore durante il recupero dell'ID Challenge:", error);
@@ -497,16 +518,24 @@ function Transazione() {
               Autonoleggio.itis{" "}
             </h1>
             <p className="text-center text-sm ">
-              Inserisci il codice OTP inviato alla mail h********@gmail.com
+              Inserisci il codice OTP inviato alla mail {newEmail}
             </p>
             <input
-              className="w-full h-11 text-xl text-center bg-[#D9D9D9] outline-none border-none"
+              className="input-codice-otp w-full h-11 text-xl text-center bg-[#D9D9D9] outline-none border-none"
               type="text"
               placeholder="000000"
               name=""
               id=""
+              maxLength={6}
+              minLength={6}
+              required
             />
-            <p>Scadenza codice OTP 01:45</p>
+            <p>
+              Scadenza codice OTP{" "}
+              {timers.map((timer) => (
+                <CountdownTimer key={timer.id} id={timer.id} />
+              ))}
+            </p>
             <div className="w-full flex justify-between items-center">
               <button className="w-[45%] flex justify-center items-center cursor-pointer whitespace-nowrap outline-none text-white border-[1.5px] border-transparent bg-[#192024] hover:bg-[#212a2f] focus:ring-2 focus:outline-none focus:ring-[#2E3438] font-medium rounded-md px-5 py-2 text-center">
                 Conferma
