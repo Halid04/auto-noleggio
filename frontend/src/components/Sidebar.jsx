@@ -52,7 +52,7 @@ function Sidebar() {
               activePath === route.path
                 ? "bg-[#FF690F] text-white"
                 : "bg-transparent text-[#192024] dark:text-white"
-            } outline-none whitespace-nowrap flex justify-start items-center gap-3 text-md px-4 py-1 rounded-lg`}
+            } outline-none whitespace-nowrap flex justify-start items-center gap-3 text-base 2xl:text-xl px-4 py-1 rounded-lg`}
           >
             <route.icon
               size={22}
@@ -67,7 +67,7 @@ function Sidebar() {
           </button>
         ))}
       </div>
-      <div className="h-[20vh] w-full flex justify-start items-start">
+      <div className="h-[20vh] w-full flex justify-start 2xl:items-center items-start">
         <button
           type="button"
           onClick={() => handleNavigation(routes[4].path)}
@@ -75,7 +75,7 @@ function Sidebar() {
             activePath === routes[4].path
               ? "bg-[#FF690F] text-white"
               : "bg-transparent text-[#192024] dark:text-white"
-          } outline-none flex justify-start items-center gap-3 text-md px-4 py-1 rounded-lg`}
+          } outline-none flex justify-start items-center gap-3 text-base 2xl:text-xl px-4 py-1 rounded-lg`}
         >
           <Heart
             size={22}

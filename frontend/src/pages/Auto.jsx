@@ -223,7 +223,7 @@ function Auto() {
         return response.json();
       })
       .then((data) => {
-        console.log("get all auto", data.content);
+        console.log("get all auto preferiti", data.content);
         localStorage.removeItem("selezioniMarca");
         localStorage.removeItem("selezioniTipoMacchina");
         localStorage.removeItem("selezioniTipoCarburante");
@@ -1319,53 +1319,6 @@ function Auto() {
             </div>
           )}
         </div>
-
-        {/* Filtri Vicino a te  */}
-        <div className="hidden relative lg:inline-block text-left">
-          <div>
-            <button
-              type="button"
-              className="hover:bg-[#EEEEEE] dark:hover:bg-[#2E3438] transition-all inline-flex w-full justify-center items-center outline-none border-[1.5px] border-[#EEEEEE] dark:border-[#2E3438] rounded-lg bg-white dark:bg-[#192024] px-2 py-1 text-[#192024] dark:text-white"
-              id="menu-button"
-              aria-expanded={isDropdownVicinoATeFiltriOpen}
-              aria-haspopup="true"
-              onClick={handleMenuButtonClickVicinoATeFiltri}
-            >
-              <span className=" font-bold text-[#192024] dark:text-white">
-                Vicino a te
-              </span>
-              <ChevronDown
-                className={`mr-1 h-5 w-5 stroke-[#192024] dark:stroke-white transition-transdiv duration-300 ${
-                  isDropdownVicinoATeFiltriOpen ? "rotate-180" : "rotate-0"
-                }`}
-                color="#192024"
-              />
-            </button>
-          </div>
-
-          {/* <!-- Dropdown Filtri Vicino a te menu --> */}
-          {isDropdownVicinoATeFiltriOpen && (
-            <div
-              ref={dropdownVicinoATeFiltriRef}
-              className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white dark:bg-[#192024] shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
-              role="menu"
-              aria-orientation="vertical"
-              aria-labelledby="menu-button"
-            >
-              <div className="py-1" role="none">
-                <button
-                  type="button"
-                  className="text-[#192024] dark:text-white block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
-                  role="menuitem"
-                  tabIndex="-1"
-                  // onClick={handleNavigateToAccount}
-                >
-                  Vicino a te - da fare per ultimo
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
       </form>
       <div className="auto-section shrink-0 h-[90vh] px-5 sm:px-10 py-5 w-full flex items-start justify-start flex-wrap gap-x-16 gap-y-5">
         {auto && auto.length > 0 ? (
@@ -1389,7 +1342,9 @@ function Auto() {
             />
           ))
         ) : (
-          <p>Nessuna auto disponibile</p>
+          <p className="text-lg 2xl:text-2xl text-[#192024]">
+            Nessuna auto disponibile
+          </p>
         )}
       </div>
     </div>
