@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import toast, { Toaster } from "react-hot-toast";
 import CountdownTimer from "../components/CountdownTimer";
 import { useParams, useNavigate } from "react-router-dom";
 import { CreditCard, Calendar } from "lucide-react";
@@ -15,6 +16,10 @@ function Transazione() {
   const [IDChallengeRecived, setIDChallengeRecived] = useState(false);
   const [newEmail, setNewEmail] = useState("");
   const [timers, setTimers] = useState([]);
+  const [timerId, setTimerId] = useState(null);
+  const [IDChallenge, setIDChallenge] = useState("");
+  const [userInsertedOTP, setUserInsertedOTP] = useState("");
+  const [userCanPay, setUserCanPay] = useState(false);
 
   const calculateTotal = () => {
     const dateRitiro = new Date(dataRitiro);
@@ -131,6 +136,15 @@ function Transazione() {
     }
   };
 
+  const handleGoToFinalRiepilogoSection = () => {
+    const section = document.getElementById("container");
+    if (section) {
+      section.classList.add("translate-x-[-200vw]", "sm:translate-x-[-150vw]");
+    } else {
+      console.error("Element with id 'container' not found.");
+    }
+  };
+
   useEffect(() => {
     getSedi();
   }, []);
@@ -192,12 +206,10 @@ function Transazione() {
   };
 
   const getIDChallenge = (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     const url =
       "http://localhost/auto-noleggio/backend/public/otp/getChallenge";
-
     const token = localStorage.getItem("userToken");
-    console.log("token", token);
 
     const headers = {
       Accept: "application/json",
@@ -216,16 +228,81 @@ function Transazione() {
         return response.json();
       })
       .then((data) => {
-        console.log(data);
         setIDChallengeRecived(true);
         setNewEmail(obfuscateEmail(localStorage.getItem("userEmail")));
-        handleGoToCodiceOTPSection();
-        // Aggiungi un nuovo timer all'array
+
+        if (!IDChallenge) {
+          handleGoToCodiceOTPSection();
+        }
+
+        setIDChallenge(data.content.challenge_id);
         setTimers((prevTimers) => [...prevTimers, { id: prevTimers.length }]);
+        // Aggiorna il timer ID per avviare un nuovo timer
+        setTimerId(Date.now());
       })
       .catch((error) => {
         console.error("Errore durante il recupero dell'ID Challenge:", error);
       });
+  };
+
+  const checkOtpCode = (e) => {
+    e.preventDefault();
+    const url =
+      "http://localhost/auto-noleggio/backend/public/otp/solveChallenge";
+    const token = localStorage.getItem("userToken");
+
+    const headers = {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    };
+
+    const requestBody = {
+      otp_challenge_id: IDChallenge,
+      otp_code: userInsertedOTP,
+    };
+
+    fetch(url, {
+      method: "POST",
+      headers: headers,
+      body: JSON.stringify(requestBody),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          return response.text().then((text) => {
+            throw new Error(text);
+          });
+        }
+        return response.json();
+      })
+      .then((data) => {
+        toast.success("Codice OTP corretto", {
+          duration: 1500,
+        });
+        setUserCanPay(true);
+        setTimeout(() => {
+          handleGoToFinalRiepilogoSection();
+        }, 1500);
+      })
+      .catch((error) => {
+        const errorString = error.message.replace("Error: ", "");
+        const errorObject = JSON.parse(errorString);
+        toast.error(
+          `${errorObject.message}, ti è stato mandato un nuovo codice OTP alla mail inserita`,
+          { duration: 4500 }
+        );
+        getIDChallenge(); // Richiedi un nuovo ID Challenge
+      });
+  };
+
+  const finalTransaction = () => {
+    if (userCanPay) {
+      console.log("Transazione completata con successo!");
+    } else {
+      console.error(
+        "Devi completare tutte le fasi della transazione per procedere con il pagamento!"
+      );
+    }
   };
 
   return (
@@ -242,22 +319,25 @@ function Transazione() {
           <div className="w-full flex flex-col sm:flex-row gap-3 sm:gap-0 justify-between items-center">
             <button
               onClick={handleCreditCardTypeOneSelection}
-              className="credit-card-section-one w-full sm:w-[49%] h-8 sm:py-2 flex gap-4 justify-center items-center rounded-lg border-[1.5px] border-[#808080rgb(128, 128, 128)]"
+              className="credit-card-section-one w-full sm:w-[49%] h-8 sm:py-2 flex gap-4 justify-center items-center rounded-lg border-[1.5px] border-[#FF690F]"
             >
               <img
                 src="/src/assets/visaLogo.png"
                 className=" w-8 aspect-square object-contain"
                 alt="visaLogo"
+                loading="lazy"
               />
               <img
                 src="/src/assets/masterCardLogo.png"
                 className=" w-8 aspect-square object-contain"
                 alt="visaLogo"
+                loading="lazy"
               />
               <img
                 src="/src/assets/maestroCardLogo.png"
                 className=" w-8 aspect-square object-contain"
                 alt="visaLogo"
+                loading="lazy"
               />
             </button>
             <button
@@ -268,6 +348,7 @@ function Transazione() {
                 src="/src/assets/payPalLogo.png"
                 className=" w-16 aspect-square object-contain"
                 alt="visaLogo"
+                loading="lazy"
               />
             </button>
           </div>
@@ -513,7 +594,10 @@ function Transazione() {
           </button>
         </form>
         <div className="w-full h-full flex justify-center items-center shrink-0 grow-0 text-[#192024]">
-          <div className="codice-otp-card px-4 py-2 w-[45%] h-[40%] bg-[#F0F3F5] rounded-md flex flex-col justify-center gap-3 items-center">
+          <form
+            onSubmit={checkOtpCode}
+            className="codice-otp-card px-4 py-2 w-[45%] h-[40%] bg-[#F0F3F5] rounded-md flex flex-col justify-center gap-3 items-center"
+          >
             <h1 className="text-center text-3xl font-bold">
               Autonoleggio.itis{" "}
             </h1>
@@ -529,22 +613,31 @@ function Transazione() {
               maxLength={6}
               minLength={6}
               required
+              onChange={(e) => setUserInsertedOTP(e.target.value)}
             />
             <p>
-              Scadenza codice OTP{" "}
-              {timers.map((timer) => (
-                <CountdownTimer key={timer.id} id={timer.id} />
-              ))}
+              Scadenza codice OTP <CountdownTimer id={timerId} />
             </p>
             <div className="w-full flex justify-between items-center">
-              <button className="w-[45%] flex justify-center items-center cursor-pointer whitespace-nowrap outline-none text-white border-[1.5px] border-transparent bg-[#192024] hover:bg-[#212a2f] focus:ring-2 focus:outline-none focus:ring-[#2E3438] font-medium rounded-md px-5 py-2 text-center">
+              <button
+                type="submit"
+                className="w-[45%] flex justify-center items-center cursor-pointer whitespace-nowrap outline-none text-white border-[1.5px] border-transparent bg-[#192024] hover:bg-[#212a2f] focus:ring-2 focus:outline-none focus:ring-[#2E3438] font-medium rounded-md px-5 py-2 text-center"
+              >
                 Conferma
               </button>
-              <button className="w-[45%] flex justify-center items-center cursor-pointer whitespace-nowrap outline-none text-[#192024] border-[1.5px] border-[#192024] bg-trasparent hover:bg-[#EEEEEE] focus:ring-2 focus:outline-none focus:ring-[#2E3438] font-medium rounded-md px-5 py-2 text-center">
+              <button
+                type="button"
+                className="w-[45%] flex justify-center items-center cursor-pointer whitespace-nowrap outline-none text-[#192024] border-[1.5px] border-[#192024] bg-trasparent hover:bg-[#EEEEEE] focus:ring-2 focus:outline-none focus:ring-[#2E3438] font-medium rounded-md px-5 py-2 text-center"
+              >
                 Rinvio Codice OTP
               </button>
             </div>
-          </div>
+          </form>
+        </div>
+        <div className="w-full h-full flex justify-center items-center shrink-0 grow-0 text-[#192024]">
+          <h2 className="font-bold text-3xl">
+            Ora puoi confermare il noleggio dell'auto!
+          </h2>
         </div>
       </div>
       <div className="h-[35vh] sm:h-full w-full sm:w-[25vw] flex flex-col justify-between items-center z-50 border-t-[1.5px] sm:border-l-[1.5px] border-[#808080rgb(128, 128, 128)]">
@@ -608,9 +701,11 @@ function Transazione() {
             <p>{totale}€</p>
           </div>
           <button
-            className="w-full -opacity-50 sm:mt-3 whitespace-nowrap outline-none text-white border-[1.5px] border-transparent bg-[#FF690F] hover:bg-[#d55508] focus:ring-4 focus:outline-none focus:ring-orange-300 font-medium rounded-lg px-5 py-1 text-center"
+            className={`w-full ${
+              !userCanPay ? "opacity-50" : ""
+            } -opacity-50 sm:mt-3 whitespace-nowrap outline-none text-white border-[1.5px] border-transparent bg-[#FF690F] hover:bg-[#d55508] focus:ring-4 focus:outline-none focus:ring-orange-300 font-medium rounded-lg px-5 py-1 text-center`}
             type="button"
-            disabled
+            onClick={finalTransaction}
           >
             Noleggia auto
           </button>

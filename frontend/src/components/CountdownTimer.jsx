@@ -15,7 +15,7 @@ const CountdownTimer = ({ id }) => {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [id]);
+  }, [id]); // Rimuovi il vecchio timer e avvia uno nuovo quando cambia l'id
 
   const formatTime = (time) => {
     const minutes = Math.floor(time / 60);
