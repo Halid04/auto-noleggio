@@ -116,7 +116,7 @@ function CardAuto({
 
       <img
         onClick={() => handleNavigateToCarDetail(idAuto)}
-        className="rounded-t-lg w-full h-[10rem] object-cover"
+        className="rounded-t-lg w-full h-[10rem] 2xl:h-[12rem] object-cover"
         src={`/src/progettoGPOAutoImages${imgNewPath[0]}.jpg`}
         alt={imgNewPath[0]}
         loading="lazy"
@@ -138,26 +138,26 @@ function CardAuto({
         <div className="tags flex gap-1 2xl:gap-3 mb-2">
           <span
             title={tipo_veicolo}
-            className="whitespace-nowrap inline-flex items-center px-3 2xl:px-4 2xl:py-3 h-7 2xl:h-8 text-sm 2xl:text-base font-normal text-center text-white bg-[#FF690F] rounded-lg hover:bg-[#d55508] "
+            className="whitespace-nowrap inline-flex items-center px-3 2xl:px-4 2xl:py-3 h-7 2xl:h-8 text-sm 2xl:text-lg font-normal text-center text-white bg-[#FF690F] rounded-lg hover:bg-[#d55508] "
           >
             {tipo_veicolo.split(" ")[0]}
           </span>
           <span
             title={tipo_carburazione}
-            className="whitespace-nowrap inline-flex items-center px-3 2xl:px-4 2xl:py-3  h-7 2xl:h-8 text-sm 2xl:text-base font-normal text-center text-white bg-[#FF690F] rounded-lg hover:bg-[#d55508] "
+            className="whitespace-nowrap inline-flex items-center px-3 2xl:px-4 2xl:py-3  h-7 2xl:h-8 text-sm 2xl:text-lg font-normal text-center text-white bg-[#FF690F] rounded-lg hover:bg-[#d55508] "
           >
             {tipo_carburazione.split(" ")[0]}
           </span>
           <span
             title={colore_veicolo}
-            className="whitespace-nowrap inline-flex items-center px-3 2xl:px-4 2xl:py-3  h-7 2xl:h-8 text-sm 2xl:text-base font-normal text-center text-white bg-[#FF690F] rounded-lg hover:bg-[#d55508] "
+            className="whitespace-nowrap inline-flex items-center px-3 2xl:px-4 2xl:py-3  h-7 2xl:h-8 text-sm 2xl:text-lg font-normal text-center text-white bg-[#FF690F] rounded-lg hover:bg-[#d55508] "
           >
             {colore_veicolo.split(" ")[0]}
           </span>
         </div>
         <div className="oneline">
           <MapPin className="stroke-[#192024] dark:stroke-white" />{" "}
-          <p className="whitespace-nowrap font-normal text-[#192024] dark:text-white">
+          <p className="whitespace-nowrap font-normal text-[#192024] dark:text-white 2xl:text-lg">
             {citta}, {indirizzo}
           </p>
         </div>
