@@ -192,7 +192,7 @@ class OTPController extends BaseController {
             return result;
         }
 
-        $result = $this->gateway->findLatest();
+        $result = $this->gateway->findLatest($request);
 
         if ($result['statusCode'] != 200) {
             return $result;
