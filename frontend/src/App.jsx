@@ -9,6 +9,7 @@ import Preferiti from "./pages/Preferiti.jsx";
 import Transazione from "./pages/Transazione.jsx";
 import CarDetail from "./pages/CarDetail.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
+import UserDashboard from "./pages/UserDashboard.jsx";
 import ImpostazioniProfilo from "./pages/ImpostazioniProfilo.jsx";
 import NotLogged from "./pages/NotLogged.jsx";
 import Header from "./components/Header.jsx";
@@ -105,6 +106,8 @@ function App() {
             <Route path="/sedi" element={<Sedi />} />
             <Route path="/preferiti" element={<Preferiti />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/userdashboard" element={<UserDashboard />} />
+
             <Route
               path="/impostazioniProfilo"
               element={<ImpostazioniProfilo />}
