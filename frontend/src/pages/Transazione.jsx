@@ -306,8 +306,7 @@ function Transazione() {
     e.preventDefault();
 
     if (userCanPay) {
-      const url =
-        "http://localhost/auto-noleggio/backend/public/otp/transazioni";
+      const url = "http://localhost/auto-noleggio/backend/public/transazioni";
       const token = localStorage.getItem("userToken");
 
       const headers = {
@@ -332,35 +331,36 @@ function Transazione() {
 
       console.log("Request body:", requestBody);
 
-      // fetch(url, {
-      //   method: "POST",
-      //   headers: headers,
-      //   body: JSON.stringify(requestBody),
-      // })
-      //   .then((response) => {
-      //     if (!response.ok) {
-      //       return response.text().then((text) => {
-      //         throw new Error(text);
-      //       });
-      //     }
-      //     return response.json();
-      //   })
-      //   .then((data) => {
-      //     setTimeout(() => {
-      //       toast.success("Auto noleggiata con successo!", {
-      //         duration: 1000,
-      //       });
-      //       navigate("/auto");
-      //       window.location.reload();
-      //     }, 1000);
-      //   })
-      //   .catch((error) => {
-      //     const errorString = error.message.replace("Error: ", "");
-      //     const errorObject = JSON.parse(errorString);
-      //     toast.error(errorObject.message, {
-      //       duration: 1500,
-      //     });
-      //   });
+      fetch(url, {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify(requestBody),
+      })
+        .then((response) => {
+          if (!response.ok) {
+            return response.text().then((text) => {
+              throw new Error(text);
+            });
+          }
+          return response.json();
+        })
+        .then((data) => {
+          setTimeout(() => {
+            toast.success("Auto noleggiata con successo!", {
+              duration: 1000,
+            });
+            navigate("/auto");
+            window.location.reload();
+          }, 1000);
+        })
+        .catch((error) => {
+          const errorString = error.message.replace("Error: ", "");
+          const errorObject = JSON.parse(errorString);
+          console.log("Error object:", errorObject.message);
+          toast.error(errorObject.message, {
+            duration: 1500,
+          });
+        });
     } else {
       toast.error(
         "Devi completare tutte le fasi della transazione per procedere con il pagamento!"
