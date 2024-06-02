@@ -141,7 +141,7 @@ function Header() {
                         className="text-gray-700 dark:text-white block w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
                         role="menuitem"
                         tabIndex="-1"
-                        onClick={() => navigate("/impostazioniProfilo")}
+                        onClick={() => navigate("/userdashboard")}
                       >
                         Impostazioni profilo
                       </button>

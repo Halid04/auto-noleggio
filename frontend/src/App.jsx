@@ -10,7 +10,6 @@ import Transazione from "./pages/Transazione.jsx";
 import CarDetail from "./pages/CarDetail.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import UserDashboard from "./pages/UserDashboard.jsx";
-import ImpostazioniProfilo from "./pages/ImpostazioniProfilo.jsx";
 import NotLogged from "./pages/NotLogged.jsx";
 import Header from "./components/Header.jsx";
 import Sidebar from "./components/Sidebar.jsx";
@@ -69,9 +68,7 @@ function App() {
 
   const isTransactionPage = location.pathname.startsWith("/transazione");
   const isAdminDashboard = location.pathname.startsWith("/dashboard");
-  const impostazioniProfilo = location.pathname.startsWith(
-    "/impostazioniProfilo"
-  );
+  const impostazioniProfilo = location.pathname.startsWith("/userdashboard");
 
   return (
     <div
@@ -107,11 +104,6 @@ function App() {
             <Route path="/preferiti" element={<Preferiti />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/userdashboard" element={<UserDashboard />} />
-
-            <Route
-              path="/impostazioniProfilo"
-              element={<ImpostazioniProfilo />}
-            />
             <Route path="/transazione/:idAuto" element={<Transazione />} />
             <Route path="/carDetail/:idAuto" element={<CarDetail />} />
             <Route path="/notLogged" element={<NotLogged />} />
