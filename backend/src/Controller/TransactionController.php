@@ -293,9 +293,6 @@ class TransactionController extends BaseController {
                     bcdiv($transaction['importo'] * 1.19, 1, 2),
                     bcdiv($transaction['importo'], 1, 2),
                 ];
-            
-
-                
 
                 $this->mail->sendMail(
                 [
@@ -303,7 +300,7 @@ class TransactionController extends BaseController {
                     "name" => $user['nome'] . " " . $user['cognome']
                 ],
                 [
-                    "subject" => "Congratulazioni",
+                    "subject" => "Riepilogo del noleggio",
                     "body" => str_replace($search, $replace, file_get_contents(dirname(__DIR__)  . '/confirmationTemplate.html')),
                     "altBody" => "Later"
                 ]);
