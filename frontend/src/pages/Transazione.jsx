@@ -20,6 +20,13 @@ function Transazione() {
   const [IDChallenge, setIDChallenge] = useState("");
   const [userInsertedOTP, setUserInsertedOTP] = useState("");
   const [userCanPay, setUserCanPay] = useState(false);
+  const [userCreditCard, setUserCreditCard] = useState("");
+  const [userCreditCardExpirationMonth, setUserCreditCardExpirationMonth] =
+    useState("");
+  const [userCreditCardExpirationYear, setUserCreditCardExpirationYear] =
+    useState("");
+  const [userCreditCardCVV, setUserCreditCardCVV] = useState("");
+  const [userSedeRitiro, setUserSedeRitiro] = useState("");
 
   const calculateTotal = () => {
     const dateRitiro = new Date(dataRitiro);
@@ -170,6 +177,7 @@ function Transazione() {
       .then((data) => {
         console.log(data);
         const sediMap = data.content.map((sede) => ({
+          id: sede.id_sede,
           nome: sede.nome,
           citta: sede.città,
           indirizzo: sede.indirizzo,
@@ -236,9 +244,7 @@ function Transazione() {
         }
 
         setIDChallenge(data.content.challenge_id);
-        setTimers((prevTimers) => [...prevTimers, { id: prevTimers.length }]);
-        // Aggiorna il timer ID per avviare un nuovo timer
-        setTimerId(Date.now());
+        setTimerId(Date.now()); // Aggiorna il timer ID per avviare un nuovo timer
       })
       .catch((error) => {
         console.error("Errore durante il recupero dell'ID Challenge:", error);
@@ -276,13 +282,14 @@ function Transazione() {
         return response.json();
       })
       .then((data) => {
-        toast.success("Codice OTP corretto", {
-          duration: 1500,
-        });
         setUserCanPay(true);
+        toast.success("Codice OTP corretto", {
+          duration: 1000,
+        });
+
         setTimeout(() => {
           handleGoToFinalRiepilogoSection();
-        }, 1500);
+        }, 1000);
       })
       .catch((error) => {
         const errorString = error.message.replace("Error: ", "");
@@ -295,13 +302,71 @@ function Transazione() {
       });
   };
 
-  const finalTransaction = () => {
+  const finalTransaction = (e) => {
+    e.preventDefault();
+
     if (userCanPay) {
-      console.log("Transazione completata con successo!");
+      const url =
+        "http://localhost/auto-noleggio/backend/public/otp/transazioni";
+      const token = localStorage.getItem("userToken");
+
+      const headers = {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      };
+
+      const expirationDate = `${userCreditCardExpirationYear}-${userCreditCardExpirationMonth}-01`;
+
+      const requestBody = {
+        numero_carta: userCreditCard,
+        scadenza: expirationDate,
+        ccv: userCreditCardCVV,
+        otp_challenge_id: IDChallenge,
+        id_sede: userSedeRitiro,
+        id_veicolo: carDetail[0].id_veicolo,
+        data_inizio: dataRitiro,
+        data_fine: dataConsegna,
+        importo: totale,
+      };
+
+      console.log("Request body:", requestBody);
+
+      // fetch(url, {
+      //   method: "POST",
+      //   headers: headers,
+      //   body: JSON.stringify(requestBody),
+      // })
+      //   .then((response) => {
+      //     if (!response.ok) {
+      //       return response.text().then((text) => {
+      //         throw new Error(text);
+      //       });
+      //     }
+      //     return response.json();
+      //   })
+      //   .then((data) => {
+      //     setTimeout(() => {
+      //       toast.success("Auto noleggiata con successo!", {
+      //         duration: 1000,
+      //       });
+      //       navigate("/auto");
+      //       window.location.reload();
+      //     }, 1000);
+      //   })
+      //   .catch((error) => {
+      //     const errorString = error.message.replace("Error: ", "");
+      //     const errorObject = JSON.parse(errorString);
+      //     toast.error(errorObject.message, {
+      //       duration: 1500,
+      //     });
+      //   });
     } else {
-      console.error(
+      toast.error(
         "Devi completare tutte le fasi della transazione per procedere con il pagamento!"
       );
+
+      return;
     }
   };
 
@@ -368,6 +433,7 @@ function Transazione() {
                   placeholder="Numero carta"
                   className="w-[70%] text-sm border-none outline-none font-bold "
                   required
+                  onChange={(e) => setUserCreditCard(e.target.value)}
                 />
                 <CreditCard size={20} className="stroke-[#192024]" />
               </div>
@@ -383,41 +449,47 @@ function Transazione() {
                 <div className="w-full flex justify-between items-center px-3 py-[0.10rem] rounded-lg border-[1.5px] border-[#808080rgb(128, 128, 128)]">
                   <select
                     className="select-month outline-none w-1/2 h-full border-r-[2px] border-[#808080rgb(128, 128, 128)]"
-                    name=""
-                    id=""
+                    name="creditCardExpirationMonth"
+                    id="creditCardExpirationMonth"
                     required
+                    onChange={(e) =>
+                      setUserCreditCardExpirationMonth(e.target.value)
+                    }
                   >
-                    <option value="">01</option>
-                    <option value="">02</option>
-                    <option value="">03</option>
-                    <option value="">04</option>
-                    <option value="">05</option>
-                    <option value="">06</option>
-                    <option value="">07</option>
-                    <option value="">08</option>
-                    <option value="">09</option>
-                    <option value="">10</option>
-                    <option value="">11</option>
-                    <option value="">12</option>
+                    <option value="01">01</option>
+                    <option value="02">02</option>
+                    <option value="03">03</option>
+                    <option value="04">04</option>
+                    <option value="05">05</option>
+                    <option value="06">06</option>
+                    <option value="07">07</option>
+                    <option value="08">08</option>
+                    <option value="09">09</option>
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
                   </select>
                   <select
                     className="select-year outline-none w-1/2 h-full px-2"
-                    name=""
-                    id=""
+                    name="creditCardExpirationYear"
+                    id="creditCardExpirationYear"
                     required
+                    onChange={(e) =>
+                      setUserCreditCardExpirationYear(e.target.value)
+                    }
                   >
-                    <option value="">24</option>
-                    <option value="">25</option>
-                    <option value="">26</option>
-                    <option value="">27</option>
-                    <option value="">28</option>
-                    <option value="">29</option>
-                    <option value="">30</option>
-                    <option value="">31</option>
-                    <option value="">32</option>
-                    <option value="">33</option>
-                    <option value="">34</option>
-                    <option value="">35</option>
+                    <option value="2024">24</option>
+                    <option value="2025">25</option>
+                    <option value="2026">26</option>
+                    <option value="2027">27</option>
+                    <option value="2028">28</option>
+                    <option value="2029">29</option>
+                    <option value="2030">30</option>
+                    <option value="2031">31</option>
+                    <option value="2032">32</option>
+                    <option value="2033">33</option>
+                    <option value="2034">34</option>
+                    <option value="2035">35</option>
                   </select>
                 </div>
               </div>
@@ -437,6 +509,7 @@ function Transazione() {
                     placeholder="CVV"
                     className="w-full text-sm border-none outline-none font-bold "
                     required
+                    onChange={(e) => setUserCreditCardCVV(e.target.value)}
                   />
                 </div>
               </div>
@@ -572,12 +645,13 @@ function Transazione() {
                   className="w-full outline-none border-none"
                   id=""
                   required
+                  onChange={(e) => setUserSedeRitiro(e.target.value)}
                 >
                   {sediAutoNoleggio &&
                     sediAutoNoleggio.length > 0 &&
                     sediAutoNoleggio.map((sede, index) => {
                       return (
-                        <option key={index} value={sede.nome}>
+                        <option key={index} value={sede.id}>
                           {sede.nome} - {sede.citta}, {sede.indirizzo}
                         </option>
                       );
@@ -615,9 +689,7 @@ function Transazione() {
               required
               onChange={(e) => setUserInsertedOTP(e.target.value)}
             />
-            <p>
-              Scadenza codice OTP <CountdownTimer id={timerId} />
-            </p>
+            <p>Il codice OTP inviato ha una validità di 2 minuti.</p>
             <div className="w-full flex justify-between items-center">
               <button
                 type="submit"
@@ -628,6 +700,15 @@ function Transazione() {
               <button
                 type="button"
                 className="w-[45%] flex justify-center items-center cursor-pointer whitespace-nowrap outline-none text-[#192024] border-[1.5px] border-[#192024] bg-trasparent hover:bg-[#EEEEEE] focus:ring-2 focus:outline-none focus:ring-[#2E3438] font-medium rounded-md px-5 py-2 text-center"
+                onClick={(e) => {
+                  toast.success(
+                    "è stato inviato un nuovo codice OTP alla mail",
+                    {
+                      duration: 2500,
+                    }
+                  );
+                  getIDChallenge(e);
+                }}
               >
                 Rinvio Codice OTP
               </button>
