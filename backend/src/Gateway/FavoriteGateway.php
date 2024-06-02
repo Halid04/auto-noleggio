@@ -41,7 +41,7 @@ class FavoriteGateway extends BaseGateway
         $missing_keys = $this->validateRequiredParameters($input, $required_parameters);
         
         if (!empty($missing_keys)) {
-            return $this->response(400, "Missing parameters: " . implode(", ", $missing_keys));
+            return $this->response(400, "Parametri mancanti: " . implode(", ", $missing_keys));
         }
         
         $statement = "
@@ -80,7 +80,7 @@ class FavoriteGateway extends BaseGateway
         $missing_keys = $this->validateRequiredParameters($input, $required_parameters);
         
         if (!empty($missing_keys)) {
-            return $this->response(400, "Missing parameters: " . implode(", ", $missing_keys));
+            return $this->response(400, "Parametri mancanti: " . implode(", ", $missing_keys));
         }
         
         $statement = "

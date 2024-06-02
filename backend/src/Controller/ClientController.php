@@ -32,7 +32,7 @@ class ClientController extends BaseController {
             $response_obj['obj'] =  array (
                 'statusCode' => 403,
                 'body' => array (
-                    'message' => "Access forbidden: You do not have permission to access this resource"
+                    'message' => "Accesso negato: Non hai i permessi per accedere a questa risorsa"
                 )
             );
             return $response_obj;
@@ -43,7 +43,7 @@ class ClientController extends BaseController {
             $response_obj['obj'] =  array (
                 'statusCode' => 403,
                 'body' => array (
-                    'message' => "Access forbidden: You do not have permission to access this resource"
+                    'message' => "Accesso negato: Non hai i permessi per accedere a questa risorsa"
                 )
             );
 

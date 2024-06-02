@@ -14,11 +14,50 @@ const EditUserModal = ({ setVisible, user }) => {
   const handleSaveChanges = (e) => {
     e.preventDefault();
 
-    // Simulate API call to save user data
-    setTimeout(() => {
-      toast.success("Profile updated successfully", { duration: 1500 });
-      setVisible(false);
-    }, 500);
+    const url = "http://localhost/auto-noleggio/backend/public/clienti";
+
+    const token = localStorage.getItem("userToken")
+    const headers = {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      "Authorization" : "Bearer " + token
+    };
+
+    fetch(url, {
+      method: "PUT",
+      headers: headers,
+      body: JSON.stringify(userData),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          return response.text().then((text) => {
+            throw new Error(text);
+          });
+        } else {
+          
+          toast.success("Profilo aggiornato", {
+            duration: 1500,
+          });
+          
+          setTimeout(() => {
+            setVisible(false);
+            
+            window.location.reload();
+          }, 1000);
+
+          return response.json(); // Moved inside the else block
+        }
+      })
+      .then((data) => {
+        console.log(data);
+      })
+      .catch((error) => {
+        const errorString = error.message.replace("Error: ", "");
+        const errorObject = JSON.parse(errorString);
+        toast.error(errorObject.message, {
+          duration: 1500,
+        });
+      });
   };
 
   return (
@@ -33,7 +72,8 @@ const EditUserModal = ({ setVisible, user }) => {
             { label: "Name", name: "name" },
             { label: "Email", name: "email" },
             { label: "Phone", name: "phone" },
-            { label: "Password", name: "password" },
+            { label: "Vecchia password", name: "password" },
+            { label: "Password", name: "new_password" },
           ].map((field) => (
             <div key={field.name}>
               <label
@@ -57,10 +97,9 @@ const EditUserModal = ({ setVisible, user }) => {
             type="submit"
             className="w-full text-white bg-orange-500 hover:bg-orange-600 focus:ring-4 focus:outline-none focus:ring-orange-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
           >
-            Save Changes
+            Aggiorna profilo
           </button>
         </form>
-        <Toaster />
       </div>
     </div>
   );

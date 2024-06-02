@@ -44,7 +44,7 @@ class ImageGateway extends BaseGateway {
     public function findVehicleImages($input)
     {
         if (!isset($input["id"])) {
-            return $this->response(400, message: "Invalid request: Missing parameters: id");
+            return $this->response(400, message: "Richiesta non valida: Parametro mancante: id");
         }
 
         $statement = "
@@ -79,7 +79,7 @@ class ImageGateway extends BaseGateway {
         echo var_dump($input);
         
         if (!isset($input["images"])) {
-            return $this->response(400, message: "Invalid request: Missing parameters: images");
+            return $this->response(400, message: "Richiesta non valida: Parametro mancante: images");
         }
 
         $image_statement = "
@@ -97,7 +97,7 @@ class ImageGateway extends BaseGateway {
                 $missing_keys = $this->validateRequiredParameters($image, $required_parameters);
     
                 if (!empty($missing_keys)) {
-                    return $this->response(400, "Invalid request: Invalid image array: Missing parameters: " . implode(", ", $missing_keys));
+                    return $this->response(400, "Richiesta non valida: Array immagini non valido: Parametri mancanti: " . implode(", ", $missing_keys));
                 }
     
                 $image_statement .= "('" . ($image['id_veicolo'] ?? $input['id_veicolo']) . "', '" . $image['nome_foto'] ."'), ";
