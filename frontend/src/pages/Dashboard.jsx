@@ -26,17 +26,68 @@ ChartJS.register(
 
 const Dashboard = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [data, setData] = useState(null);
 
   const toggleModal = () => {
     setIsOpen(!isOpen);
   };
+
+  let headers = {};
+
+  const token = localStorage.getItem("userToken");
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
+
+  useEffect(() => {
+    fetch("http://localhost/auto-noleggio/backend/public/admin", {
+      method: "GET",
+      headers: headers
+    })
+      .then((response) => response.json())
+      .then((jsonData) => setData(jsonData.content))
+      .catch((error) => console.error("Error fetching JSON data:", error));
+  }, []);
+
+  /*
+
+  const mapContainer = useRef(null);
+  const map = useRef(null);
+  const milan = { lng: 9.18854, lat: 45.464664 };
+  const [zoom] = useState(14);
+  maptilersdk.config.apiKey = "zKTSY8Huqpuc98tNjLwq";
+ 
+  useEffect(() => {
+    if (map.current) return; // stops map from intializing more than once
+ 
+    map.current = new maptilersdk.Map({
+      container: mapContainer.current,
+      style: maptilersdk.MapStyle.STREETS,
+      center: [milan.lng, milan.lat],
+      zoom: zoom,
+    });
+ 
+    new maptilersdk.Marker({ color: "#FF0000" })
+      .setLngLat([milan.lng, milan.lat])
+      .addTo(map.current);
+  }, [milan.lng, milan.lat, zoom]);
+
+  
+  */
+
+  if (!data) {
+    return <div>Loading...</div>;
+  } else {
+    console.log(data)
+
+  }
 
   const doughnutData = {
     labels: ["Available", "Rented"],
     datasets: [
       {
         label: "Car Status",
-        data: [2, 8],
+        data: [data.num_macchine_disp, data.num_macchine_nol.occupied_vehicles],
         backgroundColor: ["rgba(54, 162, 235, 0.2)", "rgba(255, 99, 132, 0.2)"],
         borderColor: ["rgba(54, 162, 235, 1)", "rgba(255, 99, 132, 1)"],
         borderWidth: 1,
@@ -45,45 +96,30 @@ const Dashboard = () => {
   };
 
   const lineData = {
-    labels: ["January", "February", "March", "April", "May", "June", "July"],
+    labels: data.incassi_mensili.map((item) => item.mese),
     datasets: [
       {
         label: "Earnings",
-        data: [6500, 5900, 8000, 8100, 5600, 5500, 4000],
+        data: data.incassi_mensili.map((item) => parseFloat(item.incassi)),
         fill: false,
         backgroundColor: "rgba(75, 192, 192, 0.2)",
         borderColor: "rgba(75, 192, 192, 1)",
-      },
-      {
-        label: "Expenses",
-        data: [4500, 3900, 5000, 5100, 3600, 3500, 2000],
-        fill: false,
-        backgroundColor: "rgba(255, 99, 132, 0.2)",
-        borderColor: "rgba(255, 99, 132, 1)",
-      },
+      }
     ],
   };
 
-  const mapContainer = useRef(null);
-  const map = useRef(null);
-  const milan = { lng: 9.18854, lat: 45.464664 };
-  const [zoom] = useState(14);
-  maptilersdk.config.apiKey = "";
-
-  useEffect(() => {
-    if (map.current) return; // stops map from intializing more than once
-
-    map.current = new maptilersdk.Map({
-      container: mapContainer.current,
-      style: maptilersdk.MapStyle.STREETS,
-      center: [milan.lng, milan.lat],
-      zoom: zoom,
-    });
-
-    new maptilersdk.Marker({ color: "#FF0000" })
-      .setLngLat([milan.lng, milan.lat])
-      .addTo(map.current);
-  }, [milan.lng, milan.lat, zoom]);
+  const doughnutSediData = {
+    labels: data.incassi_sedi.map((item) => item.nome), // Cambiato da 'item.sede' a 'item.nome'
+    datasets: [
+      {
+        label: "Earnings by Branch",
+        data: data.incassi_sedi.map((item) => parseFloat(item.proceeds)), // Cambiato da 'item.incassi' a 'item.proceeds'
+        backgroundColor: data.incassi_sedi.map((_, index) => `rgba(${(index * 60) % 255}, ${(index * 100) % 255}, ${(index * 150) % 255}, 0.2)`),
+        borderColor: data.incassi_sedi.map((_, index) => `rgba(${(index * 60) % 255}, ${(index * 100) % 255}, ${(index * 150) % 255}, 1)`),
+        borderWidth: 1,
+      },
+    ],
+  };
 
   return (
     <div className="p-4 overflow-x-hidden overflow-y-auto flex flex-col h-full w-[100vw]">
@@ -100,19 +136,19 @@ const Dashboard = () => {
       <div className="grid grid-cols-3 gap-4 mb-4">
         <div className="bg-white p-4 rounded-lg shadow-md">
           <h2 className="text-lg font-semibold mb-2">Total Users</h2>
-          <p className="text-2xl">23</p>
+          <p className="text-2xl">{data.numero_utenti}</p>
         </div>
         <div className="bg-white p-4 rounded-lg shadow-md">
           <h2 className="text-lg font-semibold mb-2">Rented Cars</h2>
-          <p className="text-2xl">23</p>
+          <p className="text-2xl">{data.num_macchine_nol}</p>
         </div>
         <div className="bg-white p-4 rounded-lg shadow-md">
           <h2 className="text-lg font-semibold mb-2">Total Earnings</h2>
-          <p className="text-2xl">$23,000</p>
+          <p className="text-2xl">${data.incassi_totali}</p>
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 mb-4">
+      <div className="grid grid-cols-3 gap-4 mb-4">
         <div className="bg-white p-4 rounded-lg shadow-md">
           <h2 className="text-lg font-semibold mb-2">Vehicle Status</h2>
           <div className="small-chart">
@@ -123,12 +159,20 @@ const Dashboard = () => {
           <h2 className="text-lg font-semibold mb-2">Sales Status</h2>
           <Line data={lineData} />
         </div>
+        <div className="grid grid-cols-2 gap-4 mb-4">
+        <div className="bg-white p-4 rounded-lg shadow-md">
+          <h2 className="text-lg font-semibold mb-2">Branch Earnings</h2>
+          <div className="small-chart">
+            <Doughnut data={doughnutSediData} />
+          </div>
+        </div>
+      </div>
       </div>
 
       <div className="grid grid-cols-2 gap-4 mb-4">
         <div className="bg-white p-4 rounded-lg shadow-md">
           <h2 className="text-lg font-semibold mb-2">Track Your Cars</h2>
-          <div ref={mapContainer} className="w-full h-64" />
+        {/*<div ref={mapContainer} className="w-full h-64" />*/}
         </div>
         <div className="bg-white p-4 rounded-lg shadow-md">
           <h2 className="text-lg font-semibold mb-2">Car Details</h2>
@@ -150,12 +194,16 @@ const Dashboard = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              <tr>
-                <td className="px-6 py-4 whitespace-nowrap">1</td>
-                <td className="px-6 py-4 whitespace-nowrap">Tesla Model 3</td>
-                <td className="px-6 py-4 whitespace-nowrap">Rented</td>
-                <td className="px-6 py-4 whitespace-nowrap">New York</td>
-              </tr>
+              {data.macchina_gps.map((car) => (
+                <tr key={car.id_dispositivogps}>
+                  <td className="px-6 py-4 whitespace-nowrap">{car.id_veicolo}</td>
+                  <td className="px-6 py-4 whitespace-nowrap">{car.modello}</td>
+                  <td className="px-6 py-4 whitespace-nowrap">{car.tipo_veicolo}</td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {car.latitudine}, {car.longitudine}
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
@@ -182,12 +230,16 @@ const Dashboard = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              <tr>
-                <td className="px-6 py-4 whitespace-nowrap">1</td>
-                <td className="px-6 py-4 whitespace-nowrap">Tesla Model 3</td>
-                <td className="px-6 py-4 whitespace-nowrap">Rented</td>
-                <td className="px-6 py-4 whitespace-nowrap">New York</td>
-              </tr>
+              {data.macchina_gps.map((car) => (
+                <tr key={car.id_dispositivogps}>
+                  <td className="px-6 py-4 whitespace-nowrap">{car.id_veicolo}</td>
+                  <td className="px-6 py-4 whitespace-nowrap">{car.modello}</td>
+                  <td className="px-6 py-4 whitespace-nowrap">{car.tipo_veicolo}</td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {car.latitudine}, {car.longitudine}
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
@@ -208,16 +260,18 @@ const Dashboard = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              <tr>
-                <td className="px-6 py-4 whitespace-nowrap">1</td>
-                <td className="px-6 py-4 whitespace-nowrap">John Doe</td>
-                <td className="px-6 py-4 whitespace-nowrap">john@example.com</td>
-              </tr>
+              {data.lista_veicoli.map((user) => (
+                <tr key={user.id_cliente}>
+                  <td className="px-6 py-4 whitespace-nowrap">{user.id_cliente}</td>
+                  <td className="px-6 py-4 whitespace-nowrap">{user.nome}</td>
+                  <td className="px-6 py-4 whitespace-nowrap">{user.email}</td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
       </div>
-
+      
       {isOpen && <InsertCar setVisible={setIsOpen} />}
     </div>
   );

@@ -235,8 +235,9 @@ class VehicleGateway extends BaseGateway {
     {
         $statement = "
             SELECT 
-                veicolo.*, transazionefinanziaria.*
-            FROM " . $this->tableName . " JOIN transazionefinanziaria on veicolo.id_veicolo = transazionefinanziaria.id_veicolo
+                veicolo.*, transazionefinanziaria.data_inizio, transazionefinanziaria.data_fine
+            FROM " . $this->tableName . " 
+            JOIN transazionefinanziaria on veicolo.id_veicolo = transazionefinanziaria.id_veicolo
             WHERE transazionefinanziaria.id_cliente = :user_id";
 
         try {
