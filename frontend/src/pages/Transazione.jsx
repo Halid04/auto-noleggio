@@ -107,7 +107,11 @@ function Transazione() {
   const handleGoToCodiceOTPSection = () => {
     const section = document.getElementById("container");
     if (section) {
-      section.classList.add("translate-x-[-100vw]", "sm:translate-x-[-75vw]");
+      if (IDChallengeRecived) {
+        section.classList.add("translate-x-[-100vw]", "sm:translate-x-[-75vw]");
+      } else {
+        console.error("ID Challenge not recived yet.");
+      }
     } else {
       console.error("Element with id 'container' not found.");
     }
@@ -173,21 +177,23 @@ function Transazione() {
     creditCardSectionOne.classList.remove("border-[#FF690F]");
   };
 
-  const getIDChallenge = () => {
+  const getIDChallenge = (e) => {
+    e.preventDefault();
     const url =
       "http://localhost/auto-noleggio/backend/public/otp/getChallenge";
+
+    const token = localStorage.getItem("userToken");
+    console.log("token", token);
 
     const headers = {
       Accept: "application/json",
       "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
     };
-
-    const token = localStorage.getItem("token");
 
     fetch(url, {
       method: "GET",
       headers: headers,
-      Authorization: `Bearer ${token}`,
     })
       .then((response) => {
         if (!response.ok) {
@@ -197,6 +203,8 @@ function Transazione() {
       })
       .then((data) => {
         console.log(data);
+        setIDChallengeRecived(true);
+        handleGoToCodiceOTPSection();
       })
       .catch((error) => {
         console.error("Errore durante il recupero dell'ID Challenge:", error);
@@ -209,7 +217,10 @@ function Transazione() {
         id="container"
         className="h-[65vh] transition-all duration-300 ease-in-out sm:h-full w-full sm:w-[75vw] flex shrink-0 grow-0 justify-between  text-[#192024]"
       >
-        <div className="w-full h-full overflow-y-auto overflow-x-hidden shrink-0 grow-0 gap-2 sm:gap-1 py-2 sm:py-5 px-2 sm:px-5 font-bold flex flex-col text-[#192024]">
+        <form
+          onSubmit={getIDChallenge}
+          className="w-full h-full overflow-y-auto overflow-x-hidden shrink-0 grow-0 gap-2 sm:gap-1 py-2 sm:py-5 px-2 sm:px-5 font-bold flex flex-col text-[#192024]"
+        >
           <h1 className="text-2xl ">Dettagli transazione</h1>
           <div className="w-full flex flex-col sm:flex-row gap-3 sm:gap-0 justify-between items-center">
             <button
@@ -258,6 +269,7 @@ function Transazione() {
                   id=""
                   placeholder="Numero carta"
                   className="w-[70%] text-sm border-none outline-none font-bold "
+                  required
                 />
                 <CreditCard size={20} className="stroke-[#192024]" />
               </div>
@@ -275,6 +287,7 @@ function Transazione() {
                     className="select-month outline-none w-1/2 h-full border-r-[2px] border-[#808080rgb(128, 128, 128)]"
                     name=""
                     id=""
+                    required
                   >
                     <option value="">01</option>
                     <option value="">02</option>
@@ -293,6 +306,7 @@ function Transazione() {
                     className="select-year outline-none w-1/2 h-full px-2"
                     name=""
                     id=""
+                    required
                   >
                     <option value="">24</option>
                     <option value="">25</option>
@@ -324,6 +338,7 @@ function Transazione() {
                     id=""
                     placeholder="CVV"
                     className="w-full text-sm border-none outline-none font-bold "
+                    required
                   />
                 </div>
               </div>
@@ -414,6 +429,7 @@ function Transazione() {
                     value={dataRitiro}
                     min={getTodayDate()}
                     onChange={handleDataRitiroChange}
+                    required
                   />
                   <Calendar
                     onClick={handleDataRitiroDateInput}
@@ -438,6 +454,7 @@ function Transazione() {
                     value={dataConsegna}
                     min={getTodayDate()}
                     onChange={handleDataConsegnaChange}
+                    required
                   />
                   <Calendar
                     onClick={handleDataConsegnaDateInput}
@@ -456,6 +473,7 @@ function Transazione() {
                   name="sedeRitiro"
                   className="w-full outline-none border-none"
                   id=""
+                  required
                 >
                   {sediAutoNoleggio &&
                     sediAutoNoleggio.length > 0 &&
@@ -472,12 +490,11 @@ function Transazione() {
           </div>
           <button
             className=" w-40 mt-5 cursor-pointer whitespace-nowrap outline-none text-white border-[1.5px] border-transparent bg-[#FF690F] hover:bg-[#d55508] focus:ring-4 focus:outline-none focus:ring-orange-300 font-medium rounded-lg px-5 py-1 text-center"
-            type="button"
-            onClick={handleGoToCodiceOTPSection}
+            type="submit"
           >
             continua
           </button>
-        </div>
+        </form>
         <div className="w-full h-full flex justify-center items-center shrink-0 grow-0 text-[#192024]">
           <div className="codice-otp-card px-4 py-2 w-[45%] h-[40%] bg-[#F0F3F5] rounded-md flex flex-col justify-center gap-3 items-center">
             <h1 className="text-center text-3xl font-bold">
