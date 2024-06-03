@@ -125,7 +125,7 @@ function Header() {
                   aria-labelledby="menu-button"
                 >
                   <div className="py-1" role="none">
-                    {localStorage.getItem("isAdmin") === "1" ? (
+                    {localStorage.getItem("isAdmin") === "1" && (
                       <button
                         type="button"
                         className="text-gray-700 dark:text-white block w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
@@ -135,17 +135,17 @@ function Header() {
                       >
                         Dashboard
                       </button>
-                    ) : (
-                      <button
-                        type="button"
-                        className="text-gray-700 dark:text-white block w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
-                        role="menuitem"
-                        tabIndex="-1"
-                        onClick={() => navigate("/userDashboard")}
-                      >
-                        Impostazioni profilo
-                      </button>
                     )}
+                    <button
+                      type="button"
+                      className="text-gray-700 dark:text-white block w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
+                      role="menuitem"
+                      tabIndex="-1"
+                      onClick={() => navigate("/userDashboard")}
+                    >
+                      Impostazioni profilo
+                    </button>
+
                     <button
                       type="button"
                       className="text-gray-700 dark:text-white block w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
