@@ -275,15 +275,19 @@ class VehicleGateway extends BaseGateway {
 
     public function findAll($request)
     {
-        $statement = "
-            SELECT 
-                veicolo.*, sede.*, 
-                CASE
-                WHEN preferire.id_cliente = " . ($request['user_id'] ?? -1) . " THEN true
-                    ELSE false
-                END as favorited 
-            FROM " . $this->tableName . " JOIN sede on veicolo.id_sede = sede.id_sede LEFT JOIN preferire ON veicolo.id_veicolo = preferire.id_veicolo";
-
+        $statement = "SELECT v.*, s.*, 
+                        CASE
+                            WHEN p.id_cliente IS NOT NULL THEN true
+                            ELSE false
+                        END as favorited
+                    FROM veicolo v
+                    JOIN sede s ON v.id_sede = s.id_sede
+                    LEFT JOIN (
+                        SELECT id_veicolo, id_cliente 
+                        FROM preferire 
+                        WHERE id_cliente = ". ($request['user_id'] ?? -1) . "
+                    ) p ON v.id_veicolo = p.id_veicolo";
+    
         try {
             $statement = $this->conn->prepare($statement);
             $statement->execute();
@@ -358,16 +362,23 @@ class VehicleGateway extends BaseGateway {
     public function find($input)
     {
         $statement = "
-            SELECT 
-                veicolo.*, sede.*, 
-                CASE
-                WHEN preferire.id_cliente = " . ($request['user_id'] ?? -1) . " THEN true
-                    ELSE false
-                END as favorited
-            FROM " . $this->tableName .
-            " JOIN sede on veicolo.id_sede = sede.id_sede LEFT JOIN preferire ON veicolo.id_veicolo = preferire.id_veicolo
-             WHERE " .$this->tableName . ".id_". $this->tableName. " = :id;
-            ";
+        SELECT 
+        v.*, 
+        s.*, 
+        CASE
+            WHEN p.id_cliente IS NOT NULL THEN true
+            ELSE false
+        END as favorited
+    FROM veicolo v
+    JOIN sede s ON v.id_sede = s.id_sede
+    LEFT JOIN (
+        SELECT id_veicolo, id_cliente 
+        FROM preferire 
+        WHERE id_cliente = " . ($request['user_id'] ?? -1) . "
+    ) p ON v.id_veicolo = p.id_veicolo
+    WHERE v.id_veicolo = :id;";
+    
+            
 
         try {
             $statement = $this->conn->prepare($statement);

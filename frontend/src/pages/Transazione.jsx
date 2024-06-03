@@ -378,13 +378,13 @@ function Transazione() {
       >
         <form
           onSubmit={getIDChallenge}
-          className="w-full h-full overflow-y-auto overflow-x-hidden shrink-0 grow-0 gap-2 sm:gap-1 py-2 sm:py-5 px-2 sm:px-5 font-bold flex flex-col text-[#192024]"
+          className="w-full h-full overflow-y-auto overflow-x-hidden shrink-0 grow-0 gap-2 sm:gap-1 2xl:gap-5 py-2 sm:py-5 px-2 sm:px-5 font-bold flex flex-col text-[#192024]"
         >
-          <h1 className="text-2xl ">Dettagli transazione</h1>
+          <h1 className="text-2xl 2xl:text-3xl ">Dettagli transazione</h1>
           <div className="w-full flex flex-col sm:flex-row gap-3 sm:gap-0 justify-between items-center">
             <button
               onClick={handleCreditCardTypeOneSelection}
-              className="credit-card-section-one w-full sm:w-[49%] h-8 sm:py-2 flex gap-4 justify-center items-center rounded-lg border-[1.5px] border-[#FF690F]"
+              className="credit-card-section-one w-full sm:w-[49%] h-8 2xl:h-12 sm:py-2 flex gap-4 justify-center items-center rounded-lg border-[1.5px] border-[#FF690F]"
             >
               <img
                 src="/src/assets/visaLogo.png"
@@ -407,7 +407,7 @@ function Transazione() {
             </button>
             <button
               onClick={handleCreditCardTypeTwoSelection}
-              className="credit-card-section-two w-full sm:w-[49%] h-8 sm:py-2 flex gap-4 justify-center items-center rounded-lg border-[1.5px] border-[#808080rgb(128, 128, 128)]"
+              className="credit-card-section-two w-full sm:w-[49%] h-8 2xl:h-12 sm:py-2 flex gap-4 justify-center items-center rounded-lg border-[1.5px] border-[#808080rgb(128, 128, 128)]"
             >
               <img
                 src="/src/assets/payPalLogo.png"
@@ -419,13 +419,13 @@ function Transazione() {
           </div>
 
           {/* Dati carta di credito */}
-          <h2 className="text-xl mt-5">Dati carta di credito</h2>
+          <h2 className="text-xl 2xl:text-2xl mt-5">Dati carta di credito</h2>
           <div className="w-full flex justify-between items-center">
             <div className="w-[40%] sm:w-[49%] gap-2 flex flex-col justify-start items-start">
               <label htmlFor="numeroCarta" className="text-[#808080] text-sm ">
                 Numero carta
               </label>
-              <div className="w-full flex justify-between items-center px-3 py-1 rounded-lg border-[1.5px] border-[#808080rgb(128, 128, 128)]">
+              <div className="w-full flex justify-between items-center px-3 py-1 2xl:py-3 rounded-lg border-[1.5px] border-[#808080rgb(128, 128, 128)]">
                 <input
                   type="text"
                   name=""
@@ -434,6 +434,8 @@ function Transazione() {
                   className="w-[70%] text-sm border-none outline-none font-bold "
                   required
                   onChange={(e) => setUserCreditCard(e.target.value)}
+                  maxLength={16}
+                  minLength={16}
                 />
                 <CreditCard size={20} className="stroke-[#192024]" />
               </div>
@@ -446,7 +448,7 @@ function Transazione() {
                 >
                   Scadenza
                 </label>
-                <div className="w-full flex justify-between items-center px-3 py-[0.10rem] rounded-lg border-[1.5px] border-[#808080rgb(128, 128, 128)]">
+                <div className="w-full flex justify-between items-center px-3 py-[0.10rem] 2xl:py-[0.6rem] rounded-lg border-[1.5px] border-[#808080rgb(128, 128, 128)]">
                   <select
                     className="select-month outline-none w-1/2 h-full border-r-[2px] border-[#808080rgb(128, 128, 128)]"
                     name="creditCardExpirationMonth"
@@ -501,7 +503,7 @@ function Transazione() {
                 >
                   CVV
                 </label>
-                <div className="w-full flex justify-between items-center px-3 py-1 rounded-lg border-[1.5px] border-[#808080rgb(128, 128, 128)]">
+                <div className="w-full flex justify-between items-center px-3 py-1 2xl:py-3 rounded-lg border-[1.5px] border-[#808080rgb(128, 128, 128)]">
                   <input
                     type="text"
                     name=""
@@ -510,19 +512,21 @@ function Transazione() {
                     className="w-full text-sm border-none outline-none font-bold "
                     required
                     onChange={(e) => setUserCreditCardCVV(e.target.value)}
+                    minLength={3}
+                    maxLength={3}
                   />
                 </div>
               </div>
             </div>
           </div>
 
-          <h2 className="text-xl mt-5">Informazioni personali</h2>
+          <h2 className="text-xl 2xl:text-2xl mt-5">Informazioni personali</h2>
           <div className="w-full flex justify-between items-center flex-wrap gap-3">
             <div className="w-[45%] sm:w-[49%] gap-2 flex flex-col justify-start items-start">
               <label htmlFor="nome" className="text-[#808080] text-sm ">
                 Nome
               </label>
-              <div className="w-full flex justify-between items-center px-3 py-1 rounded-lg border-[1.5px] border-[#808080rgb(128, 128, 128)]">
+              <div className="w-full flex justify-between items-center px-3 2xl:py-3 py-1 rounded-lg border-[1.5px] border-[#808080rgb(128, 128, 128)]">
                 <input
                   type="text"
                   name=""
@@ -538,7 +542,7 @@ function Transazione() {
               <label htmlFor="cognome" className="text-[#808080] text-sm ">
                 Cognome
               </label>
-              <div className="w-full flex justify-between items-center px-3 py-1 rounded-lg border-[1.5px] border-[#808080rgb(128, 128, 128)]">
+              <div className="w-full flex justify-between items-center px-3 2xl:py-3 py-1 rounded-lg border-[1.5px] border-[#808080rgb(128, 128, 128)]">
                 <input
                   type="text"
                   name=""
@@ -554,7 +558,7 @@ function Transazione() {
               <label htmlFor="email" className="text-[#808080] text-sm ">
                 Email
               </label>
-              <div className="w-full flex justify-between items-center px-3 py-1 rounded-lg border-[1.5px] border-[#808080rgb(128, 128, 128)]">
+              <div className="w-full flex justify-between items-center px-3 2xl:py-3 py-1 rounded-lg border-[1.5px] border-[#808080rgb(128, 128, 128)]">
                 <input
                   type="text"
                   name=""
@@ -570,7 +574,7 @@ function Transazione() {
               <label htmlFor="telefono" className="text-[#808080] text-sm ">
                 Telefono
               </label>
-              <div className="w-full flex justify-between items-center px-3 py-1 rounded-lg border-[1.5px] border-[#808080rgb(128, 128, 128)]">
+              <div className="w-full flex justify-between items-center px-3 2xl:py-3 py-1 rounded-lg border-[1.5px] border-[#808080rgb(128, 128, 128)]">
                 <input
                   type="text"
                   name=""
@@ -584,14 +588,14 @@ function Transazione() {
             </div>
           </div>
 
-          <h2 className="text-xl mt-5">Compila i seguenti campi</h2>
+          <h2 className="text-xl 2xl:text-2xl mt-5">Compila i seguenti campi</h2>
           <div className="w-full flex justify-between items-center flex-wrap gap-3">
             <div className="w-full sm:w-[49%] flex-wrap sm:flex-nowrap gap-2 flex justify-between items-start">
               <div className="w-full sm:w-[45%] gap-2 flex flex-col justify-start items-start">
                 <label htmlFor="dataRitiro" className="text-[#808080] text-sm ">
                   Seleziona data ritiro auto
                 </label>
-                <div className="w-full flex justify-between items-center px-3 py-1 rounded-lg border-[1.5px] border-[#808080rgb(128, 128, 128)]">
+                <div className="w-full flex justify-between items-center px-3 2xl:py-3 py-1 rounded-lg border-[1.5px] border-[#808080rgb(128, 128, 128)]">
                   <input
                     type="date"
                     name=""
@@ -616,7 +620,7 @@ function Transazione() {
                 >
                   Seleziona data consegna auto
                 </label>
-                <div className="w-full flex justify-between items-center px-3 py-1 rounded-lg border-[1.5px] border-[#808080rgb(128, 128, 128)]">
+                <div className="w-full flex justify-between items-center px-3 2xl:py-3 py-1 rounded-lg border-[1.5px] border-[#808080rgb(128, 128, 128)]">
                   <input
                     type="date"
                     name=""
@@ -639,7 +643,7 @@ function Transazione() {
               <label htmlFor="email" className="text-[#808080] text-sm ">
                 Seleziona la sede per il ritiro dell'auto
               </label>
-              <div className="w-full flex justify-between items-center px-3 py-1 rounded-lg border-[1.5px] border-[#808080rgb(128, 128, 128)]">
+              <div className="w-full flex justify-between items-center px-3 2xl:py-3 py-1 rounded-lg border-[1.5px] border-[#808080rgb(128, 128, 128)]">
                 <select
                   name="sedeRitiro"
                   className="w-full outline-none border-none"
@@ -716,14 +720,14 @@ function Transazione() {
           </form>
         </div>
         <div className="w-full h-full flex justify-center items-center shrink-0 grow-0 text-[#192024]">
-          <h2 className="font-bold text-3xl">
+          <h2 className="font-bold text-3xl 2xl:text-5xl">
             Ora puoi confermare il noleggio dell'auto!
           </h2>
         </div>
       </div>
       <div className="h-[35vh] sm:h-full w-full sm:w-[25vw] flex flex-col justify-between items-center z-50 border-t-[1.5px] sm:border-l-[1.5px] border-[#808080rgb(128, 128, 128)]">
         <div className="w-full h-[60vh] bg-white py-2 sm:py-5 px-2 sm:px-5 sm:h-[70vh] font-bold flex flex-wrap sm:flex-col text-[#192024]">
-          <h1 className="text-2xl ">Riepilogo transazione</h1>
+          <h1 className="text-2xl 2xl:text-3xl">Riepilogo transazione</h1>
 
           <div className="w-full flex flex-wrap sm:flex-col">
             {/* sezione macchina */}

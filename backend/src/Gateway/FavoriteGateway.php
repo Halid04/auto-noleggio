@@ -2,12 +2,16 @@
 namespace Src\Gateway;
 use Src\Database;
 use Src\Gateway\BaseGateway;
+use Src\Gateway\ImageGateway;
 
 class FavoriteGateway extends BaseGateway
 {
+    private $imageGateway;
+    
     public function __construct(Database $db)
     {
         $this->tableName = "preferire";
+        $this->imageGateway = new ImageGateway($db);
         parent::__construct($db);
     }
 
@@ -48,7 +52,10 @@ class FavoriteGateway extends BaseGateway
             SELECT 
                 *
             FROM " . $this->tableName .
-            " WHERE id_cliente = :user_id;
+            " 
+            JOIN veicolo ON $this->tableName.id_veicolo = veicolo.id_veicolo
+            JOIN sede ON veicolo.id_sede = sede.id_sede
+            WHERE id_cliente = :user_id;
             ";
 
         try {
@@ -61,6 +68,16 @@ class FavoriteGateway extends BaseGateway
 
             if (!$response) {
                 $response = [];
+            } else {
+                foreach($response as &$vehicle) {
+                    $image_response = $this->imageGateway->findVehicleImages(['id' => $vehicle['id_veicolo']]);
+
+                    if ($image_response['statusCode'] != 200) {
+                        return $this->response($image_response['statusCode'], message: $image_response['body']['message']);
+                    }
+
+                    $vehicle['images'] = $image_response['body']['content'];
+                }
             }
 
             return $this->response(200, content: $response);

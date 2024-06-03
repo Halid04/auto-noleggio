@@ -221,7 +221,7 @@ function Preferiti() {
         return response.json();
       })
       .then((data) => {
-        console.log("get all auto", data.content);
+        console.log("get all auto preferiti", data.content);
         localStorage.removeItem("selezioniMarca");
         localStorage.removeItem("selezioniTipoMacchina");
         localStorage.removeItem("selezioniTipoCarburante");
@@ -1336,7 +1336,7 @@ function Preferiti() {
               images={auto.images}
               citta={auto.città}
               indirizzo={auto.indirizzo}
-              favorited={auto.favorited}
+              favorited={true}
             />
           ))
         ) : (

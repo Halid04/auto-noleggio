@@ -83,7 +83,7 @@ const CarDetail = () => {
           <img
             src={`/src/progettoGPOAutoImages${mainImage}.jpg`}
             alt={mainImage}
-            className="w-full h-[10rem] md:h-[20rem] 2xl:h-[35rem] rounded-lg object-cover"
+            className="w-full h-[10rem] md:h-[20rem] 2xl:h-[35rem] rounded-lg object-cover 2xl:object-contain"
           />
         )}
         <div className="flex justify-around mt-4">
