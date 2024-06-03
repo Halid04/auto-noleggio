@@ -115,6 +115,8 @@ const UserDashboard = () => {
       })
       .then((data) => {
         console.log(data);
+        getUpcomingRentals();
+        getPastRentals();
         toast.success("Prenotazione auto rimmossa con successo", {
           duration: 1500,
         });
