@@ -422,49 +422,27 @@ class VehicleGateway extends BaseGateway {
             "modello",
             "anno_immatricolazione",
             "numero_posti",
-            "tipo_carburazione"
+            "tipo_carburazione",
+            "tipo_veicolo",
+            "colore_veicolo",
+            "id_sede",
+            "id_dispositivogps",
+            "chilometraggio",
+            "costo_giornaliero"
         ];
 
-        $missing_keys = $this->validateRequiredParameters($input, $required_parameters);
-        if (!empty($missing_keys)) {
-            return $this->response(400, "Missing parameters: " . implode(", ", $missing_keys));
+        $insert_response = $this->insertM($input, $fields);
+
+        if ($insert_response["statusCode"] != 201) {
+            return $this->response(
+                $insert_response["statusCode"],
+                message: $insert_response["body"]["message"]
+            );
         }
 
-        $validationErrors = $this->validateInput($input);
-        if (!empty($validationErrors)) {
-            return $this->response(400, $validationErrors);
-        }
+        $latestVehicle = $this->findLatest($request)['body']['content'][0];
 
-        $statement = "
-            INSERT INTO " . $this->tableName . "
-                (targa, marca, modello, anno_immatricolazione, numero_posti, tipo_carburazione)
-            VALUES (
-                :targa,
-                :marca,
-                :modello, 
-                :anno_immatricolazione, 
-                :numero_posti, 
-                :tipo_carburazione
-            )";
-
-        try {
-            $statement = $this->conn->prepare($statement);
-            $statement->execute([
-                'targa' => $input['targa'],
-                'marca' => $input['marca'],
-                'modello' => $input['modello'],
-                'anno_immatricolazione' => $input['anno_immatricolazione'],
-                'numero_posti' => $input['numero_posti'],
-                'tipo_carburazione' => $input['tipo_carburazione'],
-            ]);
-
-        } catch (\PDOException $e) {
-            if ($e->getCode() == "23000") {
-                return $this->response(400, "Invalid request: Duplicate number plate");
-            }
-            error_log("Database error: " . $e->getMessage());
-            return $this->response(500, "Internal Server Error");
-        }
+        $request['id_veicolo'] = $latestVehicle['id_veicolo'];
 
         if (isset($input['images']) && !empty($input['images'])) {
             $response = $this->imageGateway->insert($input);

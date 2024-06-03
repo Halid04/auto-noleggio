@@ -48,6 +48,7 @@ const Dashboard = () => {
       .then((jsonData) => setData(jsonData.content))
       .catch((error) => console.error("Error fetching JSON data:", error));
   }, []);
+  /*
 
   const mapContainer = useRef(null);
   const map = useRef(null);
@@ -69,6 +70,8 @@ const Dashboard = () => {
       .setLngLat([139.7525, 35.6846])
       .addTo(map.current);
   }, [tokyo.lng, tokyo.lat, zoom]);
+
+  */
 
   if (!data) {
     return <div>Loading...</div>;
@@ -176,7 +179,7 @@ const Dashboard = () => {
       <div className="grid grid-cols-2 gap-4 mb-4">
         <div className="bg-white p-4 rounded-lg shadow-md">
           <h2 className="text-lg font-semibold mb-2">Track Your Cars</h2>
-          <div ref={mapContainer} className=" w-full h-64" />
+          {/* {<div ref={mapContainer} className=" w-full h-64" />} */}
         </div>
         <div className="bg-white p-4 rounded-lg shadow-md">
           <h2 className="text-lg font-semibold mb-2">Car Details</h2>
