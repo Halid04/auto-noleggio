@@ -1,5 +1,6 @@
 // UserDashboard.js
 import React, { useState, useEffect } from "react";
+import toast, { Toaster } from "react-hot-toast";
 import EditUserModal from "../components/EditUserModal";
 
 const UserDashboard = () => {
@@ -13,8 +14,6 @@ const UserDashboard = () => {
     getUpcomingRentals();
   }, []);
 
-  
-
   const getPastRentals = () => {
     const url = `http://localhost/auto-noleggio/backend/public/transazioni/noleggiPassati`;
 
@@ -23,7 +22,7 @@ const UserDashboard = () => {
     const headers = {
       Accept: "application/json",
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`,
+      Authorization: `Bearer ${token}`,
     };
 
     fetch(url, {
@@ -41,10 +40,7 @@ const UserDashboard = () => {
         setPastRentals(data.content);
       })
       .catch((error) => {
-        console.error(
-          "Errore durante il recupero dei noleggi",
-          error
-        );
+        console.error("Errore durante il recupero dei noleggi", error);
       });
   };
 
@@ -56,7 +52,7 @@ const UserDashboard = () => {
     const headers = {
       Accept: "application/json",
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`,
+      Authorization: `Bearer ${token}`,
     };
 
     fetch(url, {
@@ -74,26 +70,66 @@ const UserDashboard = () => {
         setUpcomingRentals(data.content);
       })
       .catch((error) => {
-        console.error(
-          "Errore durante il recupero dei noleggi",
-          error
-        );
+        console.error("Errore durante il recupero dei noleggi", error);
       });
   };
 
   const user = {
-    name: localStorage.getItem("userName") + " " + localStorage.getItem("userSurname"),
+    name:
+      localStorage.getItem("userName") +
+      " " +
+      localStorage.getItem("userSurname"),
     email: localStorage.getItem("userEmail"),
     phone: localStorage.getItem("userPhone"),
     status: "Frequent Renter",
   };
 
-  //const rentalHistory = getPastRentals();
+  const handleCancel = (index) => {
+    const token = localStorage.getItem("userToken");
+    const url = "http://localhost/auto-noleggio/backend/public/transazioni";
+    const headers = {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    };
 
-  //const upcomingRentals = getUpcomingRentals();
+    const requestBody = {
+      id: index,
+    };
+
+    console.log("Request body:", requestBody);
+
+    fetch(url, {
+      method: "DELETE",
+      headers: headers,
+      body: JSON.stringify(requestBody),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          return response.text().then((text) => {
+            throw new Error(text);
+          });
+        } else {
+          return response.json(); // Moved inside the else block
+        }
+      })
+      .then((data) => {
+        console.log(data);
+        toast.success("Prenotazione auto rimmossa con successo", {
+          duration: 1500,
+        });
+      })
+      .catch((error) => {
+        const errorString = error.message.replace("Error: ", "");
+        const errorObject = JSON.parse(errorString);
+        toast.error(errorObject.message, {
+          duration: 1500,
+        });
+      });
+  };
 
   return (
-    <div className="w-full min-h-screen bg-gray-100 overflow-auto">
+    <div className="w-full h-full bg-gray-100 overflow-x-hidden overflow-y-auto ">
       <div className="container mx-auto px-4 py-6 w-full">
         <div className="bg-orange-500 text-white p-6 rounded-lg shadow-md w-full">
           <div className="flex justify-between items-center">
@@ -108,7 +144,6 @@ const UserDashboard = () => {
               Modifica profilo
             </button>
           </div>
-          
         </div>
 
         <div className="mt-6 w-full">
@@ -126,12 +161,27 @@ const UserDashboard = () => {
               <tbody>
                 {pastRentals.map((rental, index) => (
                   <tr key={index} className="border-t">
-                    <td className="px-4 py-2">{new Date(rental.data_inizio).toLocaleDateString(undefined, {
-  year: 'numeric',
-  month: 'long',
-  day: 'numeric'})}</td>
-                    <td className="px-4 py-2">{rental.marca + " " + rental.modello}</td>
-                    <td className="px-4 py-2">{Math.ceil((new Date(rental.data_fine) - new Date(rental.data_inizio)) / (1000 * 60 * 60 * 24))} giorni</td>
+                    <td className="px-4 py-2">
+                      {new Date(rental.data_inizio).toLocaleDateString(
+                        undefined,
+                        {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        }
+                      )}
+                    </td>
+                    <td className="px-4 py-2">
+                      {rental.marca + " " + rental.modello}
+                    </td>
+                    <td className="px-4 py-2">
+                      {Math.ceil(
+                        (new Date(rental.data_fine) -
+                          new Date(rental.data_inizio)) /
+                          (1000 * 60 * 60 * 24)
+                      )}{" "}
+                      giorni
+                    </td>
                     <td className="px-4 py-2">{rental.importo}</td>
                   </tr>
                 ))}
@@ -156,18 +206,37 @@ const UserDashboard = () => {
               <tbody>
                 {upcomingRentals.map((rental, index) => (
                   <tr key={index} className="border-t">
-             
-                    <td className="px-4 py-2">{new Date(rental.data_inizio).toLocaleDateString(undefined, {
-  year: 'numeric',
-  month: 'long',
-  day: 'numeric'})}</td>
-                    <td className="px-4 py-2">{rental.marca + " " + rental.modello}</td>
-                    <td className="px-4 py-2">{Math.ceil((new Date(rental.data_fine) - new Date(rental.data_inizio)) / (1000 * 60 * 60 * 24))} giorni</td>
-                    <td className="px-4 py-2">{rental.importo}</td>
-                  
                     <td className="px-4 py-2">
-                      <button className="bg-red-500 text-white py-1 px-3 rounded-lg" onClick={() => handleCancel(index)}>
-                        Annulla
+                      {new Date(rental.data_inizio).toLocaleDateString(
+                        undefined,
+                        {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        }
+                      )}
+                    </td>
+                    <td className="px-4 py-2">
+                      {rental.marca + " " + rental.modello}
+                    </td>
+                    <td className="px-4 py-2">
+                      {Math.ceil(
+                        (new Date(rental.data_fine) -
+                          new Date(rental.data_inizio)) /
+                          (1000 * 60 * 60 * 24)
+                      )}{" "}
+                      giorni
+                    </td>
+                    <td className="px-4 py-2">{rental.importo}</td>
+
+                    <td className="px-4 py-2">
+                      <button
+                        className="bg-red-500 text-white py-1 px-3 rounded-lg"
+                        onClick={() =>
+                          handleCancel(rental.id_transazionefinanziaria)
+                        }
+                      >
+                        Elimina
                       </button>
                     </td>
                   </tr>
@@ -178,7 +247,9 @@ const UserDashboard = () => {
         </div>
       </div>
 
-      {isModalVisible && <EditUserModal setVisible={setModalVisible} user={user} />}
+      {isModalVisible && (
+        <EditUserModal setVisible={setModalVisible} user={user} />
+      )}
     </div>
   );
 };
