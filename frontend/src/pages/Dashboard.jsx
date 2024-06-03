@@ -159,18 +159,20 @@ const Dashboard = () => {
             <Doughnut data={doughnutData} />
           </div>
         </div>
+
         <div className="bg-white p-4 rounded-lg shadow-md-best">
           <h2 className="text-lg font-semibold mb-2">Sales Status</h2>
           <Line data={lineData} />
         </div>
-        <div className="grid grid-cols-2 gap-4 mb-4">
-          <div className="bg-white p-4 rounded-lg shadow-md-best">
-            <h2 className="text-lg font-semibold mb-2">Branch Earnings</h2>
-            <div className="small-chart">
-              <Doughnut data={doughnutSediData} />
-            </div>
+
+        {/* <div className="grid grid-cols-2 gap-4 mb-4"> */}
+        <div className="bg-white p-4 rounded-lg shadow-md-best">
+          <h2 className="text-lg font-semibold mb-2">Branch Earnings</h2>
+          <div className="small-chart">
+            <Doughnut data={doughnutSediData} />
           </div>
         </div>
+        {/* </div> */}
       </div>
 
       <div className="bg-white p-4 rounded-lg shadow-md-best">
@@ -217,10 +219,10 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div className="bg-white p-4 rounded-lg shadow-md-best">
-          <h2 className="text-lg font-semibold mb-2">Cars</h2>
-          <table className="min-w-full divide-y divide-gray-200">
+      <div className="bg-white w-full p-4 rounded-lg shadow-md-best">
+        <h2 className="text-lg font-semibold mb-2">Cars</h2>
+        <div className="w-full h-[25rem] overflow-y-auto overflow-x-auto">
+          <table className="w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -255,9 +257,12 @@ const Dashboard = () => {
             </tbody>
           </table>
         </div>
-        <div className="bg-white p-4 rounded-lg shadow-md-best">
-          <h2 className="text-lg font-semibold mb-2">Users</h2>
-          <table className="min-w-full divide-y divide-gray-200">
+      </div>
+
+      <div className="bg-white w-full p-4 rounded-lg shadow-md-best">
+        <h2 className="text-lg font-semibold mb-2">Users</h2>
+        <div className="w-full h-[25rem] overflow-y-auto overflow-x-auto">
+          <table className="w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
