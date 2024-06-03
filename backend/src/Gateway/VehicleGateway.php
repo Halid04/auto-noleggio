@@ -610,11 +610,23 @@ class VehicleGateway extends BaseGateway {
         $errors = [];
 
         if (isset($input['targa']) && !preg_match('/^[A-Z]{2}[0-9]{3}[A-Z]{2}$/', $input['targa'])) {
-            $errors[] = "The number plate provided is in an invalid format";
+            $errors[] = "La targa del veicolo non è nel formato valido";
         }
 
         if (isset($input['numero_posti']) && !is_numeric($input['numero_posti'])) {
-            $errors[] = "The number of seats must be numeric";
+            $errors[] = "Il numero di posti del veicolo dev'essere un numero";
+        }
+
+        if (isset($input['chilometraggio']) && !is_numeric($input['chilometraggio'])) {
+            $errors[] = "Il chilometraggio del veicolo dev'essere un numero";
+        }
+
+        if (isset($input['anno_immatricolazione']) && !is_numeric($input['anno_immatricolazione'])) {
+            $errors[] = "L'anno d'immatricolazione del veicolo dev'essere un numero";
+        }
+
+        if (isset($input['costo_giornaliero']) && !preg_match('/^([0-9.]+)$/', $input['costo_giornaliero'])) {
+            $errors[] = "Il costo del veicolo dev'essere un numero positivo";
         }
 
         return $errors;
