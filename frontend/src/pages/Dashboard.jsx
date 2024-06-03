@@ -48,6 +48,7 @@ const Dashboard = () => {
       .then((jsonData) => setData(jsonData.content))
       .catch((error) => console.error("Error fetching JSON data:", error));
   }, []);
+  /*
 
   // const mapContainer = useRef(null);
   // const map = useRef(null);

@@ -110,6 +110,7 @@ class TransactionGateway extends BaseGateway
             $statement = $this->conn->prepare($statement);
 
             $statement->execute();
+            
 
             $response = $statement->fetchAll(\PDO::FETCH_ASSOC);
 
@@ -350,6 +351,8 @@ class TransactionGateway extends BaseGateway
     public function validateInput(array $input)
     {
         $errors = [];
+
+        
         /*
         if (isset($input['targa']) && !preg_match('/^[A-Z]{2}[0-9]{3}[A-Z]{2}$/', $input['targa'])) {
             $errors[] = "The number plate provided is in an invalid format";
@@ -367,7 +370,7 @@ class TransactionGateway extends BaseGateway
     {
         $fields = ["id_veicolo", "percorso_foto"];
 
-        //$validationErrors = $this->validateInput($input);
+        $validationErrors = $this->validateInput($input);
         if (!empty($validationErrors)) {
             return $this->response(400, $validationErrors);
         }

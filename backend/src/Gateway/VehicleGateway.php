@@ -422,49 +422,27 @@ class VehicleGateway extends BaseGateway {
             "modello",
             "anno_immatricolazione",
             "numero_posti",
-            "tipo_carburazione"
+            "tipo_carburazione",
+            "tipo_veicolo",
+            "colore_veicolo",
+            "id_sede",
+            "id_dispositivogps",
+            "chilometraggio",
+            "costo_giornaliero"
         ];
 
-        $missing_keys = $this->validateRequiredParameters($input, $required_parameters);
-        if (!empty($missing_keys)) {
-            return $this->response(400, "Missing parameters: " . implode(", ", $missing_keys));
+        $insert_response = $this->insertM($input, $fields);
+
+        if ($insert_response["statusCode"] != 201) {
+            return $this->response(
+                $insert_response["statusCode"],
+                message: $insert_response["body"]["message"]
+            );
         }
 
-        $validationErrors = $this->validateInput($input);
-        if (!empty($validationErrors)) {
-            return $this->response(400, $validationErrors);
-        }
+        $latestVehicle = $this->findLatest($request)['body']['content'][0];
 
-        $statement = "
-            INSERT INTO " . $this->tableName . "
-                (targa, marca, modello, anno_immatricolazione, numero_posti, tipo_carburazione)
-            VALUES (
-                :targa,
-                :marca,
-                :modello, 
-                :anno_immatricolazione, 
-                :numero_posti, 
-                :tipo_carburazione
-            )";
-
-        try {
-            $statement = $this->conn->prepare($statement);
-            $statement->execute([
-                'targa' => $input['targa'],
-                'marca' => $input['marca'],
-                'modello' => $input['modello'],
-                'anno_immatricolazione' => $input['anno_immatricolazione'],
-                'numero_posti' => $input['numero_posti'],
-                'tipo_carburazione' => $input['tipo_carburazione'],
-            ]);
-
-        } catch (\PDOException $e) {
-            if ($e->getCode() == "23000") {
-                return $this->response(400, "Invalid request: Duplicate number plate");
-            }
-            error_log("Database error: " . $e->getMessage());
-            return $this->response(500, "Internal Server Error");
-        }
+        $request['id_veicolo'] = $latestVehicle['id_veicolo'];
 
         if (isset($input['images']) && !empty($input['images'])) {
             $response = $this->imageGateway->insert($input);
@@ -632,11 +610,23 @@ class VehicleGateway extends BaseGateway {
         $errors = [];
 
         if (isset($input['targa']) && !preg_match('/^[A-Z]{2}[0-9]{3}[A-Z]{2}$/', $input['targa'])) {
-            $errors[] = "The number plate provided is in an invalid format";
+            $errors[] = "La targa del veicolo non è nel formato valido";
         }
 
         if (isset($input['numero_posti']) && !is_numeric($input['numero_posti'])) {
-            $errors[] = "The number of seats must be numeric";
+            $errors[] = "Il numero di posti del veicolo dev'essere un numero";
+        }
+
+        if (isset($input['chilometraggio']) && !is_numeric($input['chilometraggio'])) {
+            $errors[] = "Il chilometraggio del veicolo dev'essere un numero";
+        }
+
+        if (isset($input['anno_immatricolazione']) && !is_numeric($input['anno_immatricolazione'])) {
+            $errors[] = "L'anno d'immatricolazione del veicolo dev'essere un numero";
+        }
+
+        if (isset($input['costo_giornaliero']) && !preg_match('/^([0-9.]+)$/', $input['costo_giornaliero'])) {
+            $errors[] = "Il costo del veicolo dev'essere un numero positivo";
         }
 
         return $errors;
