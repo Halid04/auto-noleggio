@@ -280,14 +280,13 @@ class TransactionGateway extends BaseGateway
             SELECT 
                 *
             FROM " . $this->tableName .
-            " WHERE id_". $this->tableName. " = :id AND id_cliente = :user_id;
-            ";
+            " WHERE id_". $this->tableName. " = :id";
 
         try {
             $statement = $this->conn->prepare($statement);
             $statement->execute(array(
                 'id' => (int) $input["id"],
-                'user_id' => (int) $input['user_id']
+                //'user_id' => (int) $input['user_id']
             ));
 
             $response = $statement->fetchAll(\PDO::FETCH_ASSOC);
@@ -385,5 +384,30 @@ class TransactionGateway extends BaseGateway
         }
 
         return $this->updateM($input, $fields);
+    }
+
+    public function delete($input)
+    {
+        $statement = "
+            DELETE FROM " . $this->tableName .
+             " WHERE id_". $this->tableName. " = :id;
+        ";
+
+        if (!isset($input["id"])) {
+            return $this->response(400, message: "Missing parameters:  id");
+        }
+
+        try {
+            $statement = $this->conn->prepare($statement);
+            $statement->execute(array(
+                'id' => (int) $input["id"]
+            ));
+
+            return $this->response(200, content: $statement->rowCount());
+
+        } catch (\PDOException $e) {
+            error_log("Database error: " . $e->getMessage());
+            return $this->response(500, message: "Internal Server Error");
+        }    
     }
 }

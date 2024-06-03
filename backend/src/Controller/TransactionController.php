@@ -345,7 +345,6 @@ class TransactionController extends BaseController {
         }
 
         $auth_info = $auth_info['obj'];
-
         
         if (isset($request['id'])) {
             $transaction = $this->gateway->find($request);
@@ -370,15 +369,27 @@ class TransactionController extends BaseController {
 
             $transaction = $transaction[0];
 
-            
-
-            
-
             if ($transaction['id_cliente'] != $auth_info['data']['user_id'] && $auth_info['data']['admin'] == 0) {
                 $response_obj['obj'] =  array (
                     'statusCode' => 403,
                     'body' => array (
                         'message' => "Accesso negato: Non hai i permessi per accedere a questa risorsa"
+                    )
+                );
+
+                return $response_obj;
+            }
+
+            $timestamp_prima_data = strtotime($transaction['data_transazione']);
+            $timestamp_seconda_data = time();
+
+            $differenza_in_secondi = $timestamp_seconda_data - $timestamp_prima_data;
+
+            if ($differenza_in_secondi > 86400 * 2 && $auth_info['data']['admin'] == 0) {
+                $response_obj['obj'] =  array (
+                    'statusCode' => 400,
+                    'body' => array (
+                        'message' => "Impossibile cancellare il noleggio: La prenotazione è stata effettuata più di 2 giorni fa"
                     )
                 );
 
