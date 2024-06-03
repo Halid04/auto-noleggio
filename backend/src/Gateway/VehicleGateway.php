@@ -416,7 +416,7 @@ class VehicleGateway extends BaseGateway {
 
     public function insert(array $input)
     {
-        $required_parameters = [
+        $fields = [
             "marca",
             "targa",
             "modello",
