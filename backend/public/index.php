@@ -11,6 +11,7 @@
     use Src\Controller\HeadQuarterController;
     use Src\Controller\TransactionController;
     use Src\Controller\OTPController;
+    use Src\Controller\GPSController;
     use Src\Controller\FavoriteController;
     use Src\Gateway\ClientGateway;
     use Src\Gateway\TransactionGateway;
@@ -65,6 +66,11 @@
                 break;
             case "otp":
                 $controller = new OTPController($requestMethod, array_slice($uri, 0), $data, $database);
+                $controller->processRequest();
+                break;
+
+            case "gps":
+                $controller = new GPSController($requestMethod, array_slice($uri, 0), $data, $database);
                 $controller->processRequest();
                 break;
             case "admin":
@@ -290,9 +296,9 @@
             return;
         }
 
-        $total_proceeds = $response['body']['content'][0];
+        $total_proceeds = $response['body']['content'][0]['proceeds'];
 
-        $admin_result['incassi_totali'] = count($total_proceeds);
+        $admin_result['incassi_totali'] = $total_proceeds;
 
         // Numero dei veicoli totali
 

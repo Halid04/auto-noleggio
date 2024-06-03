@@ -69,6 +69,32 @@ class GPSGateway extends BaseGateway
         }
     }
 
+    public function findDevices($request)
+    {
+        $statement = "
+            SELECT 
+                id_$this->tableName
+            FROM " . $this->tableName . "
+            ";
+        
+        try {
+            $statement = $this->conn->prepare($statement);
+            $statement->execute();
+
+            $response = $statement->fetchAll(\PDO::FETCH_ASSOC);
+
+            if (!$response) {
+                $response = [];
+            }
+
+            return $this->response(200, content: $response);
+
+        } catch (\PDOException $e) {
+            error_log("Database error: " . $e->getMessage());
+            return $this->response(500, message: "Internal Server Error");
+        }
+    }
+
     public function insert(array $input)
     {
         $fields = ["latitudine", "longitudine", "timestamp"];
