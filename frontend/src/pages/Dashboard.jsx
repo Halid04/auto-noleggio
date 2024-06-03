@@ -49,26 +49,26 @@ const Dashboard = () => {
       .catch((error) => console.error("Error fetching JSON data:", error));
   }, []);
 
-  const mapContainer = useRef(null);
-  const map = useRef(null);
-  const tokyo = { lng: 139.753, lat: 35.6844 };
-  const [zoom] = useState(14);
-  maptilersdk.config.apiKey = "zKTSY8Huqpuc98tNjLwq";
+  // const mapContainer = useRef(null);
+  // const map = useRef(null);
+  // const tokyo = { lng: 139.753, lat: 35.6844 };
+  // const [zoom] = useState(14);
+  // maptilersdk.config.apiKey = "zKTSY8Huqpuc98tNjLwq";
 
-  useEffect(() => {
-    if (map.current) return; // stops map from intializing more than once
+  // useEffect(() => {
+  //   if (map.current) return; // stops map from intializing more than once
 
-    map.current = new maptilersdk.Map({
-      container: mapContainer.current,
-      style: maptilersdk.MapStyle.STREETS,
-      center: [tokyo.lng, tokyo.lat],
-      zoom: zoom,
-    });
+  //   map.current = new maptilersdk.Map({
+  //     container: mapContainer.current,
+  //     style: maptilersdk.MapStyle.STREETS,
+  //     center: [tokyo.lng, tokyo.lat],
+  //     zoom: zoom,
+  //   });
 
-    new maptilersdk.Marker({ color: "#FF0000" })
-      .setLngLat([139.7525, 35.6846])
-      .addTo(map.current);
-  }, [tokyo.lng, tokyo.lat, zoom]);
+  //   new maptilersdk.Marker({ color: "#FF0000" })
+  //     .setLngLat([139.7525, 35.6846])
+  //     .addTo(map.current);
+  // }, [tokyo.lng, tokyo.lat, zoom]);
 
   if (!data) {
     return <div>Loading...</div>;
@@ -176,7 +176,7 @@ const Dashboard = () => {
       <div className="grid grid-cols-2 gap-4 mb-4">
         <div className="bg-white p-4 rounded-lg shadow-md">
           <h2 className="text-lg font-semibold mb-2">Track Your Cars</h2>
-          <div ref={mapContainer} className=" w-full h-64" />
+          {/* <div ref={mapContainer} className=" w-full h-64" /> */}
         </div>
         <div className="bg-white p-4 rounded-lg shadow-md">
           <h2 className="text-lg font-semibold mb-2">Car Details</h2>
