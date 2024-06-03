@@ -9,7 +9,10 @@ function InsertCar({ setVisible }) {
   );
   const [sedeAuto, setSedeAuto] = useState("");
   const [dispositivoGpsAuto, setDispositivoGpsAuto] = useState("");
-  const [immagineVeicolo, setImmagineVeicolo] = useState([4]);
+  const [immagineVeicolo1, setImmagineVeicolo1] = useState("");
+  const [immagineVeicolo2, setImmagineVeicolo2] = useState("");
+  const [immagineVeicolo3, setImmagineVeicolo3] = useState("");
+  const [immagineVeicolo4, setImmagineVeicolo4] = useState("");
   const [carData, setCarData] = useState({
     marca: "",
     targa: "",
@@ -17,11 +20,18 @@ function InsertCar({ setVisible }) {
     anno_immatricolazione: "",
     numero_posti: "",
     tipo_carburazione: "",
-    tipo_carburazione: "",
+    tipo_veicolo: "",
     colore_veicolo: "",
     chilometraggio: "",
     costo_giornaliero: "",
   });
+
+  const handleGetFileName = (file) => {
+    const fileName = file[0].name;
+    const fileNameWithoutExtension = fileName.split(".").slice(0, -1).join(".");
+
+    return fileNameWithoutExtension;
+  };
 
   useEffect(() => {
     getSedi();
@@ -64,9 +74,11 @@ function InsertCar({ setVisible }) {
   const getDispositiviGps = () => {
     const url = "http://localhost/auto-noleggio/backend/public/gps/dispositivi";
 
+    const token = localStorage.getItem("userToken");
     const headers = {
       Accept: "application/json",
       "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
     };
 
     fetch(url, {
@@ -122,7 +134,16 @@ function InsertCar({ setVisible }) {
       id_sede: sedeAuto,
       images: [
         {
-          nome_foto: "",
+          nome_foto: handleGetFileName(immagineVeicolo1),
+        },
+        {
+          nome_foto: handleGetFileName(immagineVeicolo2),
+        },
+        {
+          nome_foto: handleGetFileName(immagineVeicolo3),
+        },
+        {
+          nome_foto: handleGetFileName(immagineVeicolo4),
         },
       ],
     };
@@ -171,16 +192,28 @@ function InsertCar({ setVisible }) {
             Inserisci Nuova Auto
           </h5>
           {[
-            { label: "marca", name: "marca" },
-            { label: "Targa", name: "targa" },
-            { label: "Modello", name: "modello" },
-            { label: "Anno immatricolazione", name: "anno_immatricolazione" },
-            { label: "Numero posti", name: "numero_posti" },
-            { label: "Tipo carburazione", name: "tipo_carburazione" },
-            { label: "Tipo veicolo", name: "tipo_veicolo" },
-            { label: "Colore veicolo", name: "colore_veicolo" },
-            { label: "Chilometraggio", name: "chilometraggio" },
-            { label: "Costo giornaliero", name: "costo_giornaliero" },
+            { label: "marca", name: "marca", type: "text" },
+            { label: "Targa", name: "targa", type: "text" },
+            { label: "Modello", name: "modello", type: "text" },
+            {
+              label: "Anno immatricolazione",
+              name: "anno_immatricolazione",
+              type: "date",
+            },
+            { label: "Numero posti", name: "numero_posti", type: "number" },
+            {
+              label: "Tipo carburazione",
+              name: "tipo_carburazione",
+              type: "text",
+            },
+            { label: "Tipo veicolo", name: "tipo_veicolo", type: "text" },
+            { label: "Colore veicolo", name: "colore_veicolo", type: "text" },
+            { label: "Chilometraggio", name: "chilometraggio", type: "number" },
+            {
+              label: "Costo giornaliero",
+              name: "costo_giornaliero",
+              type: "number",
+            },
           ].map((field, index) => (
             <div key={index}>
               <label
@@ -190,7 +223,7 @@ function InsertCar({ setVisible }) {
                 {field.label}
               </label>
               <input
-                type="text"
+                type={field.type}
                 name={field.name}
                 id={field.name}
                 value={carData[field.name]}
@@ -236,7 +269,7 @@ function InsertCar({ setVisible }) {
               name="id_dispositivogps"
               id=""
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-orange-500 focus:border-orange-500 block w-full p-2.5"
-              required
+              // required
               onChange={(e) => setDispositivoGpsAuto(e.target.value)}
             >
               {dispositiviGpsAutoNoleggio &&
@@ -249,7 +282,70 @@ function InsertCar({ setVisible }) {
                   );
                 })}
             </select>
-            <input type="file" name="" id="" />
+          </div>
+          <div>
+            <label
+              htmlFor="immagineVeicolo1"
+              className="block mb-1 text-sm font-medium text-gray-900"
+            >
+              Immagine veicolo 1
+            </label>
+            <input
+              type="file"
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-orange-500 focus:border-orange-500 block w-full p-2.5"
+              id="immagineVeicolo1"
+              required
+              placeholder="Inserire immagine veicolo 1"
+              onChange={(e) => setImmagineVeicolo1(e.target.files[0])}
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="immagineVeicolo2"
+              className="block mb-1 text-sm font-medium text-gray-900"
+            >
+              Immagine veicolo 2
+            </label>
+            <input
+              type="file"
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-orange-500 focus:border-orange-500 block w-full p-2.5"
+              id="immagineVeicolo2"
+              required
+              placeholder="Inserire immagine veicolo 2"
+              onChange={(e) => setImmagineVeicolo2(e.target.files[0])}
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="immagineVeicolo3"
+              className="block mb-1 text-sm font-medium text-gray-900"
+            >
+              Immagine veicolo 3
+            </label>
+            <input
+              type="file"
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-orange-500 focus:border-orange-500 block w-full p-2.5"
+              id="immagineVeicolo1"
+              required
+              placeholder="Inserire immagine veicolo 3"
+              onChange={(e) => setImmagineVeicolo3(e.target.files[0])}
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="immagineVeicolo4"
+              className="block mb-1 text-sm font-medium text-gray-900"
+            >
+              Immagine veicolo 4
+            </label>
+            <input
+              type="file"
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-orange-500 focus:border-orange-500 block w-full p-2.5"
+              id="immagineVeicolo1"
+              required
+              placeholder="Inserire immagine veicolo 4"
+              onChange={(e) => setImmagineVeicolo4(e.target.files[0])}
+            />
           </div>
           <button
             type="submit"
