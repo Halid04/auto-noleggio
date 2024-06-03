@@ -78,7 +78,7 @@ class TransactionGateway extends BaseGateway
             SELECT 
                 COUNT(*) as occupied_vehicles
             FROM " . $this->tableName . "
-            WHERE CURRENT_TIMESTAMP BETWEEN data_inizio AND data_fine;";
+            WHERE CURRENT_TIME BETWEEN data_inizio AND data_fine;";
         
         try {
             $statement = $this->conn->prepare($statement);
@@ -86,6 +86,8 @@ class TransactionGateway extends BaseGateway
             $statement->execute();
 
             $response = $statement->fetchAll(\PDO::FETCH_ASSOC);
+
+            //echo var_dump($response);
 
             if (!$response) {
                 $response = [];
@@ -110,7 +112,6 @@ class TransactionGateway extends BaseGateway
             $statement = $this->conn->prepare($statement);
 
             $statement->execute();
-            
 
             $response = $statement->fetchAll(\PDO::FETCH_ASSOC);
 
@@ -352,6 +353,14 @@ class TransactionGateway extends BaseGateway
     {
         $errors = [];
 
+        if (isset($input['numero_carta']) && !is_numeric($input['numero_carta'])) {
+            $errors[] = "Il numero della carta di credito non è valido";
+        }
+
+        if (isset($input['numero_carta']) && !is_numeric($input['numero_carta'])) {
+            $errors[] = "Il numero della carta di credito non è valido";
+        }
+
         
         /*
         if (isset($input['targa']) && !preg_match('/^[A-Z]{2}[0-9]{3}[A-Z]{2}$/', $input['targa'])) {
@@ -370,7 +379,7 @@ class TransactionGateway extends BaseGateway
     {
         $fields = ["id_veicolo", "percorso_foto"];
 
-        $validationErrors = $this->validateInput($input);
+        //$validationErrors = $this->validateInput($input);
         if (!empty($validationErrors)) {
             return $this->response(400, $validationErrors);
         }

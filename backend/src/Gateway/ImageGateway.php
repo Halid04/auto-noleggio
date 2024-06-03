@@ -76,7 +76,6 @@ class ImageGateway extends BaseGateway {
 
     public function insert(array $input)
     {
-        echo var_dump($input);
         
         if (!isset($input["images"])) {
             return $this->response(400, message: "Richiesta non valida: Parametro mancante: images");
