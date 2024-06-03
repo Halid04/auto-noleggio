@@ -27,10 +27,15 @@ function InsertCar({ setVisible }) {
   });
 
   const handleGetFileName = (file) => {
-    const fileName = file[0].name;
-    const fileNameWithoutExtension = fileName.split(".").slice(0, -1).join(".");
-
-    return fileNameWithoutExtension;
+    if (file) {
+      const fileName = file.name;
+      const fileNameWithoutExtension = fileName
+        .split(".")
+        .slice(0, -1)
+        .join(".");
+      return fileNameWithoutExtension;
+    }
+    return "";
   };
 
   useEffect(() => {
@@ -112,7 +117,7 @@ function InsertCar({ setVisible }) {
     e.preventDefault();
 
     const token = localStorage.getItem("userToken");
-    const url = "http://localhost/auto-noleggio/backend/public/veicolo";
+    const url = "http://localhost/auto-noleggio/backend/public/veicoli";
     const headers = {
       Accept: "application/json",
       "Content-Type": "application/json",
@@ -130,7 +135,7 @@ function InsertCar({ setVisible }) {
       colore_veicolo: carData.colore_veicolo,
       chilometraggio: carData.chilometraggio,
       costo_giornaliero: carData.costo_giornaliero,
-      id_dispositivogps: "",
+      id_dispositivogps: dispositivoGpsAuto,
       id_sede: sedeAuto,
       images: [
         {
@@ -150,35 +155,34 @@ function InsertCar({ setVisible }) {
 
     console.log("Request body:", requestBody);
 
-    // fetch(url, {
-    //   method: "POST",
-    //   headers: headers,
-    //   body: JSON.stringify(carData),
-    // })
-    //   .then((response) => {
-    //     if (!response.ok) {
-    //       return response.text().then((text) => {
-    //         throw new Error(text);
-    //       });
-    //     } else {
-    //       toast.success("Macchina inserita con successo", {
-    //         duration: 1500,
-    //       });
-
-    //       return response.json(); // Moved inside the else block
-    //     }
-    //   })
-    //   .then((data) => {
-    //     console.log(data);
-    //     setVisible(false);
-    //   })
-    //   .catch((error) => {
-    //     const errorString = error.message.replace("Error: ", "");
-    //     const errorObject = JSON.parse(errorString);
-    //     toast.error(errorObject.message, {
-    //       duration: 1500,
-    //     });
-    //   });
+    fetch(url, {
+      method: "POST",
+      headers: headers,
+      body: JSON.stringify(carData),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          return response.text().then((text) => {
+            throw new Error(text);
+          });
+        } else {
+          return response.json(); // Moved inside the else block
+        }
+      })
+      .then((data) => {
+        toast.success("Macchina inserita con successo", {
+          duration: 1500,
+        });
+        console.log(data);
+        setVisible(false);
+      })
+      .catch((error) => {
+        const errorString = error.message.replace("Error: ", "");
+        const errorObject = JSON.parse(errorString);
+        toast.error(errorObject.message, {
+          duration: 1500,
+        });
+      });
   };
 
   return (
@@ -269,7 +273,7 @@ function InsertCar({ setVisible }) {
               name="id_dispositivogps"
               id=""
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-orange-500 focus:border-orange-500 block w-full p-2.5"
-              // required
+              required
               onChange={(e) => setDispositivoGpsAuto(e.target.value)}
             >
               {dispositiviGpsAutoNoleggio &&
