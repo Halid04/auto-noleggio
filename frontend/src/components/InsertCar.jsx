@@ -128,7 +128,9 @@ function InsertCar({ setVisible }) {
       marca: carData.marca,
       targa: carData.targa,
       modello: carData.modello,
-      anno_immatricolazione: carData.anno_immatricolazione,
+      anno_immatricolazione: new Date(
+        carData.anno_immatricolazione
+      ).getFullYear(),
       numero_posti: carData.numero_posti,
       tipo_carburazione: carData.tipo_carburazione,
       tipo_veicolo: carData.tipo_veicolo,
@@ -158,7 +160,7 @@ function InsertCar({ setVisible }) {
     fetch(url, {
       method: "POST",
       headers: headers,
-      body: JSON.stringify(carData),
+      body: JSON.stringify(requestBody),
     })
       .then((response) => {
         if (!response.ok) {

@@ -126,7 +126,7 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="p-4 overflow-x-hidden overflow-y-auto flex flex-col h-full w-[100vw]">
+    <div className="p-4 overflow-x-hidden overflow-y-auto flex flex-col gap-7 h-full w-[100vw]">
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-semibold">Dashboard</h1>
         <button
@@ -138,33 +138,33 @@ const Dashboard = () => {
       </div>
 
       <div className="grid grid-cols-3 gap-4 mb-4">
-        <div className="bg-white p-4 rounded-lg shadow-md">
+        <div className="bg-white p-4 rounded-lg shadow-md-best">
           <h2 className="text-lg font-semibold mb-2">Total Users</h2>
           <p className="text-2xl">{data.numero_utenti}</p>
         </div>
-        <div className="bg-white p-4 rounded-lg shadow-md">
+        <div className="bg-white p-4 rounded-lg shadow-md-best">
           <h2 className="text-lg font-semibold mb-2">Rented Cars</h2>
           <p className="text-2xl">{data.num_macchine_nol}</p>
         </div>
-        <div className="bg-white p-4 rounded-lg shadow-md">
+        <div className="bg-white p-4 rounded-lg shadow-md-best">
           <h2 className="text-lg font-semibold mb-2">Total Earnings</h2>
           <p className="text-2xl">${data.incassi_totali}</p>
         </div>
       </div>
 
       <div className="grid grid-cols-3 gap-4 mb-4">
-        <div className="bg-white p-4 rounded-lg shadow-md">
+        <div className="bg-white p-4 rounded-lg shadow-md-best">
           <h2 className="text-lg font-semibold mb-2">Vehicle Status</h2>
           <div className="small-chart">
             <Doughnut data={doughnutData} />
           </div>
         </div>
-        <div className="bg-white p-4 rounded-lg shadow-md">
+        <div className="bg-white p-4 rounded-lg shadow-md-best">
           <h2 className="text-lg font-semibold mb-2">Sales Status</h2>
           <Line data={lineData} />
         </div>
         <div className="grid grid-cols-2 gap-4 mb-4">
-          <div className="bg-white p-4 rounded-lg shadow-md">
+          <div className="bg-white p-4 rounded-lg shadow-md-best">
             <h2 className="text-lg font-semibold mb-2">Branch Earnings</h2>
             <div className="small-chart">
               <Doughnut data={doughnutSediData} />
@@ -173,56 +173,52 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 mb-4">
-        <div className="bg-white p-4 rounded-lg shadow-md">
-          <h2 className="text-lg font-semibold mb-2">Track Your Cars</h2>
-          {/* <div ref={mapContainer} className=" w-full h-64" /> */}
-        </div>
-        <div className="bg-white p-4 rounded-lg shadow-md">
-          <h2 className="text-lg font-semibold mb-2">Car Details</h2>
-          <div className="w-full h-[30rem] overflow-y-auto overflow-x-auto">
-            <table className="w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    ID
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Model
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Location
-                  </th>
+      <div className="bg-white p-4 rounded-lg shadow-md-best">
+        <h2 className="text-lg font-semibold mb-2">Track Your Cars</h2>
+        {/* <div ref={mapContainer} className=" w-full h-64" /> */}
+      </div>
+      <div className="bg-white w-full p-4 rounded-lg shadow-md-best">
+        <h2 className="text-lg font-semibold mb-2">Car Details</h2>
+        <div className="w-full h-[25rem] overflow-y-auto overflow-x-auto">
+          <table className="w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  ID
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Model
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Status
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Location
+                </th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {data.macchina_gps.map((car) => (
+                <tr key={car.id_dispositivogps}>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {car.id_veicolo}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">{car.modello}</td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {car.tipo_veicolo}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {car.latitudine}, {car.longitudine}
+                  </td>
                 </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {data.macchina_gps.map((car) => (
-                  <tr key={car.id_dispositivogps}>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {car.id_veicolo}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {car.modello}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {car.tipo_veicolo}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {car.latitudine}, {car.longitudine}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 mb-4">
-        <div className="bg-white p-4 rounded-lg shadow-md">
+      <div className="grid grid-cols-2 gap-4">
+        <div className="bg-white p-4 rounded-lg shadow-md-best">
           <h2 className="text-lg font-semibold mb-2">Cars</h2>
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
@@ -259,7 +255,7 @@ const Dashboard = () => {
             </tbody>
           </table>
         </div>
-        <div className="bg-white p-4 rounded-lg shadow-md">
+        <div className="bg-white p-4 rounded-lg shadow-md-best">
           <h2 className="text-lg font-semibold mb-2">Users</h2>
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
