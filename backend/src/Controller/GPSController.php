@@ -71,8 +71,6 @@ class GPSController extends BaseController {
         $response_obj = [];
         $response_obj['status'] = false;
 
-        echo var_dump($uri);
-
         $auth_info = $this->authenticateToken($request);
             
         if (!$auth_info['status']) {
