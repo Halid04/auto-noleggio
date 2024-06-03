@@ -180,40 +180,44 @@ const Dashboard = () => {
         </div>
         <div className="bg-white p-4 rounded-lg shadow-md">
           <h2 className="text-lg font-semibold mb-2">Car Details</h2>
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  ID
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Model
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Location
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {data.macchina_gps.map((car) => (
-                <tr key={car.id_dispositivogps}>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    {car.id_veicolo}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">{car.modello}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    {car.tipo_veicolo}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    {car.latitudine}, {car.longitudine}
-                  </td>
+          <div className="w-full h-[30rem] overflow-y-auto overflow-x-auto">
+            <table className="w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    ID
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Model
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Status
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Location
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {data.macchina_gps.map((car) => (
+                  <tr key={car.id_dispositivogps}>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {car.id_veicolo}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {car.modello}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {car.tipo_veicolo}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {car.latitudine}, {car.longitudine}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 
