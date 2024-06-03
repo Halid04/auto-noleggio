@@ -440,9 +440,9 @@ class VehicleGateway extends BaseGateway {
             );
         }
 
-        $latestVehicle = $this->findLatest($request)['body']['content'][0];
+        $latestVehicle = $this->findLatest($input)['body']['content'][0];
 
-        $request['id_veicolo'] = $latestVehicle['id_veicolo'];
+        $input['id_veicolo'] = $latestVehicle['id_veicolo'];
 
         if (isset($input['images']) && !empty($input['images'])) {
             $response = $this->imageGateway->insert($input);
@@ -452,7 +452,7 @@ class VehicleGateway extends BaseGateway {
             }
         }
 
-        return $this->response(201, "Vehicle added successfully");
+        return $this->response(201, "Veicolo aggiunto");
 
         
     }

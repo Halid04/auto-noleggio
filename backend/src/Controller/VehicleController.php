@@ -20,7 +20,7 @@ class VehicleController extends BaseController {
         try {
 
             $auth = $this->authenticateRequest($this->data);
-
+            
             if (!$auth['status']) {
                 $response = $auth['response_obj'];
             } else {
