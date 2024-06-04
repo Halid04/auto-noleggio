@@ -5,7 +5,7 @@ import AuthCard from "../components/AuthCard";
 const NotLogged = () => {
   return (
     <div className="w-full h-full relative">
-      <div className="auto-section blur-sm  absolute top-0 left-0 h-[90vh] px-5 sm:px-10 py-10 w-full flex items-start justify-start flex-wrap gap-x-16 gap-y-5">
+      <div className="auto-section absolute top-0 left-0 h-[90vh] px-5 sm:px-10 py-10 w-full flex items-start justify-start flex-wrap gap-x-16 gap-y-5">
         <CardAuto
           idAuto={0}
           marca={"Audi"}
@@ -95,7 +95,7 @@ const NotLogged = () => {
         />
       </div>
 
-      <div className="w-full h-full backdrop-brightness-75 absolute top-0 left-0 flex flex-col justify-center items-center z-50">
+      <div className="w-full h-full backdrop-brightness-50 absolute top-0 left-0 flex flex-col justify-center items-center z-50">
         <h1 className="text-4xl text-center font-bold text-white">
           Per poter visualizzare questa pagina devi prima effettuare l'accesso
           <span className="text-[#FF690F]">!</span>
