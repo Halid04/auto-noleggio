@@ -111,7 +111,7 @@ const Dashboard = () => {
     console.log(veicoloPosizione);
 
   if (!data) {
-    return <div>Loading...</div>;
+    return <div>Caricamento ...</div>;
   } else {
     console.log(data);
   }
@@ -121,7 +121,7 @@ const Dashboard = () => {
     datasets: [
       {
         label: "Stato veicolo",
-        data: [data.num_macchine_disp, data.num_macchine_nol.occupied_vehicles],
+        data: [data.num_macchine_disp, data.num_macchine_nol],
         backgroundColor: ["rgba(54, 162, 235, 0.2)", "rgba(255, 99, 132, 0.2)"],
         borderColor: ["rgba(54, 162, 235, 1)", "rgba(255, 99, 132, 1)"],
         borderWidth: 1,
