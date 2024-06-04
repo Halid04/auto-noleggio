@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import {
   Chart as ChartJS,
   ArcElement,
@@ -10,8 +11,8 @@ import {
   LinearScale,
 } from "chart.js";
 import { Doughnut, Line } from "react-chartjs-2";
-import * as maptilersdk from "@maptiler/sdk";
-import "@maptiler/sdk/dist/maptiler-sdk.css";
+import { ArrowLeft } from "lucide-react";
+import MapGPS from "../components/MapGPS";
 import InsertCar from "../components/InsertCar"; // Adjust the path as needed
 
 ChartJS.register(
@@ -25,8 +26,10 @@ ChartJS.register(
 );
 
 const Dashboard = () => {
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [data, setData] = useState(null);
+  const [veicoloPosizione, setVeicoloPosizione] = useState([]);
 
   const toggleModal = () => {
     setIsOpen(!isOpen);
@@ -39,36 +42,73 @@ const Dashboard = () => {
     headers.Authorization = `Bearer ${token}`;
   }
 
+  const getCarDetail = (idAuto) => {
+    const requestParams = { id: idAuto };
+    const url = `http://localhost/auto-noleggio/backend/public/veicoli?json=${encodeURIComponent(
+      JSON.stringify(requestParams)
+    )}`;
+
+    const headers = {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    };
+
+    return fetch(url, {
+      method: "GET",
+      headers: headers,
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        return data.content[0].marca + " " + data.content[0].modello;
+        // console.log("carDetail", data.content[0].modello);
+      })
+      .catch((error) => {
+        console.error(
+          "Errore durante il recupero dei dettagli dell'auto:",
+          error
+        );
+        return null; // Handle the error case by returning null or an empty object
+      });
+  };
+
   useEffect(() => {
     fetch("http://localhost/auto-noleggio/backend/public/admin", {
       method: "GET",
       headers: headers,
     })
       .then((response) => response.json())
-      .then((jsonData) => setData(jsonData.content))
+      .then((jsonData) => {
+        setData(jsonData.content);
+
+        const veicoloGPSPromises =
+          jsonData &&
+          jsonData.content &&
+          jsonData.content.macchina_gps &&
+          jsonData.content.macchina_gps.map(async (car) => {
+            const carDetail = await getCarDetail(car.id_veicolo);
+            return {
+              carDetail,
+              id_veicolo: car.id_veicolo,
+              latitudine: car.latitudine,
+              longitudine: car.longitudine,
+            };
+          });
+
+        Promise.all(veicoloGPSPromises).then((veicoloGPS) => {
+          setVeicoloPosizione(veicoloGPS);
+        });
+      })
       .catch((error) => console.error("Error fetching JSON data:", error));
   }, []);
 
-  // const mapContainer = useRef(null);
-  // const map = useRef(null);
-  // const tokyo = { lng: 139.753, lat: 35.6844 };
-  // const [zoom] = useState(14);
-  // maptilersdk.config.apiKey = "zKTSY8Huqpuc98tNjLwq";
-
-  // useEffect(() => {
-  //   if (map.current) return; // stops map from intializing more than once
-
-  //   map.current = new maptilersdk.Map({
-  //     container: mapContainer.current,
-  //     style: maptilersdk.MapStyle.STREETS,
-  //     center: [tokyo.lng, tokyo.lat],
-  //     zoom: zoom,
-  //   });
-
-  //   new maptilersdk.Marker({ color: "#FF0000" })
-  //     .setLngLat([139.7525, 35.6846])
-  //     .addTo(map.current);
-  // }, [tokyo.lng, tokyo.lat, zoom]);
+  veicoloPosizione &&
+    veicoloPosizione.length > 0 &&
+    console.log(veicoloPosizione);
 
   if (!data) {
     return <div>Loading...</div>;
@@ -77,10 +117,10 @@ const Dashboard = () => {
   }
 
   const doughnutData = {
-    labels: ["Available", "Rented"],
+    labels: ["Disponibili", "Noleggiati"],
     datasets: [
       {
-        label: "Car Status",
+        label: "Stato veicolo",
         data: [data.num_macchine_disp, data.num_macchine_nol.occupied_vehicles],
         backgroundColor: ["rgba(54, 162, 235, 0.2)", "rgba(255, 99, 132, 0.2)"],
         borderColor: ["rgba(54, 162, 235, 1)", "rgba(255, 99, 132, 1)"],
@@ -106,7 +146,7 @@ const Dashboard = () => {
     labels: data.incassi_sedi.map((item) => item.nome), // Cambiato da 'item.sede' a 'item.nome'
     datasets: [
       {
-        label: "Earnings by Branch",
+        label: "Guadagni mensili",
         data: data.incassi_sedi.map((item) => parseFloat(item.proceeds)), // Cambiato da 'item.incassi' a 'item.proceeds'
         backgroundColor: data.incassi_sedi.map(
           (_, index) =>
@@ -128,46 +168,59 @@ const Dashboard = () => {
   return (
     <div className="p-4 overflow-x-hidden overflow-y-auto flex flex-col gap-7 h-full w-[100vw]">
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-semibold">Dashboard</h1>
+        <div className="flex justify-start items-center gap-3">
+          <span
+            title="Torna indietro"
+            onClick={() => navigate("/auto")}
+            className="cursor-pointer"
+          >
+            <ArrowLeft />
+          </span>
+
+          <h1 className="text-2xl font-semibold">Dashboard</h1>
+        </div>
+
         <button
-          className="bg-orange-500 text-white px-4 py-2 rounded-lg"
+          className="bg-orange-500 text-white px-4 py-1 rounded-lg"
           onClick={toggleModal}
         >
-          + Add New Car
+          + Aggiungi un veicolo
         </button>
       </div>
 
-      <div className="grid grid-cols-3 gap-4 mb-4">
-        <div className="bg-white p-4 rounded-lg shadow-md-best">
-          <h2 className="text-lg font-semibold mb-2">Total Users</h2>
-          <p className="text-2xl">{data.numero_utenti}</p>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+        <div className="bg-white p-4 py-5 rounded-lg shadow-md-best flex flex-col justify-center items-center">
+          <h2 className="text-xl font-semibold mb-2">Utenti</h2>
+          <p className="text-3xl font-bold">{data.numero_utenti}</p>
         </div>
-        <div className="bg-white p-4 rounded-lg shadow-md-best">
-          <h2 className="text-lg font-semibold mb-2">Rented Cars</h2>
-          <p className="text-2xl">{data.num_macchine_nol}</p>
+        <div className="bg-white p-4 py-5 rounded-lg shadow-md-best flex flex-col justify-center items-center">
+          <h2 className="text-xl font-semibold mb-2">
+            Veicoli attualmente noleggiati
+          </h2>
+          <p className="text-3xl font-bold">{data.num_macchine_nol}</p>
         </div>
-        <div className="bg-white p-4 rounded-lg shadow-md-best">
-          <h2 className="text-lg font-semibold mb-2">Total Earnings</h2>
-          <p className="text-2xl">${data.incassi_totali}</p>
+        <div className="bg-white p-4 py-5 rounded-lg shadow-md-best flex flex-col justify-center items-center">
+          <h2 className="text-xl font-semibold mb-2">Guadagni</h2>
+          <p className="text-3xl font-bold">{data.incassi_totali}€</p>
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-4 mb-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
         <div className="bg-white p-4 rounded-lg shadow-md-best">
-          <h2 className="text-lg font-semibold mb-2">Vehicle Status</h2>
+          <h2 className="text-lg font-semibold mb-2">Stato veicoli</h2>
           <div className="small-chart">
             <Doughnut data={doughnutData} />
           </div>
         </div>
 
         <div className="bg-white p-4 rounded-lg shadow-md-best">
-          <h2 className="text-lg font-semibold mb-2">Sales Status</h2>
+          <h2 className="text-lg font-semibold mb-2">Guadagni mensili</h2>
           <Line data={lineData} />
         </div>
 
         {/* <div className="grid grid-cols-2 gap-4 mb-4"> */}
         <div className="bg-white p-4 rounded-lg shadow-md-best">
-          <h2 className="text-lg font-semibold mb-2">Branch Earnings</h2>
+          <h2 className="text-lg font-semibold mb-2">Guadagni sedi</h2>
           <div className="small-chart">
             <Doughnut data={doughnutSediData} />
           </div>
@@ -176,11 +229,13 @@ const Dashboard = () => {
       </div>
 
       <div className="bg-white p-4 rounded-lg shadow-md-best">
-        <h2 className="text-lg font-semibold mb-2">Track Your Cars</h2>
-        {/* <div ref={mapContainer} className=" w-full h-64" /> */}
+        <h2 className="text-lg font-semibold mb-2">
+          Geolocalizzazione veicoli
+        </h2>
+        <MapGPS veicoloPosizione={veicoloPosizione} />
       </div>
       <div className="bg-white w-full p-4 rounded-lg shadow-md-best">
-        <h2 className="text-lg font-semibold mb-2">Car Details</h2>
+        <h2 className="text-lg font-semibold mb-2">Dettagli veicoli</h2>
         <div className="w-full h-[25rem] overflow-y-auto overflow-x-auto">
           <table className="w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
@@ -189,13 +244,13 @@ const Dashboard = () => {
                   ID
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Model
+                  Modello
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
+                  Stato
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Location
+                  Localizzazione
                 </th>
               </tr>
             </thead>
@@ -219,8 +274,8 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <div className="bg-white w-full p-4 rounded-lg shadow-md-best">
-        <h2 className="text-lg font-semibold mb-2">Cars</h2>
+      {/* <div className="bg-white w-full p-4 rounded-lg shadow-md-best">
+        <h2 className="text-lg font-semibold mb-2">Veicoli</h2>
         <div className="w-full h-[25rem] overflow-y-auto overflow-x-auto">
           <table className="w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
@@ -229,13 +284,13 @@ const Dashboard = () => {
                   ID
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Model
+                  Modello
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
+                  Stato
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Location
+                  Localizzazione
                 </th>
               </tr>
             </thead>
@@ -257,10 +312,10 @@ const Dashboard = () => {
             </tbody>
           </table>
         </div>
-      </div>
+      </div> */}
 
       <div className="bg-white w-full p-4 rounded-lg shadow-md-best">
-        <h2 className="text-lg font-semibold mb-2">Users</h2>
+        <h2 className="text-lg font-semibold mb-2">Utenti</h2>
         <div className="w-full h-[25rem] overflow-y-auto overflow-x-auto">
           <table className="w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
@@ -269,7 +324,10 @@ const Dashboard = () => {
                   ID
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Name
+                  Nome
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Cognome
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Email
@@ -283,6 +341,9 @@ const Dashboard = () => {
                     {user.id_cliente}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">{user.nome}</td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {user.cognome}
+                  </td>
                   <td className="px-6 py-4 whitespace-nowrap">{user.email}</td>
                 </tr>
               ))}

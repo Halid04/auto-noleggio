@@ -2,10 +2,12 @@
 import React, { useState, useEffect } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import EditUserModal from "../components/EditUserModal";
+import { useParams, useNavigate } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
 
 const UserDashboard = () => {
   const [isModalVisible, setModalVisible] = useState(false);
-
+  const navigate = useNavigate();
   const [pastRentals, setPastRentals] = useState([]);
   const [upcomingRentals, setUpcomingRentals] = useState([]);
 
@@ -135,9 +137,15 @@ const UserDashboard = () => {
       <div className="container mx-auto px-4 py-6 w-full">
         <div className="bg-orange-500 text-white p-6 rounded-lg shadow-md w-full">
           <div className="flex justify-between items-center">
-            <div>
+            <div className="flex justify-start items-center gap-3">
+              <span
+                title="Torna indietro"
+                onClick={() => navigate("/auto")}
+                className="cursor-pointer"
+              >
+                <ArrowLeft />
+              </span>
               <h1 className="text-3xl font-bold">{user.name}</h1>
-              <p className="text-lg">{user.status}</p>
             </div>
             <button
               className="bg-blue-500 text-white py-2 px-4 rounded-lg"
@@ -149,15 +157,15 @@ const UserDashboard = () => {
         </div>
 
         <div className="mt-6 w-full">
-          <h2 className="text-2xl font-semibold">Rental History</h2>
+          <h2 className="text-2xl font-semibold">Cronologia noleggi</h2>
           <div className="overflow-x-auto mt-2 w-full">
             <table className="w-full bg-white rounded-lg shadow-md">
               <thead className="bg-gray-100">
                 <tr>
-                  <th className="px-4 py-2 text-left">Date</th>
-                  <th className="px-4 py-2 text-left">Car</th>
-                  <th className="px-4 py-2 text-left">Duration</th>
-                  <th className="px-4 py-2 text-left">Total</th>
+                  <th className="px-4 py-2 text-left">Data</th>
+                  <th className="px-4 py-2 text-left">Veicolo</th>
+                  <th className="px-4 py-2 text-left">Durata</th>
+                  <th className="px-4 py-2 text-left">Importo totale</th>
                 </tr>
               </thead>
               <tbody>
@@ -193,15 +201,15 @@ const UserDashboard = () => {
         </div>
 
         <div className="mt-6 w-full">
-          <h2 className="text-2xl font-semibold">Upcoming Rentals</h2>
+          <h2 className="text-2xl font-semibold">Noleggi prenotati</h2>
           <div className="overflow-x-auto mt-2 w-full">
             <table className="w-full bg-white rounded-lg shadow-md">
               <thead className="bg-gray-100">
                 <tr>
-                  <th className="px-4 py-2 text-left">Date</th>
-                  <th className="px-4 py-2 text-left">Car</th>
-                  <th className="px-4 py-2 text-left">Duration</th>
-                  <th className="px-4 py-2 text-left">Total</th>
+                  <th className="px-4 py-2 text-left">Data</th>
+                  <th className="px-4 py-2 text-left">Veicolo</th>
+                  <th className="px-4 py-2 text-left">Durata</th>
+                  <th className="px-4 py-2 text-left">Importo totale</th>
                   <th className="px-4 py-2 text-left"></th>
                 </tr>
               </thead>
