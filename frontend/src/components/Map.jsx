@@ -8,7 +8,7 @@ export default function Map({ sedi }) {
   const map = useRef(null);
   const brescia = { lng: 10.211802, lat: 45.541553 };
   const [zoom] = useState(4);
-  maptilersdk.config.apiKey = "zKTSY8Huqpuc98tNjLwq";
+  maptilersdk.config.apiKey = "YOUR_API_KEY";
 
   useEffect(() => {
     if (map.current) return; // stops map from initializing more than once
