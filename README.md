@@ -284,6 +284,7 @@ The application will then be available at http://localhost:5173.
 * [![Lucide.dev][Lucide.dev-badge]][Lucide.dev-url]
 * [![MapTiler][MapTiler-badge]][MapTiler-url]
 * [![Chart.js][Chart.js-badge]][Chart.js-url]
+* [![PrimeReact][PrimeReact-badge]][PrimeReact-url]
 
 [React.js-badge]: https://img.shields.io/badge/React-61DAFB?style=flat&logo=react&logoColor=black
 [PHP-badge]: https://img.shields.io/badge/PHP-777BB4?style=flat&logo=php&logoColor=white
@@ -292,6 +293,7 @@ The application will then be available at http://localhost:5173.
 [Lucide.dev-badge]: https://img.shields.io/badge/Lucide.dev-000000?style=flat&logo=lucide&logoColor=white
 [MapTiler-badge]: https://img.shields.io/badge/MapTiler-006C70?style=flat&logo=maptiler&logoColor=white
 [Chart.js-badge]: https://img.shields.io/badge/Chart.js-F5F5F5?style=flat&logo=chart.js&logoColor=000000
+[PrimeReact-badge]: https://img.shields.io/badge/PrimeReact-007AD9?style=flat&logo=primereact&logoColor=white
 
 [React-url]: https://reactjs.org/
 [PHP-url]: https://www.php.net/
@@ -300,6 +302,7 @@ The application will then be available at http://localhost:5173.
 [Lucide.dev-url]: https://lucide.dev/
 [MapTiler-url]: https://www.maptiler.com/
 [Chart.js-url]: https://www.chartjs.org/
+[PrimeReact-url]: https://www.primefaces.org/primereact/
 
 ## Contributors
 
